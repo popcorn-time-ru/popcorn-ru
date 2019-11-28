@@ -48,4 +48,15 @@ class Rating
     protected $hated;
     public function getHated() { return $this->hated; }
     public function setHated($hated) { $this->hated = $hated; return $this;}
+
+    public function getApiArray(): array
+    {
+        return [
+            'percentage' => $this->getPercentage(),
+            'watching' => $this->getWatching(),
+            'votes' => $this->getVotes(),
+            'loved' => $this->getLoved(),
+            'hated' => $this->getHated(),
+        ];
+    }
 }

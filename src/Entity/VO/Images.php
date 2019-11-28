@@ -32,4 +32,13 @@ class Images
     protected $banner;
     public function getBanner() { return $this->banner; }
     public function setBanner($banner) { $this->banner = $banner; return $this;}
+
+    public function getApiArray(): array
+    {
+        return [
+            'poster' => $this->getPoster(),
+            'fanart' => $this->getFanart(),
+            'banner' => $this->getBanner(),
+        ];
+    }
 }

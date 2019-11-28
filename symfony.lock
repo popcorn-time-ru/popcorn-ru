@@ -102,6 +102,15 @@
     "ocramius/proxy-manager": {
         "version": "2.2.3"
     },
+    "phpdocumentor/reflection-common": {
+        "version": "2.0.0"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "4.3.2"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "1.0.1"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -214,6 +223,9 @@
     "symfony/http-kernel": {
         "version": "v4.4.0"
     },
+    "symfony/inflector": {
+        "version": "v4.4.0"
+    },
     "symfony/maker-bundle": {
         "version": "1.0",
         "recipe": {
@@ -241,6 +253,12 @@
     "symfony/polyfill-php73": {
         "version": "v1.13.0"
     },
+    "symfony/property-access": {
+        "version": "v4.4.0"
+    },
+    "symfony/property-info": {
+        "version": "v4.4.0"
+    },
     "symfony/routing": {
         "version": "4.2",
         "recipe": {
@@ -254,6 +272,12 @@
             "config/packages/routing.yaml",
             "config/routes.yaml"
         ]
+    },
+    "symfony/serializer": {
+        "version": "v4.4.0"
+    },
+    "symfony/serializer-pack": {
+        "version": "v1.0.2"
     },
     "symfony/service-contracts": {
         "version": "v2.0.0"
@@ -269,6 +293,9 @@
     },
     "symfony/yaml": {
         "version": "v4.4.0"
+    },
+    "webmozart/assert": {
+        "version": "1.6.0"
     },
     "zendframework/zend-code": {
         "version": "3.4.0"
