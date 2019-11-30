@@ -2,7 +2,10 @@
 
 namespace App\Command;
 
+use App\Processors\ForumProcessor;
 use App\Service\MovieInfo;
+use Enqueue\Client\Message;
+use Enqueue\Client\ProducerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,9 +40,9 @@ class TestTmdbCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->movieInfo->fetchToLocal('tt0167261');
-        $this->movieInfo->fetchToLocal('tt0076759');
-        $this->movieInfo->fetchToLocal('tt0241527');
+        // $this->movieInfo->fetchToLocal('tt0167261');
+        // $this->movieInfo->fetchToLocal('tt0076759');
+        // $this->movieInfo->fetchToLocal('tt0241527');
 
         return 0;
     }

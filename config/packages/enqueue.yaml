@@ -1,0 +1,7 @@
+enqueue:
+    default:
+        transport: '%env(resolve:DATABASE_URL)%'
+        client: null
+        extensions:
+            doctrine_clear_identity_map_extension: true
+            signal_extension:     true

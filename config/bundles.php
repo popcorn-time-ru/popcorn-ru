@@ -9,4 +9,5 @@ return [
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle::class => ['all' => true],
     Tmdb\SymfonyBundle\TmdbSymfonyBundle::class => ['all' => true],
+    Enqueue\Bundle\EnqueueBundle::class => ['all' => true],
 ];
