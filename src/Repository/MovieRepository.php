@@ -19,9 +19,21 @@ class MovieRepository extends ServiceEntityRepository
         parent::__construct($registry, Movie::class);
     }
 
-    public function getByImdb(string $imdbId): ?Movie
+    public function flush(): void
     {
-        return $this->findOneBy(['imdb' => $imdbId]);
+        $this->_em->flush();
+    }
+
+    public function findOrCreateByImdb(string $imdbId): Movie
+    {
+        $movie = $this->findOneBy(['imdb' => $imdbId]);
+        if (!$movie) {
+            $movie = new Movie();
+            $movie->setImdb($imdbId);
+            $this->_em->persist($movie);
+        }
+
+        return $movie;
     }
 
     /**

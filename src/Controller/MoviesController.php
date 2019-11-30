@@ -66,7 +66,7 @@ class MoviesController extends AbstractController
      */
     public function movie($id)
     {
-        $movie = $this->repo->getByImdb($id);
+        $movie = $this->repo->findByImdb($id);
         return $this->json($movie)->setEncodingOptions(JSON_UNESCAPED_SLASHES);
     }
 }

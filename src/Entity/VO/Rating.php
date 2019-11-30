@@ -13,7 +13,7 @@ class Rating
      * @var integer
      * @ORM\Column(type="integer")
      */
-    protected $percentage;
+    protected $percentage = 0;
     public function getPercentage() { return $this->percentage; }
     public function setPercentage($percentage) { $this->percentage = $percentage; return $this;}
 
@@ -21,7 +21,7 @@ class Rating
      * @var integer
      * @ORM\Column(type="integer")
      */
-    protected $watching;
+    protected $watching = 0;
     public function getWatching() { return $this->watching; }
     public function setWatching($watching) { $this->watching = $watching; return $this;}
 
@@ -29,7 +29,7 @@ class Rating
      * @var integer
      * @ORM\Column(type="integer")
      */
-    protected $votes;
+    protected $votes = 0;
     public function getVotes() { return $this->votes; }
     public function setVotes($votes) { $this->votes = $votes; return $this;}
 
@@ -37,7 +37,7 @@ class Rating
      * @var integer
      * @ORM\Column(type="integer")
      */
-    protected $loved;
+    protected $loved = 0;
     public function getLoved() { return $this->loved; }
     public function setLoved($loved) { $this->loved = $loved; return $this;}
 
@@ -45,7 +45,7 @@ class Rating
      * @var integer
      * @ORM\Column(type="integer")
      */
-    protected $hated;
+    protected $hated = 0;
     public function getHated() { return $this->hated; }
     public function setHated($hated) { $this->hated = $hated; return $this;}
 

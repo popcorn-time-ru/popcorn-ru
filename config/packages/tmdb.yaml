@@ -1,0 +1,4 @@
+tmdb_symfony:
+  api_key: '%env(TMDB_API_KEY)%'
+  twig_extension:
+    enabled: false

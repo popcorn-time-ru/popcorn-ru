@@ -31,6 +31,19 @@ class Movie
     }
 
     /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime")
+     */
+    protected $syncAt;
+    public function synced(int $delta):bool
+    {
+        return $this->syncAt &&
+            $this->syncAt->getTimestamp() + $delta > (new \DateTime())->getTimestamp();
+    }
+    public function sync() { $this->syncAt = new \DateTime(); return $this;}
+
+
+    /**
      * @var Torrent[]
      * @ORM\OneToMany(targetEntity="App\Entity\Torrent", fetch="EAGER", mappedBy="movie")
      */

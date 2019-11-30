@@ -41,6 +41,9 @@
             "src/Repository/.gitignore"
         ]
     },
+    "doctrine/doctrine-cache-bundle": {
+        "version": "1.4.0"
+    },
     "doctrine/doctrine-fixtures-bundle": {
         "version": "3.0",
         "recipe": {
@@ -90,8 +93,20 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "guzzlehttp/guzzle": {
+        "version": "6.4.1"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
+    },
+    "guzzlehttp/psr7": {
+        "version": "1.6.1"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "kevinrob/guzzle-cache-middleware": {
+        "version": "v2.1.1"
     },
     "nikic/php-parser": {
         "version": "v4.3.0"
@@ -101,6 +116,12 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.3"
+    },
+    "php-tmdb/api": {
+        "version": "2.1.17"
+    },
+    "php-tmdb/symfony": {
+        "version": "2.2.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.0.0"
@@ -117,11 +138,20 @@
     "psr/container": {
         "version": "1.0.0"
     },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
     "psr/log": {
         "version": "1.1.2"
     },
+    "ralouphie/getallheaders": {
+        "version": "3.0.3"
+    },
     "roave/security-advisories": {
         "version": "dev-master"
+    },
+    "rtheunissen/guzzle-log-middleware": {
+        "version": "v0.4.2"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -238,6 +268,9 @@
     "symfony/mime": {
         "version": "v4.4.0"
     },
+    "symfony/options-resolver": {
+        "version": "v4.4.0"
+    },
     "symfony/orm-pack": {
         "version": "v1.0.7"
     },
@@ -293,6 +326,9 @@
     },
     "symfony/yaml": {
         "version": "v4.4.0"
+    },
+    "twig/twig": {
+        "version": "v2.12.2"
     },
     "webmozart/assert": {
         "version": "1.6.0"
