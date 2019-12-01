@@ -47,20 +47,21 @@ class ForumProcessor implements TopicSubscriberInterface, Processor
                 return self::REJECT;
             }
             $generator = $spider->getPage($data['forumId'], $data['page']);
-            foreach ($generator as $topic) {
-                $message = new \Enqueue\Client\Message(JSON::encode([
+            foreach ($generator as $topic => $info) {
+                $topicMessage = new \Enqueue\Client\Message(JSON::encode([
                     'spider' => $data['spider'],
-                    'topicId' => $topic
+                    'topicId' => $topic,
+                    'info' => $info,
                 ]));
-                $message->setDelay(random_int(60, 300));
-                $this->producer->sendEvent(TopicProcessor::TOPIC, $message);
+                $topicMessage->setDelay(random_int(60, 300));
+                $this->producer->sendEvent(TopicProcessor::TOPIC, $topicMessage);
             }
 
             if ($generator->getReturn()) {
                 $data['page']++;
-                $message = new \Enqueue\Client\Message(JSON::encode($data));
-                $message->setDelay(random_int(600, 1200));
-                $this->producer->sendEvent(ForumProcessor::TOPIC, $message);
+                $nextPageMessage = new \Enqueue\Client\Message(JSON::encode($data));
+                $nextPageMessage->setDelay(random_int(600, 1200));
+                $this->producer->sendEvent(self::TOPIC, $nextPageMessage);
             }
 
             return self::ACK;

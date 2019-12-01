@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Processors\ForumProcessor;
+use App\Processors\TopicProcessor;
 use App\Service\MovieInfo;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
@@ -23,10 +24,16 @@ class TestTmdbCommand extends Command
      */
     private $movieInfo;
 
-    public function __construct(MovieInfo $movieInfo)
+    /**
+     * @var ProducerInterface
+     */
+    private $producer;
+
+    public function __construct(MovieInfo $movieInfo, ProducerInterface $producer)
     {
         parent::__construct();
         $this->movieInfo = $movieInfo;
+        $this->producer = $producer;
     }
 
     protected function configure()
@@ -40,6 +47,11 @@ class TestTmdbCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->producer->sendEvent(TopicProcessor::TOPIC, new Message(json_encode([
+            'spider' => 'NnmClub',
+            'topicId' => '1282399',
+            'info' => ['seed' => '10', 'leech' => '1'],
+        ])));
         // $this->movieInfo->fetchToLocal('tt0167261');
         // $this->movieInfo->fetchToLocal('tt0076759');
         // $this->movieInfo->fetchToLocal('tt0241527');

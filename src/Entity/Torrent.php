@@ -25,6 +25,14 @@ class Torrent
     public function getMovie(): Movie { return $this->movie; }
     public function setMovie(Movie $movie): self { $this->movie = $movie; return $this; }
 
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $providerExternalId;
+    public function getProviderExternalId() { return $this->providerExternalId; }
+    public function setProviderExternalId($providerExternalId) { $this->providerExternalId = $providerExternalId; return $this;}
+
     //<editor-fold desc="Movie Api Data">
     /**
      * @var string

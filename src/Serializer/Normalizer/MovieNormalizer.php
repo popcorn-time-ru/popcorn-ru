@@ -30,7 +30,9 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         $torrents = [];
         foreach ($object->getTorrents() as $torrent) {
             // force english
-            $torrents['en'][$torrent->getQuality()] = $this->normalizer->normalize($torrent, $format, $context);
+            $torrents['en'][$torrent->getQuality()] =
+//            $torrents['ru'][$torrent->getQuality()] =
+                $this->normalizer->normalize($torrent, $format, $context);
         }
 
         return [

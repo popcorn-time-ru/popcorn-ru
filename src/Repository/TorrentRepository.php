@@ -19,6 +19,29 @@ class TorrentRepository extends ServiceEntityRepository
         parent::__construct($registry, Torrent::class);
     }
 
+    public function flush(): void
+    {
+        $this->_em->flush();
+    }
+
+    public function findOrCreateByProviderAndExternalId(string $provider, string $externalId): Torrent
+    {
+        $torrent = $this->findOneBy([
+            'provider' => $provider,
+            'providerExternalId' => $externalId
+        ]);
+        if (!$torrent) {
+            $torrent = new Torrent();
+            $torrent
+                ->setProvider($provider)
+                ->setProviderExternalId($externalId)
+            ;
+            $this->_em->persist($torrent);
+        }
+
+        return $torrent;
+    }
+
     // /**
     //  * @return Torrent[] Returns an array of Torrent objects
     //  */

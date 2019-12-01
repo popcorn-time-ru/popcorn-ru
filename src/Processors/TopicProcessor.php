@@ -42,7 +42,7 @@ class TopicProcessor implements TopicSubscriberInterface, Processor
 
                 return self::REJECT;
             }
-            $spider->getTopic($data['topicId']);
+            $spider->getTopic($data['topicId'], $data['info']);
 
             return self::ACK;
         } catch (GuzzleException $e) {

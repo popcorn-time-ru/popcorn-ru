@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Movie;
 use App\Repository\MovieRepository;
 use Tmdb\Model\Common\Video;
 use Tmdb\Model\Image;
@@ -31,6 +32,13 @@ class MovieInfo
     {
         $this->tmdb = $tmdb;
         $this->repo = $repo;
+    }
+
+    public function getByImdb(string $imdbId): Movie
+    {
+        $this->fetchToLocal($imdbId);
+
+        return $this->repo->findOneBy(['imdb' => $imdbId]);
     }
 
     public function fetchToLocal(string $imdbId): void
