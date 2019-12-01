@@ -11,6 +11,7 @@ class MoviesController extends AbstractController
 {
     const PAGE_SIZE = 50;
 
+    const CACHE = 3600 * 12;
     /**
      * @var MovieRepository
      */
@@ -33,7 +34,7 @@ class MoviesController extends AbstractController
             $links[] = 'movies/'.$page;
         }
 
-        return $this->json($links)->setEncodingOptions(JSON_UNESCAPED_SLASHES);
+        return $this->resp($links);
     }
 
     /**
@@ -58,7 +59,7 @@ class MoviesController extends AbstractController
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
-        return $this->json($movies)->setEncodingOptions(JSON_UNESCAPED_SLASHES);
+        return $this->resp($movies);
     }
 
     /**
@@ -67,6 +68,13 @@ class MoviesController extends AbstractController
     public function movie($id)
     {
         $movie = $this->repo->findByImdb($id);
-        return $this->json($movie)->setEncodingOptions(JSON_UNESCAPED_SLASHES);
+        return $this->resp($movie);
+    }
+
+    protected function resp($data)
+    {
+        return $this->json($data)
+            ->setEncodingOptions(JSON_UNESCAPED_SLASHES)
+            ->setSharedMaxAge(self::CACHE);
     }
 }
