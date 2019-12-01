@@ -49,7 +49,7 @@ class TestTmdbCommand extends Command
     {
         $this->producer->sendEvent(TopicProcessor::TOPIC, new Message(json_encode([
             'spider' => 'NnmClub',
-            'topicId' => '1282399',
+            'topicId' => '916652',
             'info' => ['seed' => '10', 'leech' => '1'],
         ])));
         // $this->movieInfo->fetchToLocal('tt0167261');

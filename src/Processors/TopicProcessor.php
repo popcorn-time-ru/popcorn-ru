@@ -6,7 +6,9 @@ use App\Service\SpiderSelector;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
@@ -45,7 +47,12 @@ class TopicProcessor implements TopicSubscriberInterface, Processor
             $spider->getTopic($data['topicId'], $data['info']);
 
             return self::ACK;
-        } catch (GuzzleException $e) {
+        } catch (RequestException $e) {
+            if ($e->getResponse()) {
+                echo $e->getMessage().PHP_EOL;
+                return self::ACK;
+            }
+            echo $e->getMessage().PHP_EOL;
             return self::REQUEUE;
         } catch (\Exception $e) {
 

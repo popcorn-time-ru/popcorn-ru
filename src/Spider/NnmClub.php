@@ -57,7 +57,7 @@ class NnmClub extends AbstractSpider
         );
         foreach($lines as $line) {
             /** @var Crawler $line */
-            if (preg_match('#viewtopic\.php\?p=(\d+)#', $line->html(), $m)) {
+            if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
                 $info = [
                     'seed' => $line->filter('.seedmed b')->first()->text(),
                     'leech' => $line->filter('.leechmed b')->first()->text(),
@@ -82,6 +82,7 @@ class NnmClub extends AbstractSpider
 
         preg_match('#\'filelst.php\?attach_id=(\d+)\'#', $crawler->html(), $m);
         if (empty($m)) {
+            $this->logger->info('No File List', ['spider' => $this->getName(), 'topicId' => $topicId, 'html' => $crawler->html()]);
             // нету списка файлов
             return;
         }
@@ -89,12 +90,26 @@ class NnmClub extends AbstractSpider
 
         $post = $crawler->filter('.postbody')->first();
 
+        $imdb = false;
+
         $imdbBlock = $post->filter('.imdbRatingPlugin');
-        if (!$imdbBlock->count()) {
+        if ($imdbBlock->count()) {
+            $imdb = $imdbBlock->attr('data-title');
+        }
+
+        if (!$imdb) {
+            $lnk = $post->filter('a#imdb_id');
+            if ($lnk->count()) {
+                preg_match('#tt\d+#', $lnk->attr('href'), $m);
+                $imdb = $m[0];
+            }
+        }
+
+        if (!$imdb) {
+            $this->logger->info('No IMDB', ['spider' => $this->getName(), 'topicId' => $topicId]);
             // TODO: пока так, только imdb
             return;
         }
-        $imdb = $imdbBlock->attr('data-title');
 
         // TODO: пока так
         $quality = '480p';
