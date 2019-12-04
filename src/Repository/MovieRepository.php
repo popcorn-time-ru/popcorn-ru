@@ -24,9 +24,14 @@ class MovieRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    public function findByImdb(string $imdbId): ?Movie
+    {
+        return $this->findOneBy(['imdb' => $imdbId]);
+    }
+
     public function findOrCreateByImdb(string $imdbId): Movie
     {
-        $movie = $this->findOneBy(['imdb' => $imdbId]);
+        $movie = $this->findByImdb($imdbId);
         if (!$movie) {
             $movie = new Movie();
             $movie->setImdb($imdbId);
