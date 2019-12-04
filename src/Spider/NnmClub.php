@@ -2,8 +2,9 @@
 
 namespace App\Spider;
 
+use App\Entity\File;
 use App\Entity\Torrent;
-use App\Service\TorrentSrvice;
+use App\Service\TorrentService;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
@@ -18,7 +19,9 @@ class NnmClub extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentSrvice $torrentService, LoggerInterface $logger)
+    private $context;
+
+    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
     {
         parent::__construct($torrentService, $logger);
         $this->client = new Client([
@@ -72,6 +75,8 @@ class NnmClub extends AbstractSpider
 
     public function getTopic($topicId, array $info)
     {
+        $this->context = ['spider' => $this->getName(), 'topicId' => $topicId];
+
         $res = $this->client->get('viewtopic.php', [
             'query' => [
                 't' =>$topicId,
@@ -82,7 +87,7 @@ class NnmClub extends AbstractSpider
 
         preg_match('#\'filelst.php\?attach_id=(\d+)\'#', $crawler->html(), $m);
         if (empty($m)) {
-            $this->logger->info('No File List', ['spider' => $this->getName(), 'topicId' => $topicId, 'html' => $crawler->html()]);
+            $this->logger->info('No File List', $this->context + ['html' => $crawler->html()]);
             // нету списка файлов
             return;
         }
@@ -90,47 +95,42 @@ class NnmClub extends AbstractSpider
 
         $post = $crawler->filter('.postbody')->first();
 
-        $imdb = false;
-
-        $imdbBlock = $post->filter('.imdbRatingPlugin');
-        if ($imdbBlock->count()) {
-            $imdb = $imdbBlock->attr('data-title');
-        }
+        $imdb = $this->getImdb($post);
 
         if (!$imdb) {
-            $lnk = $post->filter('a#imdb_id');
-            if ($lnk->count()) {
-                preg_match('#tt\d+#', $lnk->attr('href'), $m);
-                $imdb = $m[0];
-            }
-        }
-
-        if (!$imdb) {
-            $this->logger->info('No IMDB', ['spider' => $this->getName(), 'topicId' => $topicId]);
+            $this->logger->info('No IMDB', $this->context);
             // TODO: пока так, только imdb
             return;
         }
 
-        // TODO: пока так
-        $quality = '480p';
-        if (strpos($post->text(), '1080p')) {
-            $quality = '1080p';
-        } else if (strpos($post->text(), '720p')) {
-            $quality = '720p';
-        }
+        $quality = $this->getQuality($post);
 
         $torrentTable = $crawler->filter('.btTbl')->first();
 
-
         preg_match('#"(magnet[^"]+)"#', $torrentTable->html(), $m);
         if (empty($m[1])) {
-            $this->logger->warning('Not Magnet torrent', ['spider' => $this->getName(), 'topicId' => $topicId]);
+            $this->logger->warning('Not Magnet torrent', $this->context);
             return;
         }
         $url = $m[1];
 
-        $fileSize = $torrentTable->filter('span[title]')->first()->html();
+        $files = $this->getFiles($fileListId);
 
+        $torrent = new Torrent();
+        $torrent
+            ->setProvider($this->getName())
+            ->setProviderExternalId($topicId)
+            ->setUrl($url)
+            ->setSeed($info['seed'])
+            ->setPeer($info['seed'] + $info['leech'])
+            ->setQuality($quality)
+        ;
+
+        $this->torrentService->updateTorrent($torrent, $imdb, $files);
+    }
+
+    protected function getFiles($fileListId): array
+    {
         $res = $this->client->get('filelst.php', [
             'query' => [
                 'attach_id' =>$fileListId,
@@ -142,25 +142,54 @@ class NnmClub extends AbstractSpider
         $crawlerFiles = new Crawler();
         $crawlerFiles->addHtmlContent($html, 'CP-1251');
 
-        $size = '0';
-        $lines = $crawlerFiles->filter('td[align="right"]')->each(static function (Crawler $c) {return $c;});
-        foreach ($lines as $line) {
-            $text = preg_replace('#[^0-9]#', '', $line->html());
-            $size += (int)$text;
+        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
+            $name = trim($c->filter('td[align="left"]')->html());
+            $size = preg_replace('#[^0-9]#', '', $c->filter('td[align="right"]')->html());
+            if (!$name) {
+                $this->logger->warning('Files parsing error', $this->context);
+            }
+            if ($size === '') {
+                return false;
+            }
+
+            return new File($name, (int) $size);
+        });
+
+        return array_filter($files);
+    }
+
+    private function getQuality(Crawler $post): string
+    {
+        if (strpos($post->text(), '1080p')) {
+            return '1080p';
+        }
+        if (strpos($post->text(), '720p')) {
+            return '720p';
+        }
+        if (preg_match('#1920\s*[xхXХ]\s*\d+#u', $post->html())) {
+            return '1080p';
+        }
+        if (preg_match('#1280\s*[xхXХ]\s*\d+#u', $post->html())) {
+            return '720p';
         }
 
-        $torrent = new Torrent();
-        $torrent
-            ->setProvider($this->getName())
-            ->setProviderExternalId($topicId)
-            ->setUrl($url)
-            ->setSeed($info['seed'])
-            ->setPeer($info['seed'] + $info['leech'])
-            ->setSize($size)
-            ->setFilesize($fileSize)
-            ->setQuality($quality)
-        ;
+        return '480p';
+    }
 
-        $this->torrentService->updateTorrent($torrent, $imdb);
+    private function getImdb(Crawler $post): ?string
+    {
+        $plugins = $post->filter('.imdbRatingPlugin')->each(function (Crawler $c) {
+            return $c->attr('data-title');
+        });
+
+        $links = $post->filter('a[href*="imdb.com"]')->each(function (Crawler $c) {
+            preg_match('#tt\d+#', $c->attr('href'), $m);
+            return $m[0] ?? false;
+        });
+
+        $ids = array_unique(array_filter(array_merge($plugins, $links)));
+
+        // пропускаем сборники
+        return count($ids) == 1 ? current($ids) : null;
     }
 }

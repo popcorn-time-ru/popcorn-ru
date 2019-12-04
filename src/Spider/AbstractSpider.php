@@ -2,18 +2,18 @@
 
 namespace App\Spider;
 
-use App\Service\TorrentSrvice;
+use App\Service\TorrentService;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractSpider implements SpiderInterface
 {
-    /** @var TorrentSrvice */
+    /** @var TorrentService */
     protected $torrentService;
 
     /** @var LoggerInterface */
     protected $logger;
 
-    public function __construct(TorrentSrvice $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
     {
         $this->torrentService = $torrentService;
         $this->logger = $logger;

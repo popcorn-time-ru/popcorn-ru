@@ -20,9 +20,6 @@ class Movie
     protected $id;
     public function getId(): ?int { return $this->id; }
 
-    /**
-     * Movie constructor.
-     */
     public function __construct()
     {
         $this->torrents = new ArrayCollection();

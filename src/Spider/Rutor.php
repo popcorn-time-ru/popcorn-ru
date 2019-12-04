@@ -2,7 +2,7 @@
 
 namespace App\Spider;
 
-use App\Service\TorrentSrvice;
+use App\Service\TorrentService;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
@@ -14,7 +14,7 @@ class Rutor extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentSrvice $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
     {
         parent::__construct($torrentService, $logger);
         $this->client = new Client([

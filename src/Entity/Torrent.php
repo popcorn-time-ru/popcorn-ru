@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,6 +18,11 @@ class Torrent
     protected $id;
     public function getId(): ?int { return $this->id; }
 
+    public function __construct()
+    {
+        $this->files = new ArrayCollection();
+    }
+
     /**
      * @var Movie
      * @ORM\ManyToOne(targetEntity="App\Entity\Movie", inversedBy="torrents")
@@ -24,6 +30,37 @@ class Torrent
     protected $movie;
     public function getMovie(): Movie { return $this->movie; }
     public function setMovie(Movie $movie): self { $this->movie = $movie; return $this; }
+
+    /**
+     * @var File[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="App\Entity\File", mappedBy="torrent",
+     *     cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $files;
+    public function getFiles() { return $this->files; }
+    public function setFiles(array $files):self {
+        /** @var File[] $files */
+        $existFiles = [];
+        foreach ($files as $n => $file) {
+            foreach ($this->files as $exist) {
+                if ($exist->equals($file)) {
+                    $existFiles[] = $exist;
+                    unset($files[$n]);
+                }
+            }
+        }
+        foreach ($this->files as $file) {
+            if (!in_array($file, $existFiles)) {
+                $this->files->removeElement($file);
+            }
+        }
+        foreach ($files as $file) {
+            $file->setTorrent($this);
+            $this->files->add($file);
+        }
+
+        return $this;
+    }
 
     /**
      * @var string

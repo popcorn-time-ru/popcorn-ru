@@ -139,6 +139,9 @@
     "kevinrob/guzzle-cache-middleware": {
         "version": "v2.1.1"
     },
+    "monolog/monolog": {
+        "version": "1.25.2"
+    },
     "nikic/php-parser": {
         "version": "v4.3.0"
     },
@@ -313,6 +316,23 @@
     },
     "symfony/mime": {
         "version": "v4.4.0"
+    },
+    "symfony/monolog-bridge": {
+        "version": "v4.4.0"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "6240c6d43e8237a32452f057f81816820fd56ab6"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
     },
     "symfony/options-resolver": {
         "version": "v4.4.0"

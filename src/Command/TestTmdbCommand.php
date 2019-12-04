@@ -2,18 +2,15 @@
 
 namespace App\Command;
 
-use App\Processors\ForumProcessor;
 use App\Processors\TopicProcessor;
 use App\Service\MovieInfo;
-use Enqueue\Client\Message;
-use Enqueue\Client\ProducerInterface;
+use Enqueue\Null\NullContext;
+use Interop\Amqp\Impl\AmqpMessage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tmdb\Model\Movie;
-use Tmdb\Repository\MovieRepository;
 
 class TestTmdbCommand extends Command
 {
@@ -25,36 +22,36 @@ class TestTmdbCommand extends Command
     private $movieInfo;
 
     /**
-     * @var ProducerInterface
+     * @var TopicProcessor
      */
-    private $producer;
+    private $processor;
 
-    public function __construct(MovieInfo $movieInfo, ProducerInterface $producer)
+    public function __construct(MovieInfo $movieInfo, TopicProcessor $processor)
     {
         parent::__construct();
         $this->movieInfo = $movieInfo;
-        $this->producer = $producer;
+        $this->processor = $processor;
     }
 
     protected function configure()
     {
         $this
             ->setDescription('Add a short description for your command')
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->addArgument('spider', InputArgument::REQUIRED, 'Spider')
+            ->addArgument('id', InputArgument::REQUIRED, 'Id')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->producer->sendEvent(TopicProcessor::TOPIC, new Message(json_encode([
-            'spider' => 'NnmClub',
-            'topicId' => '916652',
-            'info' => ['seed' => '10', 'leech' => '1'],
-        ])));
-        // $this->movieInfo->fetchToLocal('tt0167261');
-        // $this->movieInfo->fetchToLocal('tt0076759');
-        // $this->movieInfo->fetchToLocal('tt0241527');
+        $this->processor->process(
+            new AmqpMessage(json_encode([
+                'spider' => $input->getArgument('spider'),
+                'topicId' => $input->getArgument('id'),
+                'info' => ['seed' => '10', 'leech' => '1'],
+            ])),
+            new NullContext()
+        );
 
         return 0;
     }

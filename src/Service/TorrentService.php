@@ -2,10 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\File;
 use App\Entity\Torrent;
 use App\Repository\TorrentRepository;
 
-class TorrentSrvice
+class TorrentService
 {
     /** @var MovieInfo */
     protected $movieInfo;
@@ -25,7 +26,12 @@ class TorrentSrvice
         $this->torrentRepo = $torrentRepo;
     }
 
-    public function updateTorrent(Torrent $newTorrent, string $imdbId)
+    /**
+     * @param Torrent $newTorrent
+     * @param string  $imdbId
+     * @param File[]  $files
+     */
+    public function updateTorrent(Torrent $newTorrent, string $imdbId, array $files)
     {
         $movie = $this->movieInfo->getByImdb($imdbId);
 
@@ -39,12 +45,35 @@ class TorrentSrvice
             ->setUrl($newTorrent->getUrl())
             ->setLanguage('en')
             ->setQuality($newTorrent->getQuality())
-            ->setFilesize($newTorrent->getFilesize())
-            ->setSize($newTorrent->getSize())
             ->setPeer($newTorrent->getPeer())
             ->setSeed($newTorrent->getSeed())
         ;
 
+        $size = 0;
+        foreach ($files as $file) {
+            $size+=$file->getSize();
+        }
+
+        $torrent
+            ->setFiles($files)
+            ->setFilesize($this->formatBytes($size))
+            ->setSize($size)
+        ;
+
+
         $this->torrentRepo->flush();
     }
+
+    function formatBytes($bytes, $precision = 2) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= 1024 ** $pow;
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
 }
