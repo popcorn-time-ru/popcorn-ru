@@ -139,6 +139,15 @@
     "kevinrob/guzzle-cache-middleware": {
         "version": "v2.1.1"
     },
+    "long-running/long-running": {
+        "version": "0.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "0.1",
+            "ref": "b661d2358dbaee7826b470522ec4cb6b948cc80a"
+        }
+    },
     "monolog/monolog": {
         "version": "1.25.2"
     },

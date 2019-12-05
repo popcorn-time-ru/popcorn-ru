@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb1b499e03cfffed8cf8e5f977e79fd7",
+    "content-hash": "295c77ac53ac6989dc6191eeb9fabd9e",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1504,6 +1504,60 @@
                 "sql"
             ],
             "time": "2014-01-12T16:20:24+00:00"
+        },
+        {
+            "name": "long-running/long-running",
+            "version": "0.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LongRunning/LongRunning.git",
+                "reference": "e111fd178f03c24f4d014240f528ad7dfca4c4d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LongRunning/LongRunning/zipball/e111fd178f03c24f4d014240f528ad7dfca4c4d2",
+                "reference": "e111fd178f03c24f4d014240f528ad7dfca4c4d2",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "doctrine/doctrine-bundle": "~1.0",
+                "doctrine/orm": "~2.3",
+                "phpunit/phpunit": "^7.4",
+                "sentry/sentry-symfony": "^3.0",
+                "simple-bus/rabbitmq-bundle-bridge": "~2.1 || ~4.0",
+                "symfony/monolog-bundle": "^3.1.2",
+                "symfony/swiftmailer-bundle": "~2.3 || ~3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LongRunning\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
+                },
+                {
+                    "name": "Ruud Kamphuis"
+                },
+                {
+                    "name": "Matthias Noback",
+                    "email": "matthiasnoback@gmail.com",
+                    "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                }
+            ],
+            "description": "Tools for working with long-running processes",
+            "homepage": "http://github.com/LongRunning/LongRunning",
+            "time": "2019-11-27T09:29:28+00:00"
         },
         {
             "name": "monolog/monolog",

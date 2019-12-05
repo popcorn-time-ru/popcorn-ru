@@ -8,6 +8,7 @@
         "ext-json": "*",
         "enqueue/dbal": "^0.9.15",
         "enqueue/enqueue-bundle": "^0.9.13",
+        "long-running/long-running": "^0.4.2",
         "sensio/framework-extra-bundle": "^5.5",
         "symfony/console": "^4.4",
         "symfony/css-selector": "4.4",
