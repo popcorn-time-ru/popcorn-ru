@@ -3,7 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\File;
-use App\Entity\Torrent;
+use App\Entity\MovieTorrent;
 use App\Service\TorrentService;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -116,7 +116,7 @@ class NnmClub extends AbstractSpider
 
         $files = $this->getFiles($fileListId);
 
-        $torrent = new Torrent();
+        $torrent = new MovieTorrent();
         $torrent
             ->setProvider($this->getName())
             ->setProviderExternalId($topicId)
@@ -166,10 +166,10 @@ class NnmClub extends AbstractSpider
         if (strpos($post->text(), '720p')) {
             return '720p';
         }
-        if (preg_match('#1920\s*[xхXХ]\s*\d+#u', $post->html())) {
+        if (preg_match('#1920\s*[xхXХ*]\s*\d+#u', $post->html())) {
             return '1080p';
         }
-        if (preg_match('#1280\s*[xхXХ]\s*\d+#u', $post->html())) {
+        if (preg_match('#1280\s*[xхXХ*]\s*\d+#u', $post->html())) {
             return '720p';
         }
 

@@ -3,7 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Movie;
+use App\Repository\MediaRepository;
 use App\Repository\MovieRepository;
+use App\Repository\ShowRepository;
 use Tmdb\Model\Common\Video;
 use Tmdb\Model\Image;
 use Tmdb\Model\Movie as TmdbMovie;
@@ -18,32 +20,32 @@ class MovieInfo
 
     private const SYNC_TIMEOUT = 3600 * 24 * 7;
 
-    /**
-     * @var TmdbApi
-     */
+    /** @var TmdbApi */
     protected $tmdb;
 
-    /**
-     * @var MovieRepository
-     */
-    protected $repo;
+    /** @var MovieRepository */
+    protected $movieRepo;
 
-    public function __construct(TmdbApi $tmdb, MovieRepository $repo)
+    /** @var ShowRepository */
+    protected $showRepo;
+
+    public function __construct(TmdbApi $tmdb, MovieRepository $movieRepo, ShowRepository $showRepo)
     {
         $this->tmdb = $tmdb;
-        $this->repo = $repo;
+        $this->movieRepo = $movieRepo;
+        $this->showRepo = $showRepo;
     }
 
     public function getByImdb(string $imdbId): Movie
     {
         $this->fetchToLocal($imdbId);
 
-        return $this->repo->findOneBy(['imdb' => $imdbId]);
+        return $this->movieRepo->findOneBy(['imdb' => $imdbId]);
     }
 
     public function fetchToLocal(string $imdbId): void
     {
-        $movie = $this->repo->findOrCreateByImdb($imdbId);
+        $movie = $this->movieRepo->findOrCreateMovieByImdb($imdbId);
 
         if ($movie->synced(self::SYNC_TIMEOUT)) {
             return;
@@ -118,6 +120,6 @@ class MovieInfo
         ;
 
         $movie->sync();
-        $this->repo->flush();
+        $this->movieRepo->flush();
     }
 }

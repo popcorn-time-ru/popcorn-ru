@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\BaseTorrent;
 use App\Entity\File;
-use App\Entity\Torrent;
 use App\Repository\TorrentRepository;
 
 class TorrentService
@@ -27,11 +27,11 @@ class TorrentService
     }
 
     /**
-     * @param Torrent $newTorrent
+     * @param BaseTorrent $newTorrent
      * @param string  $imdbId
      * @param File[]  $files
      */
-    public function updateTorrent(Torrent $newTorrent, string $imdbId, array $files)
+    public function updateTorrent(BaseTorrent $newTorrent, string $imdbId, array $files)
     {
         $movie = $this->movieInfo->getByImdb($imdbId);
 

@@ -30,12 +30,12 @@ class File
     public function getId(): ?int { return $this->id; }
 
     /**
-     * @var Torrent
-     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent", inversedBy="files")
+     * @var BaseTorrent
+     * @ORM\ManyToOne(targetEntity="App\Entity\BaseTorrent", inversedBy="files")
      */
     protected $torrent;
-    public function getTorrent(): Torrent { return $this->torrent; }
-    public function setTorrent(Torrent $torrent): self { $this->torrent = $torrent; return $this; }
+    public function getTorrent(): BaseTorrent { return $this->torrent; }
+    public function setTorrent(BaseTorrent $torrent): self { $this->torrent = $torrent; return $this; }
 
     /**
      * @ORM\Column(type="string")

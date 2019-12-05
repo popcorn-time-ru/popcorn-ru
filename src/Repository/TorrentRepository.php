@@ -2,21 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Torrent;
+use App\Entity\BaseTorrent;
+use App\Entity\MovieTorrent;
+use App\Entity\ShowTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method Torrent|null find($id, $lockMode = null, $lockVersion = null)
- * @method Torrent|null findOneBy(array $criteria, array $orderBy = null)
- * @method Torrent[]    findAll()
- * @method Torrent[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method BaseTorrent|null find($id, $lockMode = null, $lockVersion = null)
+ * @method BaseTorrent|null findOneBy(array $criteria, array $orderBy = null)
+ * @method BaseTorrent[]    findAll()
+ * @method BaseTorrent[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class TorrentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Torrent::class);
+        parent::__construct($registry, BaseTorrent::class);
     }
 
     public function flush(): void
@@ -24,14 +26,14 @@ class TorrentRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    public function findOrCreateByProviderAndExternalId(string $provider, string $externalId): Torrent
+    public function findOrCreateByProviderAndExternalId(string $provider, string $externalId): BaseTorrent
     {
         $torrent = $this->findOneBy([
             'provider' => $provider,
             'providerExternalId' => $externalId
         ]);
         if (!$torrent) {
-            $torrent = new Torrent();
+            $torrent = new MovieTorrent();
             $torrent
                 ->setProvider($provider)
                 ->setProviderExternalId($externalId)

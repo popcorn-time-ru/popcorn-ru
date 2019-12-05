@@ -4,32 +4,32 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TorrentRepository")
+ * @ORM\Table(name="torrent")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"movie" = "MovieTorrent", "show" = "ShowTorrent"})
  */
-class Torrent
+abstract class BaseTorrent
 {
     /**
+     * @var UuidInterface
+     *
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid")
      */
     protected $id;
-    public function getId(): ?int { return $this->id; }
+    public function getId(): UuidInterface { return $this->id; }
 
     public function __construct()
     {
+        $this->id = Uuid::uuid4();
         $this->files = new ArrayCollection();
     }
-
-    /**
-     * @var Movie
-     * @ORM\ManyToOne(targetEntity="App\Entity\Movie", inversedBy="torrents")
-     */
-    protected $movie;
-    public function getMovie(): Movie { return $this->movie; }
-    public function setMovie(Movie $movie): self { $this->movie = $movie; return $this; }
 
     /**
      * @var File[]|ArrayCollection
