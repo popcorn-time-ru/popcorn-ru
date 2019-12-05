@@ -43,6 +43,7 @@ class Movie
     /**
      * @var Torrent[]
      * @ORM\OneToMany(targetEntity="App\Entity\Torrent", fetch="EAGER", mappedBy="movie")
+     * @ORM\OrderBy({"peer" = "ASC"})
      */
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
