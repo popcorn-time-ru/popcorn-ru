@@ -44,32 +44,17 @@ class TorrentRepository extends ServiceEntityRepository
         return $torrent;
     }
 
-    // /**
-    //  * @return Torrent[] Returns an array of Torrent objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getStatByProvider(): array
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('t');
+        $qb->select('t.provider', 'count(t.id) as c')
+            ->groupBy('t.provider')
+            ;
+        $result = [];
+        foreach ($qb->getQuery()->getArrayResult() as $item) {
+            $result[$item['provider']] = $item['c'];
+        }
 
-    /*
-    public function findOneBySomeField($value): ?Torrent
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $result;
     }
-    */
 }
