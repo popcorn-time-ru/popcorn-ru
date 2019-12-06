@@ -6,7 +6,6 @@ use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method BaseMedia|null find($id, $lockMode = null, $lockVersion = null)
@@ -24,18 +23,6 @@ abstract class MediaRepository extends ServiceEntityRepository
     public function findByImdb(string $imdbId): ?BaseMedia
     {
         return $this->findOneBy(['imdb' => $imdbId]);
-    }
-
-    public function findOrCreateShowByImdb(string $imdbId): Show
-    {
-        $movie = $this->findByImdb($imdbId);
-        if (!$movie) {
-            $movie = new Show();
-            $movie->setImdb($imdbId);
-            $this->_em->persist($movie);
-        }
-
-        return $movie;
     }
 
     /**

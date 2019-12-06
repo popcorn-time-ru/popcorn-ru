@@ -17,4 +17,16 @@ class ShowRepository extends MediaRepository
     {
         parent::__construct($registry, Show::class);
     }
+
+    public function findOrCreateShowByImdb(string $imdbId): Show
+    {
+        $movie = $this->findByImdb($imdbId);
+        if (!$movie) {
+            $movie = new Show();
+            $movie->setImdb($imdbId);
+            $this->_em->persist($movie);
+        }
+
+        return $movie;
+    }
 }
