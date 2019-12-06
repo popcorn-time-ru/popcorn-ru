@@ -172,9 +172,6 @@
     "phpdocumentor/type-resolver": {
         "version": "1.0.1"
     },
-    "prismamedia/metrics": {
-        "version": "v1.0.0-alpha1"
-    },
     "psr/cache": {
         "version": "1.0.1"
     },

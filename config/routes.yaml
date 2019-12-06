@@ -1,6 +1,3 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
-
-metrics:
-  resource: '@PrismaMediaMetricsBundle/Resources/config/routes.xml'

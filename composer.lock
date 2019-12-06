@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c70b1b5da9758833be3210191403280f",
+    "content-hash": "8cc22fc6e8e02e2867535ae46891a707",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1829,66 +1829,6 @@
             ],
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "time": "2019-08-22T18:11:29+00:00"
-        },
-        {
-            "name": "prismamedia/metrics",
-            "version": "v1.0.0-ALPHA1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/prismamedia/metrics.git",
-                "reference": "c56b31c6caa18ef0d9a93618f43b778b053f035e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/prismamedia/metrics/zipball/c56b31c6caa18ef0d9a93618f43b778b053f035e",
-                "reference": "c56b31c6caa18ef0d9a93618f43b778b053f035e",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.1.3",
-                "symfony/dependency-injection": "^3.4|^4.0"
-            },
-            "require-dev": {
-                "symfony/browser-kit": "^3.4|^4.0",
-                "symfony/framework-bundle": "^3.4|^4.0",
-                "symfony/phpunit-bridge": "^3.4|^4.0"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PrismaMedia\\Metrics\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jérôme Tamarelle",
-                    "email": "jerome@tamarelle.net"
-                },
-                {
-                    "name": "Prisma Media",
-                    "email": "opensource@prismamedia.com"
-                },
-                {
-                    "name": "Romain Jacquart",
-                    "email": "rjacquart@prismamedia.com"
-                }
-            ],
-            "description": "Prometheus metrics exporter",
-            "keywords": [
-                "Metrics",
-                "bundle",
-                "prometheus"
-            ],
-            "time": "2019-05-09T13:52:36+00:00"
         },
         {
             "name": "psr/cache",
@@ -6003,7 +5943,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "prismamedia/metrics": 15,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
