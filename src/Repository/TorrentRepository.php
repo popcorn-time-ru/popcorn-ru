@@ -26,22 +26,12 @@ class TorrentRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    public function findOrCreateByProviderAndExternalId(string $provider, string $externalId): BaseTorrent
+    public function findByProviderAndExternalId(string $provider, string $externalId): ?BaseTorrent
     {
-        $torrent = $this->findOneBy([
+        return $this->findOneBy([
             'provider' => $provider,
             'providerExternalId' => $externalId
         ]);
-        if (!$torrent) {
-            $torrent = new MovieTorrent();
-            $torrent
-                ->setProvider($provider)
-                ->setProviderExternalId($externalId)
-            ;
-            $this->_em->persist($torrent);
-        }
-
-        return $torrent;
     }
 
     public function getStatByProvider(): array

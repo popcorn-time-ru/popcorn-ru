@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Processors\TopicProcessor;
-use App\Service\MovieInfo;
+use App\Service\TmdbExtractor;
 use Enqueue\Null\NullContext;
 use Interop\Amqp\Impl\AmqpMessage;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ class TestTmdbCommand extends Command
     protected static $defaultName = 'test:tmdb';
 
     /**
-     * @var MovieInfo
+     * @var TmdbExtractor
      */
     private $movieInfo;
 
@@ -26,7 +26,7 @@ class TestTmdbCommand extends Command
      */
     private $processor;
 
-    public function __construct(MovieInfo $movieInfo, TopicProcessor $processor)
+    public function __construct(TmdbExtractor $movieInfo, TopicProcessor $processor)
     {
         parent::__construct();
         $this->movieInfo = $movieInfo;
