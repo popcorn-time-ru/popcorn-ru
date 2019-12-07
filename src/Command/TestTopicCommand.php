@@ -48,7 +48,8 @@ class TestTopicCommand extends Command
             new AmqpMessage(json_encode([
                 'spider' => $input->getArgument('spider'),
                 'topicId' => $input->getArgument('id'),
-                'info' => ['seed' => '10', 'leech' => '1'],
+                'seed' => '10',
+                'leech' => '1'
             ])),
             new NullContext()
         );

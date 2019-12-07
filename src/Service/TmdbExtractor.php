@@ -95,8 +95,8 @@ class TmdbExtractor
         /** @var Network $network */
         $network = current(current($showInfo->getNetworks()));
         $show
-            ->setCountry($country->getIso31661() ?? '')
-            ->setNetwork($network->getName() ?? '')
+            ->setCountry($country ? $country->getIso31661() : '')
+            ->setNetwork($network ? $network->getName() : '')
         ;
         $show->setRuntime((string)current($showInfo->getEpisodeRunTime()));
 

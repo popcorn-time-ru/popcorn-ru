@@ -2,33 +2,31 @@
 
 namespace App\Controller;
 
-use App\Repository\MovieRepository;
+use App\Repository\ShowRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class MoviesController extends AbstractController
+class ShowsController extends AbstractController
 {
     const PAGE_SIZE = 50;
 
     const CACHE = 3600 * 12;
     /**
-     * @var MovieRepository
+     * @var ShowRepository
      */
     protected $repo;
 
-    public function __construct(MovieRepository $repo)
+    public function __construct(ShowRepository $repo)
     {
         $this->repo = $repo;
     }
 
     /**
-     * @Route("/movies", name="movies")
+     * @Route("/shows", name="shows")
      */
     public function index()
     {
@@ -36,14 +34,14 @@ class MoviesController extends AbstractController
         $pages = ceil($count / self::PAGE_SIZE);
         $links = [];
         for($page = 1; $page <= $pages; $page++) {
-            $links[] = 'movies/'.$page;
+            $links[] = 'shows/'.$page;
         }
 
         return $this->resp(json_encode($links, JSON_UNESCAPED_SLASHES));
     }
 
     /**
-     * @Route("/movies/{page}", name="movies_page")
+     * @Route("/shows/{page}", name="shows_page")
      */
     public function page($page, Request $r, SerializerInterface $serializer)
     {
@@ -58,25 +56,25 @@ class MoviesController extends AbstractController
 
         $keywords = $r->query->get('keywords', '');
 
-        $movies = $this->repo->getPage(
+        $shows = $this->repo->getPage(
             $genre, $keywords,
             $sort, $order > 0 ? 'ASC' : 'DESC',
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
-        $data = $serializer->serialize($movies, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'list']);
+        $data = $serializer->serialize($shows, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'list']);
 
         return $this->resp($data);
     }
 
     /**
-     * @Route("/movie/{id}", name="movie")
+     * @Route("/show/{id}", name="show")
      */
-    public function movie($id, SerializerInterface $serializer)
+    public function show($id, SerializerInterface $serializer)
     {
-        $movie = $this->repo->findByImdb($id);
+        $show = $this->repo->findByImdb($id);
 
-        $data = $serializer->serialize($movie, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'item']);
+        $data = $serializer->serialize($show, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'item']);
 
         return $this->resp($data);
     }

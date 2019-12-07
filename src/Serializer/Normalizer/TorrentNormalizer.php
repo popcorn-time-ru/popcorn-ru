@@ -2,7 +2,9 @@
 
 namespace App\Serializer\Normalizer;
 
+use App\Entity\BaseTorrent;
 use App\Entity\MovieTorrent;
+use App\Entity\ShowTorrent;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -18,8 +20,17 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
     public function normalize($object, $format = null, array $context = array()): array
     {
-        if (!$object instanceof MovieTorrent) {
+        if (!$object instanceof BaseTorrent) {
             return [];
+        }
+        if ($object instanceof ShowTorrent) {
+            return [
+                'url' => $object->getUrl(),
+                'seed' => $object->getSeed(),
+                'peer' => $object->getPeer(),
+                'provider' => $object->getProvider(),
+                'file' => $context['file']->getName() ?? '',
+            ];
         }
         return [
             'url' => $object->getUrl(),
@@ -33,7 +44,7 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
     public function supportsNormalization($data, $format = null): bool
     {
-        return $data instanceof MovieTorrent;
+        return $data instanceof BaseTorrent;
     }
 
     public function hasCacheableSupportsMethod(): bool
