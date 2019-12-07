@@ -62,7 +62,6 @@ class EpisodeService
                     ->setSeason($s)
                     ->setEpisode($e)
                 ;
-                $this->em->persist($item);
             }
 
             $episodeInfo = null;
@@ -82,9 +81,14 @@ class EpisodeService
                     ;
                 }
             }
+            if (!$item->getTitle()) {
+                // TODO: что-то левое
+                continue;
+            }
 
             $item->addFile($file);
             try {
+                $this->em->persist($item);
                 $this->em->flush();
             } catch (\Exception $e) {
                 var_dump($e->getMessage());die();

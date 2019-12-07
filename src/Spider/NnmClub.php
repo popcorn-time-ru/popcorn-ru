@@ -35,9 +35,9 @@ class NnmClub extends AbstractSpider
     public function getForumKeys(): array
     {
         return [
-            // 218, // Зарубежные Новинки (HD*Rip/LQ, DVDRip)
-            // 225, // Зарубежные Фильмы (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
-            // 319, // Зарубежная Классика (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
+            218, // Зарубежные Новинки (HD*Rip/LQ, DVDRip)
+            225, // Зарубежные Фильмы (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
+            319, // Зарубежная Классика (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
 
             768, // Зарубежные сериалы
         ];
