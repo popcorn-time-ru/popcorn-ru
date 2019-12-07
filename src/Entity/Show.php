@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -18,12 +19,19 @@ class Show extends BaseMedia
     }
 
     /**
-     * @var ShowTorrent[]
+     * @var ShowTorrent[]&Collection
      * @ORM\OneToMany(targetEntity="App\Entity\ShowTorrent", fetch="EAGER", mappedBy="show")
      * @ORM\OrderBy({"peer" = "ASC"})
      */
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
+
+    /**
+     * @var Episode[]&Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Episode", mappedBy="show")
+     */
+    protected $episodes;
+    public function getEpisodes() { return $this->episodes; }
 
     //<editor-fold desc="Show Api Data">
     /**
