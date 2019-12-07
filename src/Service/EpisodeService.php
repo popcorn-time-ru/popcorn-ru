@@ -63,7 +63,6 @@ class EpisodeService
                     ->setEpisode($e)
                 ;
                 $this->em->persist($item);
-                $this->em->flush();
             }
 
             $episodeInfo = null;
@@ -77,14 +76,19 @@ class EpisodeService
                     $item
                         ->setTitle($episodeInfo['name'])
                         ->setOverview($episodeInfo['overview'])
-                        ->setFirstAired((new \DateTime($episodeInfo['air_date']))->getTimestamp())
-                        ->setTvdb(random_int(100000, 1000000)) // TODO: нужно откуда-то дергать
+                        ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
+                        ->setTvdb(random_int(100000, 1000000))
+                        // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
                     ;
                 }
             }
 
             $item->addFile($file);
-            $this->em->flush();
+            try {
+                $this->em->flush();
+            } catch (\Exception $e) {
+                var_dump($e->getMessage());die();
+            }
         }
     }
 

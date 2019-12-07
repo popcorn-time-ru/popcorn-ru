@@ -3,6 +3,7 @@
 namespace App\Processors;
 
 use App\Service\SpiderSelector;
+use App\Spider\Dto\TopicDto;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
@@ -44,7 +45,11 @@ class TopicProcessor implements TopicSubscriberInterface, Processor
 
                 return self::REJECT;
             }
-            $spider->getTopic($data['topicId'], $data['info']);
+            $spider->getTopic(new TopicDto(
+                $data['topicId'],
+                $data['seed'],
+                $data['leech']
+            ));
 
             return self::ACK;
         } catch (RequestException $e) {

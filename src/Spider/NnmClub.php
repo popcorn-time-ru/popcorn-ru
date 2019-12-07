@@ -5,6 +5,8 @@ namespace App\Spider;
 use App\Entity\File;
 use App\Entity\MovieTorrent;
 use App\Service\TorrentService;
+use App\Spider\Dto\ForumDto;
+use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
@@ -33,18 +35,20 @@ class NnmClub extends AbstractSpider
     public function getForumKeys(): array
     {
         return [
-            218, // Зарубежные Новинки (HD*Rip/LQ, DVDRip)
-            225, // Зарубежные Фильмы (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
-            319, // Зарубежная Классика (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
+            // 218, // Зарубежные Новинки (HD*Rip/LQ, DVDRip)
+            // 225, // Зарубежные Фильмы (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
+            // 319, // Зарубежная Классика (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
+
+            768, // Зарубежные сериалы
         ];
     }
 
-    public function getPage($forumId, $page): \Generator
+    public function getPage(ForumDto $forum): \Generator
     {
         $res = $this->client->get('viewforum.php', [
             'query' => [
-                'f' => $forumId,
-                'start' => (($page-1)*self::PAGE_SIZE),
+                'f' => $forum->id,
+                'start' => (($forum->page-1)*self::PAGE_SIZE),
             ]
         ]);
         $html = $res->getBody()->getContents();
@@ -54,32 +58,46 @@ class NnmClub extends AbstractSpider
         $table = $crawler->filter('table.forumline');
         $lines = array_filter(
             $table->filter('tr')->each(static function (Crawler $c) { return $c;}),
-            static function (Crawler $c) {
+            function (Crawler $c) use ($forum){
+                // показывает дочерние форумы на всех страницах, парсим только на первой
+                if ($forum->page === 1) {
+                    if (strpos($c->html(), 'href="viewforum.php') !== false) {
+                        return true;
+                    }
+                }
+
                 return strpos($c->html(), 'href="download.php') !== false;
             }
         );
         foreach($lines as $line) {
             /** @var Crawler $line */
+            if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
+                yield new ForumDto($m[1]);
+                continue;
+            }
             if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
-                $info = [
-                    'seed' => $line->filter('.seedmed b')->first()->text(),
-                    'leech' => $line->filter('.leechmed b')->first()->text(),
-                ];
-                yield $m[1] => $info;
+                yield new TopicDto(
+                    $m[1],
+                    (int) $line->filter('.seedmed b')->first()->text(),
+                    (int) $line->filter('.leechmed b')->first()->text()
+                );
+                continue;
             }
         }
 
         $pages = $crawler->filter('form span.gensmall');
-        return strpos($pages->html(), 'След.') !== false;
+        if (strpos($pages->html(), 'След.') !== false) {
+            yield new ForumDto($forum->id, $forum->page + 1);
+        }
     }
 
-    public function getTopic($topicId, array $info)
+    public function getTopic(TopicDto $topic)
     {
-        $this->context = ['spider' => $this->getName(), 'topicId' => $topicId];
+        $this->context = ['spider' => $this->getName(), 'topicId' => $topic->id];
 
         $res = $this->client->get('viewtopic.php', [
             'query' => [
-                't' =>$topicId,
+                't' => $topic->id,
             ]
         ]);
         $html = $res->getBody()->getContents();
@@ -119,10 +137,10 @@ class NnmClub extends AbstractSpider
         $torrent = new MovieTorrent();
         $torrent
             ->setProvider($this->getName())
-            ->setProviderExternalId($topicId)
+            ->setProviderExternalId($topic->id)
             ->setUrl($url)
-            ->setSeed($info['seed'])
-            ->setPeer($info['seed'] + $info['leech'])
+            ->setSeed($topic->seed)
+            ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
         ;
 

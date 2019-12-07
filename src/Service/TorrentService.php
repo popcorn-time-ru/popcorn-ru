@@ -84,7 +84,11 @@ class TorrentService
             }
             $media->sync();
             $this->em->persist($media);
-            $this->em->flush();
+            try {
+                $this->em->flush();
+            } catch (\Exception $e) {
+                var_dump($e->getMessage());die();
+            }
         }
 
         $torrent = $this->torrentRepo->findByProviderAndExternalId(
@@ -125,7 +129,11 @@ class TorrentService
             ->setSize($size)
         ;
 
-        $this->torrentRepo->flush();
+        try {
+            $this->em->flush();
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());die();
+        }
 
         if ($torrent instanceof ShowTorrent) {
             $torrentMessage = new \Enqueue\Client\Message(JSON::encode([

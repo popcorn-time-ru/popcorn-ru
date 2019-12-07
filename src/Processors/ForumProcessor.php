@@ -3,6 +3,8 @@
 namespace App\Processors;
 
 use App\Service\SpiderSelector;
+use App\Spider\Dto\ForumDto;
+use App\Spider\Dto\TopicDto;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
@@ -46,22 +48,27 @@ class ForumProcessor implements TopicSubscriberInterface, Processor
 
                 return self::REJECT;
             }
-            $generator = $spider->getPage($data['forumId'], $data['page']);
-            foreach ($generator as $topic => $info) {
-                $topicMessage = new \Enqueue\Client\Message(JSON::encode([
-                    'spider' => $data['spider'],
-                    'topicId' => $topic,
-                    'info' => $info,
-                ]));
-                $topicMessage->setDelay(random_int(60, 300));
-                $this->producer->sendEvent(TopicProcessor::TOPIC, $topicMessage);
-            }
-
-            if ($generator->getReturn()) {
-                $data['page']++;
-                $nextPageMessage = new \Enqueue\Client\Message(JSON::encode($data));
-                $nextPageMessage->setDelay(random_int(600, 1200));
-                $this->producer->sendEvent(self::TOPIC, $nextPageMessage);
+            $generator = $spider->getPage(new ForumDto($data['forumId'], $data['page']));
+            foreach ($generator as $topic) {
+                if ($topic instanceof ForumDto) {
+                    $nextForumMessage = new \Enqueue\Client\Message(JSON::encode([
+                        'spider' => $data['spider'],
+                        'forumId' => $topic->id,
+                        'page' => $topic->page,
+                    ]));
+                    $nextForumMessage->setDelay(random_int(600, 1200));
+                    $this->producer->sendEvent(self::TOPIC, $nextForumMessage);
+                }
+                if ($topic instanceof TopicDto) {
+                    $topicMessage = new \Enqueue\Client\Message(JSON::encode([
+                        'spider' => $data['spider'],
+                        'topicId' => $topic->id,
+                        'seed' => $topic->seed,
+                        'leech' => $topic->leech,
+                    ]));
+                    $topicMessage->setDelay(random_int(60, 300));
+                    $this->producer->sendEvent(TopicProcessor::TOPIC, $topicMessage);
+                }
             }
 
             return self::ACK;

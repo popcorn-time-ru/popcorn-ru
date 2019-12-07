@@ -69,10 +69,13 @@ class TmdbExtractor
         return null;
     }
 
-    protected function getShow(int $id): Show
+    protected function getShow(int $id): ?Show
     {
         /** @var TmdbShow $showInfo */
         $showInfo = $this->showRepo->load($id);
+        if (!$showInfo->getExternalIds()->getTvdbId()) {
+            return null;
+        }
 
         $show = new Show();
         $show
@@ -86,7 +89,6 @@ class TmdbExtractor
             ->setStatus($showInfo->getStatus())
             ->setNumSeasons($showInfo->getNumberOfSeasons())
             ->setLastUpdated($showInfo->getLastAirDate()->getTimestamp())
-
         ;
         /** @var Country $country */
         $country = current($showInfo->getOriginCountry()->toArray());
@@ -108,7 +110,7 @@ class TmdbExtractor
         return $show;
     }
 
-    protected function getMovie(int $id): Movie
+    protected function getMovie(int $id): ?Movie
     {
 
         /** @var TmdbMovie $movieInfo */

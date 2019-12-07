@@ -3,6 +3,8 @@
 namespace App\Spider;
 
 use App\Service\TorrentService;
+use App\Spider\Dto\ForumDto;
+use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
@@ -25,17 +27,17 @@ class Rutor extends AbstractSpider
     public function getForumKeys(): array
     {
         return [
-            1, // Зарубежные Фильмы
+            // 1, // Зарубежные Фильмы
         ];
     }
 
-    public function getPage($forumId, $page): \Generator
+    public function getPage(ForumDto $forum): \Generator
     {
-        return false;
+        // yield
+        // return false;
     }
 
-    public function getTopic($topicId, array $info)
+    public function getTopic(TopicDto $topic)
     {
-
     }
 }
