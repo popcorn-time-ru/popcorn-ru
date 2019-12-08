@@ -176,24 +176,6 @@ class NnmClub extends AbstractSpider
         return array_filter($files);
     }
 
-    private function getQuality(Crawler $post): string
-    {
-        if (strpos($post->text(), '1080p')) {
-            return '1080p';
-        }
-        if (strpos($post->text(), '720p')) {
-            return '720p';
-        }
-        if (preg_match('#1920\s*[xхXХ*]\s*\d+#u', $post->html())) {
-            return '1080p';
-        }
-        if (preg_match('#1280\s*[xхXХ*]\s*\d+#u', $post->html())) {
-            return '720p';
-        }
-
-        return '480p';
-    }
-
     private function getImdb(Crawler $post): ?string
     {
         $plugins = $post->filter('.imdbRatingPlugin')->each(function (Crawler $c) {
