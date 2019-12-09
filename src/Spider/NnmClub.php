@@ -88,7 +88,7 @@ class NnmClub extends AbstractSpider
 
         $pages = $crawler->filter('form span.gensmall');
         if (strpos($pages->html(), 'След.') !== false) {
-            yield new ForumDto($forum->id, $forum->page + 1);
+            yield new ForumDto($forum->id, $forum->page + 1, random_int(1800, 3600));
         }
     }
 
