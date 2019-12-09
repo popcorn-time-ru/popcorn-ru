@@ -73,7 +73,7 @@ class Rutor extends AbstractSpider
                     $m[1],
                     (int) $seed,
                     (int) $leech,
-                    $n * 30 + random_int(10, 20)
+                    $n * 10 + random_int(10, 20)
                 );
                 continue;
             }
