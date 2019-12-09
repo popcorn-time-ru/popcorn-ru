@@ -14,19 +14,24 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class Rutor extends AbstractSpider
 {
-    public const BASE_URL = 'http://tor-mega.top';
+    public const BASE_URL = 'http://rutor.info';
+    public const BASE_URL_TOR = 'http://rutorc6mqdinc4cz.onion';
 
     /** @var Client */
     private $client;
 
     private $context;
 
-    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, LoggerInterface $logger, string $torProxy)
     {
         parent::__construct($torrentService, $logger);
         $this->client = new Client([
-            'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
+            'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
+            RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
+            RequestOptions::PROXY => $torProxy,
+            'curl'  => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
         ]);
     }
     public function getForumKeys(): array
@@ -39,9 +44,13 @@ class Rutor extends AbstractSpider
 
     public function getPage(ForumDto $forum): \Generator
     {
-        $res = $this->client->get(sprintf('/browse/%d/%d/0/0', $forum->page - 1, $forum->id));
-        $html = $res->getBody()->getContents();
-        $crawler = new Crawler($html);
+        try {
+            $res = $this->client->get(sprintf('/browse/%d/%d/0/0', $forum->page - 1, $forum->id));
+            $html = $res->getBody()->getContents();
+            $crawler = new Crawler($html);
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+        }
 
         $table = $crawler->filter('#index table');
         $lines = array_filter(
@@ -51,7 +60,7 @@ class Rutor extends AbstractSpider
             }
         );
 
-        foreach($lines as $line) {
+        foreach($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
 
@@ -63,14 +72,15 @@ class Rutor extends AbstractSpider
                 yield new TopicDto(
                     $m[1],
                     (int) $seed,
-                    (int) $leech
+                    (int) $leech,
+                    $n * 30 + random_int(10, 20)
                 );
                 continue;
             }
         }
 
         if (strpos($crawler->html(), sprintf('/browse/%d/%d/0/0', $forum->page, $forum->id)) !== false) {
-            yield new ForumDto($forum->id, $forum->page + 1);
+            yield new ForumDto($forum->id, $forum->page + 1, random_int(1800, 3600));
         }
     }
 

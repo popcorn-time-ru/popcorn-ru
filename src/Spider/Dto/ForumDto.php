@@ -10,15 +10,20 @@ class ForumDto
     /** @var integer */
     public $page;
 
+    /** @var integer */
+    public $delay;
+
     /**
      * ForumDto constructor.
      *
      * @param string $id
      * @param int    $page
+     * @param int    $delay
      */
-    public function __construct(string $id, int $page = 1)
+    public function __construct(string $id, int $page = 1, int $delay = 0)
     {
         $this->id = $id;
         $this->page = $page;
+        $this->delay = $delay;
     }
 }

@@ -69,17 +69,18 @@ class NnmClub extends AbstractSpider
                 return strpos($c->html(), 'href="download.php') !== false;
             }
         );
-        foreach($lines as $line) {
+        foreach($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
-                yield new ForumDto($m[1]);
+                yield new ForumDto($m[1], 1, random_int(600, 1200));
                 continue;
             }
             if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
                 yield new TopicDto(
                     $m[1],
                     (int) $line->filter('.seedmed b')->first()->text(),
-                    (int) $line->filter('.leechmed b')->first()->text()
+                    (int) $line->filter('.leechmed b')->first()->text(),
+                    $n * 60 + random_int(10, 30)
                 );
                 continue;
             }
