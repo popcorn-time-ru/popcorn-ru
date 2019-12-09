@@ -24,7 +24,7 @@ class TopicDto
      * @param int    $leech
      * @param int    $delay
      */
-    public function __construct(string $id, int $seed, int $leech, int $delay)
+    public function __construct(string $id, int $seed, int $leech, int $delay = 0)
     {
         $this->id = $id;
         $this->seed = $seed;

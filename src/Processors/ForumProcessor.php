@@ -56,7 +56,7 @@ class ForumProcessor implements TopicSubscriberInterface, Processor
                         'forumId' => $topic->id,
                         'page' => $topic->page,
                     ]));
-                    $nextForumMessage->setDelay(random_int(600, 1200));
+                    $nextForumMessage->setDelay($topic->delay);
                     $this->producer->sendEvent(self::TOPIC, $nextForumMessage);
                 }
                 if ($topic instanceof TopicDto) {
@@ -66,7 +66,7 @@ class ForumProcessor implements TopicSubscriberInterface, Processor
                         'seed' => $topic->seed,
                         'leech' => $topic->leech,
                     ]));
-                    $topicMessage->setDelay(random_int(60, 300));
+                    $topicMessage->setDelay($topic->delay);
                     $this->producer->sendEvent(TopicProcessor::TOPIC, $topicMessage);
                 }
             }
