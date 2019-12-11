@@ -105,7 +105,7 @@ class Rutracker extends AbstractSpider
             /** @var Crawler $line */
             if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
                 if (!in_array((int) $m[1], $this->blackListForums())) {
-                    yield new ForumDto($m[1], 1, random_int(1800, 3600));
+                    yield new ForumDto($m[1], 1, $forum->last, random_int(1800, 3600));
                 }
                 continue;
             }
@@ -137,7 +137,7 @@ class Rutracker extends AbstractSpider
 
         $pages = $crawler->filter('#pagination');
         if ($pages->count() && strpos($pages->html(), 'След.') !== false) {
-            yield new ForumDto($forum->id, $forum->page + 1, random_int(1800, 3600));
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }
 
