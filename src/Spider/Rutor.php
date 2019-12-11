@@ -60,9 +60,17 @@ class Rutor extends AbstractSpider
             }
         );
 
+        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
+        $exist = false;
+
         foreach($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
+                $time = $line->filter('td')->first()->html();
+                $time = preg_replace('#[^0-9а-яА-Я]#u', ' ', $time);
+                if ($this->ruStrToTime('d F y', $time) < $after) {
+                    continue;
+                }
 
                 $seed = $line->filter('span.green')->first()->text();
                 $seed = preg_replace('#[^0-9]#', '', $seed);
@@ -75,12 +83,17 @@ class Rutor extends AbstractSpider
                     (int) $leech,
                     $n * 10 + random_int(10, 20)
                 );
+                $exist = true;
                 continue;
             }
         }
 
+        if (!$exist) {
+            return;
+        }
+
         if (strpos($crawler->html(), sprintf('/browse/%d/%d/0/0', $forum->page, $forum->id)) !== false) {
-            yield new ForumDto($forum->id, $forum->page + 1, random_int(1800, 3600));
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }
 

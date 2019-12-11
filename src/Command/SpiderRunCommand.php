@@ -36,6 +36,7 @@ class SpiderRunCommand extends Command
             ->setDescription('Run spider')
             ->addArgument('name', InputArgument::IS_ARRAY, 'Spider name')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Run all spiders')
+            ->addOption('last', null, InputOption::VALUE_REQUIRED, 'Only last N hours')
         ;
     }
 
@@ -47,12 +48,13 @@ class SpiderRunCommand extends Command
         if ($input->getOption('all')) {
             $spiders = array_keys($this->selector->gerAll());
         }
+        $last = $input->getOption('last');
 
         foreach ($spiders as $spider) {
             $io->title('Start Processing '.$spider);
             $keys = $this->selector->get($spider)->getForumKeys();
             foreach ($keys as $key) {
-                $message = new Message(json_encode(['spider' => $spider, 'forumId' => $key, 'page' => 1]));
+                $message = new Message(json_encode(['spider' => $spider, 'forumId' => $key, 'page' => 1, 'last' => $last]));
                 $this->producer->sendEvent(
                     ForumProcessor::TOPIC,
                     $message

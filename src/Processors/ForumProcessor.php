@@ -48,13 +48,14 @@ class ForumProcessor implements TopicSubscriberInterface, Processor
 
                 return self::REJECT;
             }
-            $generator = $spider->getPage(new ForumDto($data['forumId'], $data['page']));
+            $generator = $spider->getPage(new ForumDto($data['forumId'], $data['page'], $data['last'] ?? null));
             foreach ($generator as $topic) {
                 if ($topic instanceof ForumDto) {
                     $nextForumMessage = new \Enqueue\Client\Message(JSON::encode([
                         'spider' => $data['spider'],
                         'forumId' => $topic->id,
                         'page' => $topic->page,
+                        'last' => $topic->last,
                     ]));
                     $nextForumMessage->setDelay($topic->delay);
                     $this->producer->sendEvent(self::TOPIC, $nextForumMessage);

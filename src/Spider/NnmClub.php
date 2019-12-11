@@ -58,7 +58,7 @@ class NnmClub extends AbstractSpider
         $table = $crawler->filter('table.forumline');
         $lines = array_filter(
             $table->filter('tr')->each(static function (Crawler $c) { return $c;}),
-            function (Crawler $c) use ($forum){
+            static function (Crawler $c) use ($forum){
                 // показывает дочерние форумы на всех страницах, парсим только на первой
                 if ($forum->page === 1) {
                     if (strpos($c->html(), 'href="viewforum.php') !== false) {
@@ -69,26 +69,41 @@ class NnmClub extends AbstractSpider
                 return strpos($c->html(), 'href="download.php') !== false;
             }
         );
+
+        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
+        $exist = false;
+
         foreach($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
-                yield new ForumDto($m[1], 1, random_int(1800, 3600));
+                yield new ForumDto($m[1], 1, $forum->last, random_int(1800, 3600));
                 continue;
             }
             if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
+                // только свежие посты
+                $time = $line->filter('.postdetails')->html();
+                $time = substr($time, 0, strpos($time, '<'));
+                if ($this->ruStrToTime('d F Y H:i:s', $time) < $after) {
+                    continue;
+                }
                 yield new TopicDto(
                     $m[1],
                     (int) $line->filter('.seedmed b')->first()->text(),
                     (int) $line->filter('.leechmed b')->first()->text(),
                     $n * 10 + random_int(10, 30)
                 );
+                $exist = true;
                 continue;
             }
         }
 
+        if (!$exist) {
+            return;
+        }
+
         $pages = $crawler->filter('form span.gensmall');
         if (strpos($pages->html(), 'След.') !== false) {
-            yield new ForumDto($forum->id, $forum->page + 1, random_int(1800, 3600));
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }
 

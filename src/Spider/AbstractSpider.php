@@ -43,4 +43,11 @@ abstract class AbstractSpider implements SpiderInterface
         return '480p';
     }
 
+    protected function ruStrToTime(string $format, string $time): \DateTime
+    {
+        $ru = ['Янв', 'Фев', 'Мар', 'Апр', 'Июн', 'Май', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+        $en = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct',' nov', 'dec'];
+        $time = str_replace($ru, $en, $time);
+        return \DateTime::createFromFormat($format, $time);
+    }
 }

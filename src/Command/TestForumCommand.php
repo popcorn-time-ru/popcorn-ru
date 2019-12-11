@@ -35,6 +35,7 @@ class TestForumCommand extends Command
             ->addArgument('spider', InputArgument::REQUIRED, 'Spider')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
             ->addArgument('page', InputArgument::OPTIONAL, 'page', 1)
+            ->addOption('last', null, InputOption::VALUE_REQUIRED, 'Only last N hours')
         ;
     }
 
@@ -45,6 +46,7 @@ class TestForumCommand extends Command
                 'spider' => $input->getArgument('spider'),
                 'forumId' => $input->getArgument('id'),
                 'page' => $input->getArgument('page'),
+                'last' => $input->getOption('last')
             ])),
             new NullContext()
         );

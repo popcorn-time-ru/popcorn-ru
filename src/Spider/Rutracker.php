@@ -98,6 +98,8 @@ class Rutracker extends AbstractSpider
             }
         );
 
+        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
+        $exist = false;
 
         foreach($lines as $n => $line) {
             /** @var Crawler $line */
@@ -108,6 +110,11 @@ class Rutracker extends AbstractSpider
                 continue;
             }
             if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
+                $time = $line->filter('td.vf-col-last-post p')->first()->html();
+                if ($this->ruStrToTime('Y-m-d H:i', $time) < $after) {
+                    continue;
+                }
+
                 $seed = $line->filter('span.seedmed')->first()->text();
                 $seed = preg_replace('#[^0-9]#', '', $seed);
                 $leech = $line->filter('span.leechmed')->first()->text();
@@ -119,8 +126,13 @@ class Rutracker extends AbstractSpider
                     (int) $leech,
                     $n * 10 + random_int(10, 30)
                 );
+                $exist = true;
                 continue;
             }
+        }
+
+        if (!$exist) {
+            return;
         }
 
         $pages = $crawler->filter('#pagination');
