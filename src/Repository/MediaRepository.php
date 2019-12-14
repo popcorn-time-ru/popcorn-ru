@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\BaseMedia;
 use App\Entity\Movie;
-use App\Entity\Show;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -26,13 +25,27 @@ abstract class MediaRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param \DateTime $before
+     * @param int       $limit
+     * @return BaseMedia[]
+     */
+    public function getOld(\DateTime $before, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('m');
+        $qb->where('m.syncAt < :before')->setParameter('before', $before);
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * @param string $genre
      * @param string $keywords
      * @param string $sort
      * @param string $order
      * @param int    $offset
      * @param int    $limit
-     * @return Movie[]
+     * @return BaseMedia[]
      */
     public function getPage(string $genre, string $keywords, string $sort, string $order, int $offset, int $limit): array
     {

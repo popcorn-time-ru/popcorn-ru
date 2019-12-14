@@ -32,6 +32,8 @@ class SpiderRunCommand extends Command
 
     protected function configure()
     {
+        // ежедневно последние 48 часов все
+        // все при старте, и при добавлении нового трекера или изменения логики
         $this
             ->setDescription('Run spider')
             ->addArgument('name', InputArgument::IS_ARRAY, 'Spider name')

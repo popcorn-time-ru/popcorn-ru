@@ -105,14 +105,14 @@ class TmdbExtractor
         $slug = strtolower($slug);
         $show->setSlug($slug);
 
-        $this->fillRatingImagesGenres($show, $showInfo);
+        $this->fillRating($show, $showInfo);
+        $this->fillImagesGenres($show, $showInfo);
 
         return $show;
     }
 
     protected function getMovie(int $id): ?Movie
     {
-
         /** @var TmdbMovie $movieInfo */
         $movieInfo = $this->movieRepo->load($id);
 
@@ -145,27 +145,54 @@ class TmdbExtractor
             ->setTrailer($trailer)
         ;
 
-        $this->fillRatingImagesGenres($movie, $movieInfo);
+        $this->fillRating($movie, $movieInfo);
+        $this->fillImagesGenres($movie, $movieInfo);
 
         return $movie;
+    }
+
+    public function updateRating(BaseMedia $media)
+    {
+        $search = $this->client->getFindApi()->findBy($media->getImdb(), ['external_source' => 'imdb_id']);
+        if (!empty($search['movie_results'])) {
+            $id = $search['movie_results'][0]['id'];
+            /** @var TmdbMovie $info */
+            $info = $this->movieRepo->load($id);
+        }
+        if (!empty($search['tv_results'])) {
+            $id = $search['tv_results'][0]['id'];
+            /** @var TmdbShow $info */
+            $info = $this->showRepo->load($id);
+        }
+
+        if ($info) {
+            $this->fillRating($media, $info);
+        }
     }
 
     /**
      * @param BaseMedia $media
      * @param TmdbShow|TmdbMovie $info
      */
-    private function fillRatingImagesGenres(BaseMedia $media, $info): void
+    private function fillRating(BaseMedia $media, $info): void
+    {
+        $media->getRating()
+            ->setVotes($info->getVoteCount())
+            ->setWatching($info->getPopularity() * 10000)
+            ->setPercentage($info->getVoteAverage() * 10)
+        ;
+    }
+
+    /**
+     * @param BaseMedia $media
+     * @param TmdbShow|TmdbMovie $info
+     */
+    private function fillImagesGenres(BaseMedia $media, $info): void
     {
         $media->getImages()
             ->setPoster(self::IMAGE_BASE . $info->getPosterPath())
             ->setFanart(self::IMAGE_BASE . $info->getBackdropPath())
             ->setBanner(self::IMAGE_BASE . $info->getPosterPath())
-        ;
-
-        $media->getRating()
-            ->setVotes($info->getVoteCount())
-            ->setWatching($info->getPopularity() * 10000)
-            ->setPercentage($info->getVoteAverage() * 10)
         ;
 
         // $poster = ''; $posterRate = 0;

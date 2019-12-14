@@ -128,6 +128,7 @@ class TorrentService
             ->setFilesize($this->formatBytes($size))
             ->setSize($size)
         ;
+        $torrent->sync();
 
         try {
             $this->em->flush();

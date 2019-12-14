@@ -26,6 +26,20 @@ class TorrentRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    /**
+     * @param \DateTime $before
+     * @param int       $limit
+     * @return BaseTorrent[]
+     */
+    public function getOld(\DateTime $before, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('t');
+        $qb->where('t.lastCheckAt < :before')->setParameter('before', $before);
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function findByProviderAndExternalId(string $provider, string $externalId): ?BaseTorrent
     {
         return $this->findOneBy([
