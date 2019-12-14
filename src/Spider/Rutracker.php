@@ -190,6 +190,14 @@ class Rutracker extends AbstractSpider
 
         $files = $this->getFiles($topic->id);
 
+        $seed = $crawler->filter('span.seed b');
+        $seed = $seed->count() ? $seed->first()->text() : 0;
+        $leech = $crawler->filter('span.leech b');
+        $leech = $leech->count() ? $leech->first()->text() : 0;
+
+        $topic->seed = (int) $seed;
+        $topic->leech = (int) $leech;
+
         $torrent = new MovieTorrent();
         $torrent
             ->setProvider($this->getName())

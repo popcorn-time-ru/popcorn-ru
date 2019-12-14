@@ -35,15 +35,19 @@ abstract class BaseTorrent
      * @var \DateTime
      * @ORM\Column(type="datetime")
      */
-    protected $syncAt;
-    public function sync() { $this->syncAt = new \DateTime(); return $this;}
+    protected $lastCheckAt;
+    public function check() { $this->lastCheckAt = new \DateTime(); return $this;}
 
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime")
      */
-    protected $lastCheckAt;
-    public function check() { $this->lastCheckAt = new \DateTime(); return $this;}
+    protected $syncAt;
+    public function sync() {
+        $this->lastCheckAt = new \DateTime();
+        $this->syncAt = new \DateTime();
+        return $this;
+    }
 
     /**
      * @var File[]|ArrayCollection

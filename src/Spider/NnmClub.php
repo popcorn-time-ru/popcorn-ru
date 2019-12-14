@@ -8,6 +8,7 @@ use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -17,6 +18,9 @@ class NnmClub extends AbstractSpider
     public const BASE_URL = 'https://nnmclub.to/forum/';
 
     private const PAGE_SIZE = 50;
+
+    private const LOGIN = 'nataly2019s';
+    private const PASS = '6x8Mt68izryiVjR2mArp';
 
     /** @var Client */
     private $client;
@@ -150,6 +154,11 @@ class NnmClub extends AbstractSpider
 
         $files = $this->getFiles($fileListId);
 
+        //Мы пршли по проверке - нужно узнать сидеров и личеров
+        if (!$topic->seed && !$topic->leech) {
+            $this->getPeers($topic);
+        }
+
         $torrent = new MovieTorrent();
         $torrent
             ->setProvider($this->getName())
@@ -207,5 +216,46 @@ class NnmClub extends AbstractSpider
 
         // пропускаем сборники
         return count($ids) == 1 ? current($ids) : null;
+    }
+
+    /**
+     * @param TopicDto $topic
+     */
+    private function getPeers(TopicDto $topic): void
+    {
+        $resp = $this->client->get(
+            'login.php',
+            [
+                'cookies' => new FileCookieJar(sys_get_temp_dir() . '/nnmclub.cookie.json', true),
+                'query' => [
+                    'redirect' => 'viewtopic.php?t=' . $topic->id,
+                ]
+            ]
+        );
+        $html = $resp->getBody()->getContents();
+        if (!strpos($html, self::LOGIN)) {
+            $crawler = new Crawler($html, self::BASE_URL . 'login.php');
+            $f = $crawler->selectButton('Вход')->form(
+                [
+                    'username' => self::LOGIN,
+                    'password' => self::PASS,
+                    'redirect' => 'viewtopic.php?t=' . $topic->id,
+                ]
+            );
+            $resp = $this->client->post(
+                'login.php',
+                [
+                    'cookies' => new FileCookieJar(sys_get_temp_dir() . '/nnmclub.cookie.json', true),
+                    'form_params' => $f->getPhpValues()
+                ]
+            );
+            $html = $resp->getBody()->getContents();
+        }
+        $crawler = new Crawler($html);
+        $seed = $crawler->filter('span.seed b')->last()->text();
+        $leech = $crawler->filter('span.leech b')->last()->text();
+
+        $topic->seed = (int) $seed;
+        $topic->leech = (int) $leech;
     }
 }

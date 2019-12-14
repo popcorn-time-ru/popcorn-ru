@@ -136,6 +136,15 @@ class Rutor extends AbstractSpider
 
         $files = $this->getFiles($fileListId);
 
+        $post->filter('tr')->each(static function (Crawler $c) use($topic) {
+            if (strpos($c->html(), 'Раздают')) {
+                $topic->seed = (int) $c->filter('td')->last()->html();
+            }
+            if (strpos($c->html(), 'Качают')) {
+                $topic->leech = (int) $c->filter('td')->last()->html();
+            }
+        });
+
         $torrent = new MovieTorrent();
         $torrent
             ->setProvider($this->getName())
