@@ -104,7 +104,7 @@ class EpisodeService
         $file = $components['filename'];
         $ext = $components['extension'];
         if (!in_array(strtolower($ext), ['avi', 'mkv', 'mp4'])) {
-            return;
+            return [false, false];
         }
         $file = str_replace(["\'", '_', '.'], ["'", ' ', ' '], $file);
 
