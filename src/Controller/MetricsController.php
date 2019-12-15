@@ -93,6 +93,7 @@ class MetricsController
             } else {
                 $content .= 'app_queue{topic="'.$topic.'"} ' . $row['count'] . PHP_EOL;
             }
+            $summ += $row['count'];
         }
 
         $content.= '# Help app_queue_all All Queue count'.PHP_EOL;
