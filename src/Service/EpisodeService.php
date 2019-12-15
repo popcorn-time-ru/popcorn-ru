@@ -43,6 +43,7 @@ class EpisodeService
 
         $showInfo = [];
         foreach ($torrent->getFiles() as $file) {
+            // TODO: для сериалов с одним сезоном только серии
             [$s, $e] = $this->getSEFromName($file->getName());
             if ($s === false) {
                 continue;
@@ -76,7 +77,7 @@ class EpisodeService
                         ->setTitle($episodeInfo['name'])
                         ->setOverview($episodeInfo['overview'])
                         ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
-                        ->setTvdb(random_int(100000, 1000000))
+                        ->setTvdb($episodeInfo['id'] ?? random_int(100000, 1000000))
                         // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
                     ;
                 }
@@ -98,9 +99,53 @@ class EpisodeService
 
     protected function getSEFromName($fileName)
     {
-        // TODO: это пока тестово
-        if (preg_match('#s(\d\d)e(\d\d).*\.(avi|mkv)#i', $fileName, $m)) {
+        $components = pathinfo($fileName);
+        $dir = $components['dirname'];
+        $file = $components['filename'];
+        $ext = $components['extension'];
+        if (!in_array(strtolower($ext), ['avi', 'mkv', 'mp4'])) {
+            return;
+        }
+        $file = str_replace(["\'", '_', '.'], ["'", ' ', ' '], $file);
+
+        // S01E02 S01 E02
+        $patterns = [
+            '#s(\d\d?)\s*e(\d\d?)#i', //S01 E01
+            '#(?:\s|^)(\d\d?)[xXхХ](\d\d?)(?:\s|$)#iu', // ' 01x01 '
+            '#\((\d\d?)[xXхХ](\d\d?)\)#iu', // (01x01)
+        ];
+        foreach($patterns as $pattern) {
+            if (preg_match($pattern, $dir . '/' . $file, $m)) {
+                return [(int) $m[1], (int) $m[2]];
+            }
+        }
+
+        $th = '-?(?:th)?';
+        $season = '(?:сезон|season|sezon)';
+        $episode = '(?:серия|episode|seriya)';
+
+        //S - EE серия
+        if (preg_match('#(\d+) ?- ?(\d+) '.$episode.'#iu', $file, $m)) {
             return [(int)$m[1], (int)$m[2]];
+        }
+        if (preg_match('#(?:\S) - (\d+) '.$episode.'#iu', $file, $m)) {
+            return [1, (int)$m[1]];
+        }
+
+        // где-то 1 сезон и потом 1 серия
+        // аналогично сезон 1 1 серия
+        // аналогично сезон 1 серия 1
+        $patterns = [
+            '#(\d+)'.$th.' '.$season.'.*(\d+)'.$th.' '.$episode.'#iu',
+            '#(\d+)'.$th.' '.$season.'.*'.$episode.' (\d+)'.$th.'#iu',
+            '#'.$season.' (\d+)'.$th.'.*(\d+)'.$th.' '.$episode.'#iu',
+            '#'.$season.' (\d+)'.$th.'.*'.$episode.' (\d+)'.$th.'#iu',
+        ];
+        foreach($patterns as $pattern) {
+            if (preg_match($pattern, $dir . '/' . $file, $m)) {
+                var_dump($m);
+                return [(int) $m[1], (int) $m[2]];
+            }
         }
 
         return [false, false];
