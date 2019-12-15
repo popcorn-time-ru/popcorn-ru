@@ -52,6 +52,7 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                         'runtime' => $object->getRuntime(),
                         'country' => $object->getCountry(),
                         'network' => $object->getNetwork(),
+                        'last_updated' => $object->getSynAt()->getTimestamp(),
                         'air_day' => $object->getAirDay(),
                         'air_time' => $object->getAirTime(),
                         'status' => $object->getStatus(),

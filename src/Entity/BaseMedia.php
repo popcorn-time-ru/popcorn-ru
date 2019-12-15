@@ -40,6 +40,7 @@ class BaseMedia
             $this->syncAt->getTimestamp() + $delta > (new \DateTime())->getTimestamp();
     }
     public function sync() { $this->syncAt = new \DateTime(); return $this;}
+    public function getSynAt() { return $this->syncAt;}
 
     //<editor-fold desc="Api Data">
     /**
