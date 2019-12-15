@@ -71,14 +71,16 @@ class MetricsController
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('topic', 'topic');
         $rsm->addScalarResult('spider', 'spider');
+        $rsm->addScalarResult('type', 'type');
         $rsm->addScalarResult('c', 'count');
         $result = $this->em->createNativeQuery(
         "select 
             count(*) c, 
             json_extract(properties, '$.\"enqueue.topic\"') topic, 
-            json_extract(body, '$.spider') spider 
+            json_extract(body, '$.spider') spider,
+            json_extract(body, '$.type') type
             from enqueue 
-            group by topic, spider",
+            group by topic, spider, type",
             $rsm
         )->getArrayResult();
 
@@ -87,12 +89,8 @@ class MetricsController
         $content.= '# TYPE app_queue gauge'.PHP_EOL;
         foreach ($result as $row) {
             $topic = trim($row['topic'],'"');
-            if ($row['spider']) {
-                $spider = trim($row['spider'],'"');
-                $content .= 'app_queue{topic="'.$topic.'", spider="'.$spider.'"} ' . $row['count'] . PHP_EOL;
-            } else {
-                $content .= 'app_queue{topic="'.$topic.'"} ' . $row['count'] . PHP_EOL;
-            }
+            $type = trim($row['spider'],'"') ?: trim($row['type'],'"');
+            $content .= 'app_queue{topic="'.$topic.'", type="'.$type.'"} ' . $row['count'] . PHP_EOL;
             $summ += $row['count'];
         }
 
