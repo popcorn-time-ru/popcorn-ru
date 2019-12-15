@@ -143,7 +143,6 @@ class EpisodeService
         ];
         foreach($patterns as $pattern) {
             if (preg_match($pattern, $dir . '/' . $file, $m)) {
-                var_dump($m);
                 return [(int) $m[1], (int) $m[2]];
             }
         }
