@@ -11,4 +11,5 @@ return [
     Tmdb\SymfonyBundle\TmdbSymfonyBundle::class => ['all' => true],
     Enqueue\Bundle\EnqueueBundle::class => ['all' => true],
     LongRunning\Bundle\LongRunningBundle\LongRunningBundle::class => ['all' => true],
+    Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
 ];

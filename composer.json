@@ -19,6 +19,7 @@
         "symfony/framework-bundle": "^4.4",
         "symfony/orm-pack": "^1.0",
         "symfony/serializer-pack": "^1.0",
+        "symfony/twig-bundle": "4.4",
         "symfony/yaml": "^4.4"
     },
     "require-dev": {
