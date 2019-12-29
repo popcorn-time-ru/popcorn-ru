@@ -44,13 +44,9 @@ class Rutor extends AbstractSpider
 
     public function getPage(ForumDto $forum): \Generator
     {
-        try {
-            $res = $this->client->get(sprintf('/browse/%d/%d/0/0', $forum->page - 1, $forum->id));
-            $html = $res->getBody()->getContents();
-            $crawler = new Crawler($html);
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
-        }
+        $res = $this->client->get(sprintf('/browse/%d/%d/0/0', $forum->page - 1, $forum->id));
+        $html = $res->getBody()->getContents();
+        $crawler = new Crawler($html);
 
         $table = $crawler->filter('#index table');
         $lines = array_filter(

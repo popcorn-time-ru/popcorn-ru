@@ -88,12 +88,8 @@ class EpisodeService
             }
 
             $item->addFile($file);
-            try {
-                $this->em->persist($item);
-                $this->em->flush();
-            } catch (\Exception $e) {
-                var_dump($e->getMessage());die();
-            }
+            $this->em->persist($item);
+            $this->em->flush();
         }
     }
 
