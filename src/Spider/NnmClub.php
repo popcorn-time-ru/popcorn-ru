@@ -125,7 +125,7 @@ class NnmClub extends AbstractSpider
 
         preg_match('#\'filelst.php\?attach_id=(\d+)\'#', $crawler->html(), $m);
         if (empty($m)) {
-            $this->logger->info('No File List', $this->context + ['html' => $crawler->html()]);
+            $this->logger->error('No File List', $this->context + ['html' => $crawler->html()]);
             // нету списка файлов
             return;
         }
@@ -189,7 +189,7 @@ class NnmClub extends AbstractSpider
             $name = trim($c->filter('td[align="left"]')->html());
             $size = preg_replace('#[^0-9]#', '', $c->filter('td[align="right"]')->html());
             if (!$name) {
-                $this->logger->warning('Files parsing error', $this->context);
+                $this->logger->error('Files parsing error', $this->context);
             }
             if ($size === '') {
                 return false;

@@ -1,0 +1,13 @@
+sentry:
+    dsn: '%env(SENTRY_DSN)%'
+    register_error_listener: false # Disables the ErrorListener
+    monolog:
+        error_handler:
+            enabled: true
+            level: error
+
+monolog:
+    handlers:
+        sentry:
+            type: service
+            id: Sentry\Monolog\Handler

@@ -107,7 +107,7 @@ class Rutor extends AbstractSpider
 
         preg_match('#\'/descriptions/(\d+).files\'#', $crawler->html(), $m);
         if (empty($m)) {
-            $this->logger->info('No File List', $this->context + ['html' => $crawler->html()]);
+            $this->logger->error('No File List', $this->context + ['html' => $crawler->html()]);
             // нету списка файлов
             return;
         }
@@ -171,7 +171,7 @@ class Rutor extends AbstractSpider
             preg_match('#\((\d+)\)#', $c->filter('td')->last()->html(), $m);
             $size = $m[1];
             if (!$name) {
-                $this->logger->warning('Files parsing error', $this->context);
+                $this->logger->error('Files parsing error', $this->context);
             }
             if ($size === '') {
                 return false;
