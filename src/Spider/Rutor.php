@@ -167,7 +167,7 @@ class Rutor extends AbstractSpider
             preg_match('#\((\d+)\)#', $c->filter('td')->last()->html(), $m);
             $size = $m[1];
             if (!$name) {
-                $this->logger->error('Files parsing error', $this->context);
+                $this->logger->error('Files parsing error', $this->context + ['html' => $c->html()]);
             }
             if ($size === '') {
                 return false;

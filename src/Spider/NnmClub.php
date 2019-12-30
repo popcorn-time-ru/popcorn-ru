@@ -189,7 +189,7 @@ class NnmClub extends AbstractSpider
             $name = trim($c->filter('td[align="left"]')->html());
             $size = preg_replace('#[^0-9]#', '', $c->filter('td[align="right"]')->html());
             if (!$name) {
-                $this->logger->error('Files parsing error', $this->context);
+                $this->logger->error('Files parsing error', $this->context + ['html' => $c->html()]);
             }
             if ($size === '') {
                 return false;
