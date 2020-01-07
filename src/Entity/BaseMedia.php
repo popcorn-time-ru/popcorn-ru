@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Locale\BaseLocale;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +12,7 @@ use Ramsey\Uuid\UuidInterface;
 /**
  * @ORM\MappedSuperclass()
  */
-class BaseMedia
+abstract class BaseMedia
 {
     /**
      * @var UuidInterface
@@ -41,6 +42,9 @@ class BaseMedia
     }
     public function sync() { $this->syncAt = new \DateTime(); return $this;}
     public function getSynAt() { return $this->syncAt;}
+
+    abstract public function getTorrents();
+    abstract public function getLocales();
 
     //<editor-fold desc="Api Data">
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Locale\EpisodeLocale;
+use App\Entity\Locale\BaseLocale;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -26,6 +28,13 @@ class Episode
         $this->id = Uuid::uuid4();
         $this->files = new ArrayCollection();
     }
+
+    /**
+     * @var EpisodeLocale[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Locale\EpisodeLocale", fetch="EAGER", mappedBy="episode")
+     */
+    protected $locales;
+    public function getLocales() { return $this->locales; }
 
     /**
      * @var Show

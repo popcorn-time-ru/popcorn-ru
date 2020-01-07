@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Locale\BaseLocale;
+use App\Entity\Locale\MovieLocale;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,6 +27,13 @@ class Movie extends BaseMedia
      */
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
+
+    /**
+     * @var MovieLocale[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Locale\MovieLocale", fetch="EAGER", mappedBy="movie")
+     */
+    protected $locales;
+    public function getLocales() { return $this->locales; }
 
     //<editor-fold desc="Movie Api Data">
     /**

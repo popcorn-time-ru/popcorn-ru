@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Locale\MovieLocale;
+use App\Entity\Locale\ShowLocale;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -25,6 +27,13 @@ class Show extends BaseMedia
      */
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
+
+    /**
+     * @var ShowLocale[]
+     * @ORM\OneToMany(targetEntity="App\Entity\Locale\ShowLocale", fetch="EAGER", mappedBy="show")
+     */
+    protected $locales;
+    public function getLocales() { return $this->locales; }
 
     /**
      * @var Episode[]&Collection
