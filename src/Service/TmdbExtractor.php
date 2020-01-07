@@ -59,6 +59,16 @@ class TmdbExtractor
         return $seasonInfo['episodes'];
     }
 
+    public function getEpisodeTranslations(Show $show, int $season, int $episode): array
+    {
+        $search = $this->client->getFindApi()->findBy($show->getImdb(), ['external_source' => 'imdb_id']);
+        $id = $search['tv_results'][0]['id'];
+
+        $info = $this->client->getTvSeasonApi()->get(sprintf('tv/%s/season/%s/episode/%s/translations', $id, $season, $episode));
+
+        return $info['translations'];
+    }
+
     public function fetchByImdb(string $imdbId): ?BaseMedia
     {
         $search = $this->client->getFindApi()->findBy($imdbId, ['external_source' => 'imdb_id']);

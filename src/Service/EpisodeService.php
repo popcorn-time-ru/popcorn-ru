@@ -97,6 +97,11 @@ class EpisodeService
                 continue;
             }
 
+            if ($this->localeService->needFillEpisode($item)) {
+                $translations = $this->movieInfo->getEpisodeTranslations($torrent->getShow(), $s, $e);
+                $this->localeService->fillEpisode($item, $translations);
+            }
+
             $item->addFile($file);
             $this->em->persist($item);
             $this->em->flush();

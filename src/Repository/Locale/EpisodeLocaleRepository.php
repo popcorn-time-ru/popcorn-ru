@@ -2,6 +2,7 @@
 
 namespace App\Repository\Locale;
 
+use App\Entity\Episode;
 use App\Entity\Locale\EpisodeLocale;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -22,5 +23,20 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
     public function flush(): void
     {
         $this->_em->flush();
+    }
+
+    public function save(EpisodeLocale $item): void
+    {
+        $this->_em->persist($item);
+        $this->_em->flush();
+    }
+
+    public function findOrByEpisodeAndLocale(Episode $episode, string $locale): ?EpisodeLocale
+    {
+        $qb = $this->createQueryBuilder('el');
+        $qb->where('el.locale = :locale')->setParameter('locale', $locale);
+        $qb->andWhere('el.episode = :id')->setParameter('id', $episode->getId());
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\BaseMedia;
 use App\Entity\Episode;
+use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Movie;
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
@@ -84,8 +85,37 @@ class LocaleService
         }
     }
 
-    public function fillEpisode(Episode $media, $info): void
+    public function needFillEpisode(Episode $episode): bool
     {
+        foreach ($this->extractLocales as $locale)
+        {
+            if (!$this->episodeLocaleRepo->findOrByEpisodeAndLocale($episode, $locale)) {
+                return true;
+            }
+        }
 
+        return false;
+    }
+
+    public function fillEpisode(Episode $episode, $translations): void
+    {
+        foreach ($this->extractLocales as $locale)
+        {
+            $object = $this->episodeLocaleRepo->findOrByEpisodeAndLocale($episode, $locale);
+            if (!$object) {
+                $object = new EpisodeLocale();
+                $object->setEpisode($episode);
+                $object->setLocale($locale);
+            }
+
+            foreach ($translations as $translation) {
+                if ($translation['iso_639_1'] == $locale) {
+                    $object->setTitle($translation['data']['name']);
+                    $object->setOverview($translation['data']['overview']);
+                }
+            }
+
+            $this->episodeLocaleRepo->save($object);
+        }
     }
 }
