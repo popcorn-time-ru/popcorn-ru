@@ -80,8 +80,6 @@ class LocaleService
                     $fanartRate = $image->getVoteAverage();
                 }
             }
-
-            $this->localeRepo->flush();
         }
     }
 
