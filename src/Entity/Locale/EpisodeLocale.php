@@ -46,7 +46,7 @@ class EpisodeLocale
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $title;
+    protected $title = '';
     public function getTitle() { return $this->title; }
     public function setTitle($title) { $this->title = $title; return $this;}
 
@@ -54,7 +54,7 @@ class EpisodeLocale
      * @var string
      * @ORM\Column(type="text")
      */
-    protected $overview;
+    protected $overview = '';
     public function getOverview() { return $this->overview; }
     public function setOverview($overview) { $this->overview = $overview; return $this;}
 }
