@@ -54,7 +54,6 @@ class TopicProcessor implements TopicSubscriberInterface, Processor
             return self::ACK;
         } catch (RequestException $e) {
             if ($e->getResponse()) {
-                $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
                 echo $e->getMessage().PHP_EOL;
                 return self::ACK;
             }
