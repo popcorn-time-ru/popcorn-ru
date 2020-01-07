@@ -52,6 +52,13 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             $torrents['0'] = current($torrents);
         }
 
+        $locale = [];
+        if (!empty($context['locale'])) {
+            $l = $object->getLocale($context['locale']);
+            if ($l) {
+                $locale['locale'][$context['locale']] = $this->normalizer->normalize($l, $format, $context);
+            }
+        }
 
         switch ($context['mode']) {
             case 'item':
@@ -67,7 +74,7 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
                     ],
                     'tvdb_id' => (int)$object->getTvdb(),
                     'torrents' => $torrents,
-                ];
+                ] + $locale;
             default:
                 return [];
         }

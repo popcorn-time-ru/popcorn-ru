@@ -35,6 +35,15 @@ class Episode
      */
     protected $locales;
     public function getLocales() { return $this->locales; }
+    public function getLocale(string $locale): ?EpisodeLocale {
+        foreach ($this->locales as $localeObj) {
+            if ($localeObj->getLocale() === $locale) {
+                return $localeObj;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * @var Show

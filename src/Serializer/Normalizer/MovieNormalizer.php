@@ -34,6 +34,13 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
 //            $torrents['ru'][$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
+        $locale = [];
+        if (!empty($context['locale'])) {
+            $l = $object->getLocale($context['locale']);
+            if ($l) {
+                $locale['locale'][$context['locale']] = $this->normalizer->normalize($l, $format, $context);
+            }
+        }
 
         return [
             '_id' => $object->getImdb(),
@@ -49,7 +56,7 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             'genres' => $object->getGenres(),
             'images' => $object->getImages()->getApiArray(),
             'rating' => $object->getRating()->getApiArray(),
-        ];
+        ] + $locale;
     }
 
     public function supportsNormalization($data, $format = null): bool

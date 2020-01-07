@@ -62,7 +62,12 @@ class ShowsController extends AbstractController
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
-        $data = $serializer->serialize($shows, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'list']);
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+            'locale' => $r->query->get('locale', ''),
+        ];
+        $data = $serializer->serialize($shows, 'json', $context);
 
         return $this->resp($data);
     }
@@ -70,11 +75,16 @@ class ShowsController extends AbstractController
     /**
      * @Route("/show/{id}", name="show")
      */
-    public function show($id, SerializerInterface $serializer)
+    public function show($id, Request $r, SerializerInterface $serializer)
     {
         $show = $this->repo->findByImdb($id);
 
-        $data = $serializer->serialize($show, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'item']);
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'item',
+            'locale' => $r->query->get('locale', ''),
+        ];
+        $data = $serializer->serialize($show, 'json', $context);
 
         return $this->resp($data);
     }

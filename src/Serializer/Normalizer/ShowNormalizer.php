@@ -39,6 +39,12 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             'images' => $object->getImages()->getApiArray(),
             'rating' => $object->getRating()->getApiArray(),
         ];
+        if (!empty($context['locale'])) {
+            $l = $object->getLocale($context['locale']);
+            if ($l) {
+                $base['locale'][$context['locale']] = $this->normalizer->normalize($l, $format, $context);
+            }
+        }
 
         switch ($context['mode']) {
             case 'list':

@@ -64,7 +64,12 @@ class MoviesController extends AbstractController
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
-        $data = $serializer->serialize($movies, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'list']);
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+            'locale' => $r->query->get('locale', ''),
+        ];
+        $data = $serializer->serialize($movies, 'json', $context);
 
         return $this->resp($data);
     }
@@ -72,11 +77,17 @@ class MoviesController extends AbstractController
     /**
      * @Route("/movie/{id}", name="movie")
      */
-    public function movie($id, SerializerInterface $serializer)
+    public function movie($id, Request $r, SerializerInterface $serializer)
     {
         $movie = $this->repo->findByImdb($id);
+        $locale = $r->query->get('locale', '');
 
-        $data = $serializer->serialize($movie, 'json', [JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES, 'mode' => 'item']);
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+            'locale' => $r->query->get('locale', ''),
+        ];
+        $data = $serializer->serialize($movie, 'json', $context);
 
         return $this->resp($data);
     }

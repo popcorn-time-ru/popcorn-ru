@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Locale\BaseLocale;
+use App\Entity\Locale\EpisodeLocale;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
 use Doctrine\ORM\Mapping as ORM;
@@ -45,6 +46,15 @@ abstract class BaseMedia
 
     abstract public function getTorrents();
     abstract public function getLocales();
+    public function getLocale(string $locale): ?BaseLocale {
+        foreach ($this->getLocales() as $localeObj) {
+            if ($localeObj->getLocale() === $locale) {
+                return $localeObj;
+            }
+        }
+
+        return null;
+    }
 
     //<editor-fold desc="Api Data">
     /**
