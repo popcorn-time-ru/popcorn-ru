@@ -25,13 +25,12 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    public function save(EpisodeLocale $item): void
+    public function persist(EpisodeLocale $item): void
     {
         $this->_em->persist($item);
-        $this->_em->flush();
     }
 
-    public function findOrByEpisodeAndLocale(Episode $episode, string $locale): ?EpisodeLocale
+    public function findByEpisodeAndLocale(Episode $episode, string $locale): ?EpisodeLocale
     {
         $qb = $this->createQueryBuilder('el');
         $qb->where('el.locale = :locale')->setParameter('locale', $locale);

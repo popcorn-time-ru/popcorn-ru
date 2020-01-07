@@ -87,7 +87,7 @@ class LocaleService
     {
         foreach ($this->extractLocales as $locale)
         {
-            if (!$this->episodeLocaleRepo->findOrByEpisodeAndLocale($episode, $locale)) {
+            if (!$this->episodeLocaleRepo->findByEpisodeAndLocale($episode, $locale)) {
                 return true;
             }
         }
@@ -99,11 +99,12 @@ class LocaleService
     {
         foreach ($this->extractLocales as $locale)
         {
-            $object = $this->episodeLocaleRepo->findOrByEpisodeAndLocale($episode, $locale);
+            $object = $this->episodeLocaleRepo->findByEpisodeAndLocale($episode, $locale);
             if (!$object) {
                 $object = new EpisodeLocale();
                 $object->setEpisode($episode);
                 $object->setLocale($locale);
+                $this->episodeLocaleRepo->persist($object);
             }
 
             foreach ($translations as $translation) {
@@ -112,8 +113,6 @@ class LocaleService
                     $object->setOverview($translation['data']['overview']);
                 }
             }
-
-            $this->episodeLocaleRepo->save($object);
         }
     }
 }
