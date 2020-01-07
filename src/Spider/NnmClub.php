@@ -255,8 +255,10 @@ class NnmClub extends AbstractSpider
             $html = $resp->getBody()->getContents();
         }
         $crawler = new Crawler($html);
-        $seed = $crawler->filter('span.seed b')->last()->text();
-        $leech = $crawler->filter('span.leech b')->last()->text();
+        $seedTag = $crawler->filter('span.seed b');
+        $leechTag = $crawler->filter('span.leech b');
+        $seed = $seedTag->count() ? $seedTag->last()->text() : 0;
+        $leech = $leechTag->count() ? $leechTag->last()->text() : 0;
 
         $topic->seed = (int) $seed;
         $topic->leech = (int) $leech;
