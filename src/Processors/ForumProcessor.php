@@ -76,8 +76,7 @@ class ForumProcessor implements TopicSubscriberInterface, Processor
         } catch (GuzzleException $e) {
             return self::REQUEUE;
         } catch (\Exception $e) {
-            echo $e->getMessage();
-            echo $e->getTraceAsString();
+            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
     }

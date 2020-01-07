@@ -102,14 +102,14 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
             return self::ACK;
         } catch (RequestException $e) {
             if ($e->getResponse()) {
+                $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
                 echo $e->getMessage().PHP_EOL;
                 return self::ACK;
             }
             echo $e->getMessage().PHP_EOL;
             return self::REQUEUE;
         } catch (\Exception $e) {
-            echo $e->getMessage();
-            echo $e->getTraceAsString();
+            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
     }
