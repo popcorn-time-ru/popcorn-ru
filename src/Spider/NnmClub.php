@@ -44,6 +44,9 @@ class NnmClub extends AbstractSpider
             319, // Зарубежная Классика (HD*Rip/LQ, DVDRip, SATRip, VHSRip)
 
             768, // Зарубежные сериалы
+
+            231, // Зарубежные мультфильмы
+            232, // Зарубежные мультсериалы
         ];
     }
 

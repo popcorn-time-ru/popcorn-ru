@@ -39,6 +39,7 @@ class Rutor extends AbstractSpider
         return [
             1, // Зарубежные фильмы
             4, // Зарубежные сериалы
+            7, // Мультипликация
         ];
     }
 
