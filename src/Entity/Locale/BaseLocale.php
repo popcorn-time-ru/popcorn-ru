@@ -43,7 +43,7 @@ abstract class BaseLocale
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $title;
+    protected $title = '';
     public function getTitle() { return $this->title; }
     public function setTitle($title) { $this->title = $title; return $this;}
 
@@ -51,7 +51,7 @@ abstract class BaseLocale
      * @var string
      * @ORM\Column(type="text")
      */
-    protected $synopsis;
+    protected $synopsis = '';
     public function getSynopsis() { return $this->synopsis; }
     public function setSynopsis($synopsis) { $this->synopsis = $synopsis; return $this;}
 

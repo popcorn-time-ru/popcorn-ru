@@ -20,9 +20,12 @@ class TmdbExtractor
     private const US = 'US';
     private const LOCALE = 'en';
     private const TYPE_TRAILER = 'Trailer';
-    private const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
+    public const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
 
     private const SYNC_TIMEOUT = 3600 * 24 * 7;
+
+    /** @var LocaleService */
+    protected $localeService;
 
     /** @var MovieRepository */
     protected $movieRepo;
@@ -36,12 +39,14 @@ class TmdbExtractor
     public function __construct(
         Client $client,
         MovieRepository $movieRepo,
-        TvRepository $showRepo
+        TvRepository $showRepo,
+        LocaleService $localeService
     )
     {
         $this->movieRepo = $movieRepo;
         $this->showRepo = $showRepo;
         $this->client = $client;
+        $this->localeService = $localeService;
     }
 
     public function getSeasonEpisodes(Show $show, int $season): array
@@ -59,25 +64,25 @@ class TmdbExtractor
         $search = $this->client->getFindApi()->findBy($imdbId, ['external_source' => 'imdb_id']);
         if (!empty($search['movie_results'])) {
             $id = $search['movie_results'][0]['id'];
-            return $this->getMovie($id);
+            /** @var TmdbMovie $movieInfo */
+            $movieInfo = $this->movieRepo->load($id);
+            return $this->fillMovie($movieInfo, new Movie());
         }
         if (!empty($search['tv_results'])) {
             $id = $search['tv_results'][0]['id'];
-            return $this->getShow($id);
+            /** @var TmdbShow $showInfo */
+            $showInfo = $this->showRepo->load($id);
+            if (!$showInfo->getExternalIds()->getTvdbId()) {
+                return null;
+            }
+            return $this->fillShow($showInfo, new Show());
         }
 
         return null;
     }
 
-    protected function getShow(int $id): ?Show
+    protected function fillShow(TmdbShow $showInfo, Show $show): Show
     {
-        /** @var TmdbShow $showInfo */
-        $showInfo = $this->showRepo->load($id);
-        if (!$showInfo->getExternalIds()->getTvdbId()) {
-            return null;
-        }
-
-        $show = new Show();
         $show
             ->setImdb($showInfo->getExternalIds()->getImdbId())
             ->setTvdb($showInfo->getExternalIds()->getTvdbId())
@@ -107,17 +112,13 @@ class TmdbExtractor
 
         $this->fillRating($show, $showInfo);
         $this->fillImagesGenres($show, $showInfo);
+        $this->localeService->fillMedia($show, $showInfo);
 
         return $show;
     }
 
-    protected function getMovie(int $id): ?Movie
+    protected function fillMovie(TmdbMovie $movieInfo, Movie $movie): Movie
     {
-        /** @var TmdbMovie $movieInfo */
-        $movieInfo = $this->movieRepo->load($id);
-
-        $movie = new Movie();
-
         $certification = '';
         foreach($movieInfo->getReleaseDates() as $release) {
             if ($release->getIso31661() == self::US) {
@@ -147,26 +148,25 @@ class TmdbExtractor
 
         $this->fillRating($movie, $movieInfo);
         $this->fillImagesGenres($movie, $movieInfo);
+        $this->localeService->fillMedia($movie, $movieInfo);
 
         return $movie;
     }
 
-    public function updateRating(BaseMedia $media)
+    public function updateMedia(BaseMedia $media)
     {
         $search = $this->client->getFindApi()->findBy($media->getImdb(), ['external_source' => 'imdb_id']);
-        if (!empty($search['movie_results'])) {
+        if (!empty($search['movie_results']) && $media instanceof Movie) {
             $id = $search['movie_results'][0]['id'];
             /** @var TmdbMovie $info */
             $info = $this->movieRepo->load($id);
+            $media = $this->fillMovie($info, $media);
         }
-        if (!empty($search['tv_results'])) {
+        if (!empty($search['tv_results']) && $media instanceof Show) {
             $id = $search['tv_results'][0]['id'];
             /** @var TmdbShow $info */
             $info = $this->showRepo->load($id);
-        }
-
-        if ($info) {
-            $this->fillRating($media, $info);
+            $media = $this->fillShow($info, $media);
         }
     }
 

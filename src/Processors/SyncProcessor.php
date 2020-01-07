@@ -88,13 +88,13 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
             if ($data['type'] === 'movie') {
                 /** @var Movie $movie */
                 $movie = $this->movieRepository->find($data['id']);
-                $this->extractor->updateRating($movie);
+                $this->extractor->updateMedia($movie);
                 $movie->sync();
             }
             if ($data['type'] === 'show') {
                 /** @var Show $show */
                 $show = $this->showRepository->find($data['id']);
-                $this->extractor->updateRating($show);
+                $this->extractor->updateMedia($show);
                 $show->sync();
             }
 

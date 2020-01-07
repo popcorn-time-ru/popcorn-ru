@@ -18,4 +18,9 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, EpisodeLocale::class);
     }
+
+    public function flush(): void
+    {
+        $this->_em->flush();
+    }
 }

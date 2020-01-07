@@ -20,18 +20,28 @@ class EpisodeService
     /** @var EntityManagerInterface */
     protected $em;
 
+    /** @var LocaleService */
+    protected $localeService;
+
     /**
      * EpisodeService constructor.
      *
      * @param TorrentRepository      $torrentRepo
      * @param TmdbExtractor          $movieInfo
      * @param EntityManagerInterface $em
+     * @param LocaleService          $localeService
      */
-    public function __construct(TorrentRepository $torrentRepo, TmdbExtractor $movieInfo, EntityManagerInterface $em)
+    public function __construct(
+        TorrentRepository $torrentRepo,
+        TmdbExtractor $movieInfo,
+        EntityManagerInterface $em,
+        LocaleService $localeService
+    )
     {
         $this->torrentRepo = $torrentRepo;
         $this->movieInfo = $movieInfo;
         $this->em = $em;
+        $this->localeService = $localeService;
     }
 
     public function link(UuidInterface $torrentId): void
