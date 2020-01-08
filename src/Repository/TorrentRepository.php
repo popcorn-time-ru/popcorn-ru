@@ -7,6 +7,8 @@ use App\Entity\MovieTorrent;
 use App\Entity\ShowTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method BaseTorrent|null find($id, $lockMode = null, $lockVersion = null)
@@ -60,5 +62,25 @@ class TorrentRepository extends ServiceEntityRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $limit
+     * @return string[]
+     */
+    public function getUnlinkedShowTorrents(int $limit): array
+    {
+        $q = $this->_em->createNativeQuery('
+            SELECT DISTINCT t.id
+            FROM torrent t
+            JOIN file f ON t.id = f.torrent_id
+            LEFT JOIN episodes_files ef ON f.id = ef.file_id
+            WHERE t.show_id IS NOT NULL AND ef.episode_id IS NULL
+              AND (name LIKE \'%.avi\'
+                    OR name LIKE \'%.mp4\'
+                    OR name LIKE \'%.mkv\'
+                )
+            LIMIT '.$limit, (new ResultSetMapping())->addScalarResult('id', 'id'));
+        return array_map(function ($a) {return $a['id'];}, $q->getResult());
     }
 }
