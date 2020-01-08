@@ -36,7 +36,7 @@ class TestTorrentCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Link files to episodes')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
         ;
     }

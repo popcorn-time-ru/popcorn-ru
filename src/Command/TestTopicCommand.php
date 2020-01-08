@@ -36,7 +36,7 @@ class TestTopicCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Extract torrent from tracker')
             ->addArgument('spider', InputArgument::REQUIRED, 'Spider')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
         ;

@@ -31,7 +31,7 @@ class TestForumCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Get list of topics from tracker')
             ->addArgument('spider', InputArgument::REQUIRED, 'Spider')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
             ->addArgument('page', InputArgument::OPTIONAL, 'page', 1)

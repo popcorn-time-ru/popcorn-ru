@@ -32,7 +32,7 @@ class TestSyncCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Test sync')
             ->addArgument('type', InputArgument::REQUIRED, 'Type')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
         ;
