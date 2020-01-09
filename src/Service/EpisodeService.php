@@ -84,8 +84,8 @@ class EpisodeService
             foreach ($showInfo[$s] as $episodeInfo) {
                 if ($episodeInfo['episode_number'] == $e) {
                     $item
-                        ->setTitle($episodeInfo['name'])
-                        ->setOverview($episodeInfo['overview'])
+                        ->setTitle($episodeInfo['name'] ?: '')
+                        ->setOverview($episodeInfo['overview'] ?: '')
                         ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
                         ->setTvdb($episodeInfo['id'] ?? random_int(100000, 1000000))
                         // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
