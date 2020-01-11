@@ -66,4 +66,28 @@ class BaseLocaleRepository extends ServiceEntityRepository
 
         return $localeObj;
     }
+
+    /**
+     * @param string $title
+     * @param string $class
+     * @param string $field
+     * @return string[]
+     */
+    public function findMediaIdsByTitle(string $title, string $class): array
+    {
+        $qb = $this->_em->createQueryBuilder('l');
+        $qb
+            ->select('l')
+            ->from($class, 'l')
+            ->where('l.title LIKE :title')
+            ->setParameter('title', '%'.$title.'%');
+
+        return array_map(static function(BaseLocale $l) {
+            if ($l instanceof ShowLocale) {
+                return $l->getShow()->getId();
+            } elseif ($l instanceof MovieLocale) {
+                return $l->getMovie()->getId();
+            }
+        }, $qb->getQuery()->getResult());
+    }
 }

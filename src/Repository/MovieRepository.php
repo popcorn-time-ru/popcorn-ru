@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
+use App\Repository\Locale\BaseLocaleRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -13,9 +14,9 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class MovieRepository extends MediaRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(BaseLocaleRepository $localeRepository, ManagerRegistry $registry)
     {
-        parent::__construct($registry, Movie::class);
+        parent::__construct($localeRepository, $registry, Movie::class);
     }
 
     public function findOrCreateMovieByImdb(string $imdbId): Movie

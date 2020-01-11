@@ -3,8 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\BaseMedia;
+use App\Entity\Locale\MovieLocale;
+use App\Entity\Locale\ShowLocale;
 use App\Entity\Movie;
+use App\Repository\Locale\BaseLocaleRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * @method BaseMedia|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,6 +18,22 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  */
 abstract class MediaRepository extends ServiceEntityRepository
 {
+    /** @var BaseLocaleRepository */
+    private $localeRepository;
+
+    /**
+     * MediaRepository constructor.
+     *
+     * @param BaseLocaleRepository $localeRepository
+     * @param ManagerRegistry      $registry
+     * @param                      $entityClass
+     */
+    public function __construct(BaseLocaleRepository $localeRepository, ManagerRegistry $registry, $entityClass)
+    {
+        parent::__construct($registry, $entityClass);
+        $this->localeRepository = $localeRepository;
+    }
+
     public function flush(): void
     {
         $this->_em->flush();
@@ -54,8 +74,15 @@ abstract class MediaRepository extends ServiceEntityRepository
             $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$genre.'%');
         }
         if ($keywords) {
-            $qb->andWhere('m.synopsis LIKE :keywords OR m.title LIKE :keywords')
-                ->setParameter('keywords', '%'.$keywords.'%');
+            $class = $this instanceof ShowRepository ? ShowLocale::class : MovieLocale::class;
+            $mediaIds = $this->localeRepository->findMediaIdsByTitle($keywords, $class);
+            $qb
+                ->andWhere('m.title LIKE :title OR m.imdb = :imdb OR m.id IN (:ids)')
+                ->setParameters([
+                    'ids' => $mediaIds,
+                    'imdb' => $keywords,
+                    'title' => '%'.$keywords.'%',
+                ]);
         }
         switch ($sort) {
             case 'name':

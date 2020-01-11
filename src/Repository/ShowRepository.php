@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Show;
+use App\Repository\Locale\BaseLocaleRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -13,9 +14,9 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  */
 class ShowRepository extends MediaRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(BaseLocaleRepository $localeRepository, ManagerRegistry $registry)
     {
-        parent::__construct($registry, Show::class);
+        parent::__construct($localeRepository, $registry, Show::class);
     }
 
     public function findOrCreateShowByImdb(string $imdbId): Show
