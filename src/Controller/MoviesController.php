@@ -80,11 +80,10 @@ class MoviesController extends AbstractController
     public function movie($id, Request $r, SerializerInterface $serializer)
     {
         $movie = $this->repo->findByImdb($id);
-        $locale = $r->query->get('locale', '');
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'list',
+            'mode' => 'item',
             'locale' => $r->query->get('locale', ''),
         ];
         $data = $serializer->serialize($movie, 'json', $context);

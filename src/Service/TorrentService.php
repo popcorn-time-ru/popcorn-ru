@@ -108,7 +108,7 @@ class TorrentService
 
         $torrent
             ->setUrl($newTorrent->getUrl())
-            ->setLanguage('en')
+            ->setLanguage($newTorrent->getLanguage())
             ->setQuality($newTorrent->getQuality())
             ->setPeer($newTorrent->getPeer())
             ->setSeed($newTorrent->getSeed())

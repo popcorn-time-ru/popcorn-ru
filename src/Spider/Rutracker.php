@@ -212,6 +212,7 @@ class Rutracker extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
+            ->setLanguage('ru')
         ;
 
         $this->torrentService->updateTorrent($torrent, $imdb, $files);
