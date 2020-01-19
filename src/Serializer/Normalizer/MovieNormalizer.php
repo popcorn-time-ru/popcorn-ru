@@ -30,17 +30,18 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         $torrents = [];
         foreach ($object->getTorrents() as $torrent) {
             $serialized = $this->normalizer->normalize($torrent, $format, $context);
-            // force english
-            $torrents['en'][$torrent->getQuality()] = $serialized;
             if (!empty($context['locale'])) {
                 $torrents[$torrent->getLanguage()][$torrent->getQuality()] = $serialized;
+            } else {
+                // force english
+                $torrents['en'][$torrent->getQuality()] = $serialized;
             }
         }
         $locale = [];
         if (!empty($context['locale'])) {
             $l = $object->getLocale($context['locale']);
             if ($l) {
-                $locale['locale'][$context['locale']] = $this->normalizer->normalize($l, $format, $context);
+                $locale['locale'] = $this->normalizer->normalize($l, $format, $context);
             }
         }
 

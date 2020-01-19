@@ -42,7 +42,7 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         if (!empty($context['locale'])) {
             $l = $object->getLocale($context['locale']);
             if ($l) {
-                $base['locale'][$context['locale']] = $this->normalizer->normalize($l, $format, $context);
+                $base['locale'] = $this->normalizer->normalize($l, $format, $context);
             }
         }
 
