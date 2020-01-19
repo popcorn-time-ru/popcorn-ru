@@ -17,6 +17,7 @@ h1, h2 {
 }
 .links {
     display: flex;
+    justify-content: center;
     margin: 0;
     padding: 0;
 }
