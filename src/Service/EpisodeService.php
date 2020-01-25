@@ -145,7 +145,7 @@ class EpisodeService
 
         $th = '-?(?:th)?';
         $season = '(?:сезон|season|sezon)';
-        $episode = '(?:серия|episode|seri?y?a)';
+        $episode = '(?:серия|episode|ser[iyj]+a)';
 
         //S - EE серия
         if (preg_match('#(\d+) ?- ?(\d+) '.$episode.'#iu', $file, $m)) {
@@ -156,8 +156,10 @@ class EpisodeService
         // аналогично сезон 1 1 серия
         // аналогично сезон 1 серия 1
         $patterns = [
+            '#S(\d+).*(\d+)'.$th.' '.$episode.'#iu',
             '#(\d+)'.$th.' '.$season.'.*(\d+)'.$th.' '.$episode.'#iu',
             '#(\d+)'.$th.' '.$season.'.*'.$episode.' (\d+)'.$th.'#iu',
+            '#'.$season.' (\d+)'.$th.'.*E(\d+)#iu',
             '#'.$season.' (\d+)'.$th.'.*(\d+)'.$th.' '.$episode.'#iu',
             '#'.$season.' (\d+)'.$th.'.*'.$episode.' (\d+)'.$th.'#iu',
         ];
