@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Episode;
+use App\Entity\Show;
 use App\Entity\ShowTorrent;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -53,8 +54,7 @@ class EpisodeService
 
         $showInfo = [];
         foreach ($torrent->getFiles() as $file) {
-            // TODO: для сериалов с одним сезоном только серии
-            [$s, $e] = $this->getSEFromName($file->getName());
+            [$s, $e] = $this->getSEFromName($file->getName(), $torrent->getShow());
             if ($s === false) {
                 continue;
             }
@@ -109,39 +109,47 @@ class EpisodeService
         }
     }
 
-    protected function getSEFromName($fileName)
+    protected function getSEFromName($filePathAndName, Show $show)
     {
-        $components = pathinfo($fileName);
+        $components = pathinfo($filePathAndName);
         $dir = $components['dirname'];
         $file = $components['filename'];
         $ext = $components['extension'];
         if (!in_array(strtolower($ext), ['avi', 'mkv', 'mp4'])) {
             return [false, false];
         }
+
         $file = str_replace(["\'", '_', '.'], ["'", ' ', ' '], $file);
+        $dir = str_replace(["\'", '_', '.'], ["'", ' ', ' '], $dir);
 
         // S01E02 S01 E02
         $patterns = [
-            '#s(\d\d?)\s*e(\d\d?)#i', //S01 E01
-            '#(?:\s|^)(\d\d?)[xXхХ](\d\d?)(?:\s|$)#iu', // ' 01x01 '
+            '#s\s*(\d\d?)\s*ep?\s*(\d\d?)#i', //S01 E01
+            '#(?:\s|^)(\d\d?)\s*[xXхХ]\s*(\d\d?)(?:\s|$)#iu', // ' 01x01 '
             '#\((\d\d?)[xXхХ](\d\d?)\)#iu', // (01x01)
+            '#\s*(\d\d?)[xXхХ](\d\d?)\s*#iu', // (01x01)
         ];
         foreach($patterns as $pattern) {
             if (preg_match($pattern, $dir . '/' . $file, $m)) {
                 return [(int) $m[1], (int) $m[2]];
             }
         }
+        $patterns = [
+            '#ep?\s*(\d\d?)\s*s\s*(\d\d?)#i', //E01 S01
+        ];
+        foreach($patterns as $pattern) {
+            if (preg_match($pattern, $dir . '/' . $file, $m)) {
+                return [(int) $m[2], (int) $m[1]];
+            }
+        }
 
         $th = '-?(?:th)?';
         $season = '(?:сезон|season|sezon)';
-        $episode = '(?:серия|episode|seriya)';
+        $episode = '(?:серия|episode|seri?y?a)';
 
         //S - EE серия
         if (preg_match('#(\d+) ?- ?(\d+) '.$episode.'#iu', $file, $m)) {
             return [(int)$m[1], (int)$m[2]];
-        }
-        if (preg_match('#(?:\S) - (\d+) '.$episode.'#iu', $file, $m)) {
-            return [1, (int)$m[1]];
         }
 
         // где-то 1 сезон и потом 1 серия
@@ -156,6 +164,40 @@ class EpisodeService
         foreach($patterns as $pattern) {
             if (preg_match($pattern, $dir . '/' . $file, $m)) {
                 return [(int) $m[1], (int) $m[2]];
+            }
+        }
+
+        if (preg_match('#^(\d+)(?:$|\s+.*)#', $file, $e)) {
+            if ($show->getNumSeasons() === 1) {
+                return [1, (int) $e[1]];
+            }
+            // эпизод у нас только число - ищем сезон
+            $patterns = [
+                '#(\d+)'.$th.' '.$season.'#iu',
+                '#'.$season.' (\d+)'.$th.'#iu',
+            ];
+            foreach($patterns as $pattern) {
+                if (preg_match($pattern, $dir, $m)) {
+                    return [(int) $m[1], (int) $e[1]];
+                }
+            }
+        }
+        if ($show->getNumSeasons() === 1) {
+            $patterns = [
+                '#\s+e(\d\d?)#i', //S01 E01
+                '#(?:\s|^)(\d\d?)(?:\s|$)#iu', // ' 01 '
+                '#\((\d\d?)\s+(?:iz|of)\s+(?:\d\d?)\)#iu', // (01x01)
+            ];
+            foreach($patterns as $pattern) {
+                if (preg_match($pattern, $file, $m)) {
+                    return [1, (int) $m[1]];
+                }
+            }
+            if (preg_match('#e(\d\d)#iu', $file, $m)) {
+                return [1, (int) $m[1]];
+            }
+            if (preg_match('#(?:\S) - (\d+) ' . $episode . '#iu', $file, $m)) {
+                return [1, (int) $m[1]];
             }
         }
 
