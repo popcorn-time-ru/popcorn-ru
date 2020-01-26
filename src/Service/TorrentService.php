@@ -8,7 +8,7 @@ use App\Entity\Movie;
 use App\Entity\MovieTorrent;
 use App\Entity\Show;
 use App\Entity\ShowTorrent;
-use App\Processors\ShowTorrentProducer;
+use App\Processors\ShowTorrentProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
@@ -132,7 +132,7 @@ class TorrentService
             $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
                 'torrentId' => $torrent->getId()->toString(),
             ]));
-            $this->producer->sendEvent(ShowTorrentProducer::TOPIC, $torrentMessage);
+            $this->producer->sendEvent(ShowTorrentProcessor::TOPIC, $torrentMessage);
         }
     }
 

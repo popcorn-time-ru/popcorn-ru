@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Processors\ShowTorrentProducer;
+use App\Processors\ShowTorrentProcessor;
 use App\Processors\SyncProcessor;
 use App\Processors\TopicProcessor;
 use App\Service\TmdbExtractor;

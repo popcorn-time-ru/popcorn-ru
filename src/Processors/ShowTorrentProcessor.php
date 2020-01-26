@@ -12,7 +12,7 @@ use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-class ShowTorrentProducer implements TopicSubscriberInterface, Processor
+class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
 {
     public const TOPIC = 'linkShowTorrent';
 

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Processors\ShowTorrentProducer;
+use App\Processors\ShowTorrentProcessor;
 use App\Processors\TopicProcessor;
 use App\Service\TmdbExtractor;
 use Enqueue\Null\NullContext;
@@ -23,11 +23,11 @@ class TestTorrentCommand extends Command
     private $movieInfo;
 
     /**
-     * @var ShowTorrentProducer
+     * @var ShowTorrentProcessor
      */
     private $processor;
 
-    public function __construct(ShowTorrentProducer $processor)
+    public function __construct(ShowTorrentProcessor $processor)
     {
         parent::__construct();
         $this->processor = $processor;
