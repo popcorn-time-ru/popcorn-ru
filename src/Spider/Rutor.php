@@ -204,9 +204,7 @@ class Rutor extends AbstractSpider
             $isSerial = true;
         }
         preg_match('#\((\d{4})\)#', $titleStr, $match);
-        if ($match) {
-            $year = (int) $match[1];
-        }
+        $year = $match ? (int) $match[1] : -1;
 
         preg_match('#^(.*?)[(\[].*#', $titleStr, $match);
         if (count($match) != 2) {
