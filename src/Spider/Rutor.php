@@ -15,6 +15,7 @@ use Symfony\Component\DomCrawler\Crawler;
 class Rutor extends AbstractSpider
 {
     public const BASE_URL = 'http://rutor.info';
+
     public const BASE_URL_TOR = 'http://rutorc6mqdinc4cz.onion';
 
     /** @var Client */
@@ -25,15 +26,18 @@ class Rutor extends AbstractSpider
     public function __construct(TorrentService $torrentService, LoggerInterface $logger, string $torProxy)
     {
         parent::__construct($torrentService, $logger);
-        $this->client = new Client([
-            'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
-            RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
-            RequestOptions::PROXY => $torProxy,
-            'curl'  => [
-                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
-            ],
-        ]);
+        $this->client = new Client(
+            [
+                'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
+                RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
+                RequestOptions::PROXY => $torProxy,
+                'curl' => [
+                    CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+                ],
+            ]
+        );
     }
+
     public function getForumKeys(): array
     {
         return [
@@ -51,16 +55,20 @@ class Rutor extends AbstractSpider
 
         $table = $crawler->filter('#index table');
         $lines = array_filter(
-            $table->filter('tr')->each(static function (Crawler $c) { return $c;}),
-            function (Crawler $c) use ($forum){
+            $table->filter('tr')->each(
+                static function (Crawler $c) {
+                    return $c;
+                }
+            ),
+            function (Crawler $c) use ($forum) {
                 return strpos($c->html(), 'href="/torrent') !== false;
             }
         );
 
-        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
+        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
         $exist = false;
 
-        foreach($lines as $n => $line) {
+        foreach ($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
                 $time = $line->filter('td')->first()->html();
@@ -105,6 +113,7 @@ class Rutor extends AbstractSpider
         preg_match('#\'/descriptions/(\d+).files\'#', $crawler->html(), $m);
         if (empty($m)) {
             $this->logger->error('No File List', $this->context + ['html' => $crawler->html()]);
+
             // нету списка файлов
             return;
         }
@@ -117,8 +126,10 @@ class Rutor extends AbstractSpider
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
-            // TODO: пока так, только imdb
-            return;
+            $imdb = $this->getImdbByTitle($title);
+            if (!$imdb) {
+                return;
+            }
         }
 
         $quality = $this->getQuality($post);
@@ -128,20 +139,23 @@ class Rutor extends AbstractSpider
         preg_match('#"(magnet[^"]+)"#', $torrentBlock->html(), $m);
         if (empty($m[1])) {
             $this->logger->warning('Not Magnet torrent', $this->context);
+
             return;
         }
         $url = $m[1];
 
         $files = $this->getFiles($fileListId);
 
-        $post->filter('tr')->each(static function (Crawler $c) use($topic) {
-            if (strpos($c->html(), 'Раздают')) {
-                $topic->seed = (int) $c->filter('td')->last()->html();
+        $post->filter('tr')->each(
+            static function (Crawler $c) use ($topic) {
+                if (strpos($c->html(), 'Раздают')) {
+                    $topic->seed = (int) $c->filter('td')->last()->html();
+                }
+                if (strpos($c->html(), 'Качают')) {
+                    $topic->leech = (int) $c->filter('td')->last()->html();
+                }
             }
-            if (strpos($c->html(), 'Качают')) {
-                $topic->leech = (int) $c->filter('td')->last()->html();
-            }
-        });
+        );
 
         $torrent = new MovieTorrent();
         $torrent
@@ -152,34 +166,63 @@ class Rutor extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage('ru')
-        ;
+            ->setLanguage('ru');
 
         $this->torrentService->updateTorrent($torrent, $imdb, $files);
     }
 
-
     protected function getFiles($fileListId): array
     {
-        $res = $this->client->get('/descriptions/'.$fileListId.'.files');
+        $res = $this->client->get('/descriptions/' . $fileListId . '.files');
         $html = $res->getBody()->getContents();
         $crawlerFiles = new Crawler();
         $crawlerFiles->addHtmlContent($html, 'UTF-8');
 
-        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
-            $name = trim($c->filter('td')->first()->text());
-            preg_match('#\((\d+)\)#', $c->filter('td')->last()->html(), $m);
-            $size = $m[1];
-            if (!$name) {
-                $this->logger->error('Files parsing error', $this->context + ['html' => $c->html()]);
-            }
-            if ($size === '') {
-                return false;
-            }
+        $files = $crawlerFiles->filter('tr')->each(
+            function (Crawler $c) {
+                $name = trim($c->filter('td')->first()->text());
+                preg_match('#\((\d+)\)#', $c->filter('td')->last()->html(), $m);
+                $size = $m[1];
+                if (!$name) {
+                    $this->logger->error('Files parsing error', $this->context + ['html' => $c->html()]);
+                }
+                if ($size === '') {
+                    return false;
+                }
 
-            return new File($name, (int) $size);
-        });
+                return new File($name, (int) $size);
+            }
+        );
 
         return array_filter($files);
+    }
+
+    private function getImdbByTitle(string $titleStr): ?string
+    {
+        $isSerial = false;
+        if (preg_match('#\[.*\]#', $titleStr)) {
+            $isSerial = true;
+        }
+        preg_match('#\((\d{4})\)#', $titleStr, $match);
+        if ($match) {
+            $year = $match[1];
+        }
+
+        preg_match('#^(.*?)[(\[].*#', $titleStr, $match);
+        if (count($match) != 2) {
+            return null;
+        }
+        $names = array_map('trim', explode('/', $match[1]));
+
+        foreach ($names as $name) {
+            $imdb = $isSerial
+                ? $this->torrentService->searchShowByTitle($name)
+                : $this->torrentService->searchMovieByTitleAndYear($name, $year);
+            if ($imdb) {
+                return $imdb;
+            }
+        }
+
+        return null;
     }
 }

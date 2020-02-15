@@ -166,8 +166,10 @@ class Rutracker extends AbstractSpider
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
-            // TODO: пока так, только imdb
-            return;
+            $imdb = $this->getImdbByTitle($title);
+            if (!$imdb) {
+                return;
+            }
         }
 
         $quality = $this->getQuality($post);
@@ -260,5 +262,40 @@ class Rutracker extends AbstractSpider
         }
 
         return $files;
+    }
+
+    private function getImdbByTitle(string $titleStr): ?string
+    {
+        $titleStr = preg_replace('#\(.*?\)#', '', $titleStr);
+        preg_match('#^(.*)\[(\d{4}).*\]#', $titleStr, $match);
+        if (count($match) != 3) {
+            return null;
+        }
+        $titles = array_map('trim', explode('/', $match[1]));
+        $year = (int)$match[2];
+
+        $names = [];
+        $isSerial = false;
+        foreach ($titles as $title) {
+            if (mb_stripos($title, 'сезон') !== false ||
+                mb_stripos($title, 'серии') !== false ||
+                mb_stripos($title, 'сериал') !== false
+            ) {
+                $isSerial = true;
+                continue;
+            }
+            $names[] = $title;
+        }
+
+        foreach ($names as $name) {
+            $imdb = $isSerial
+                ? $this->torrentService->searchShowByTitle($name)
+                : $this->torrentService->searchMovieByTitleAndYear($name, $year)
+            ;
+            if ($imdb) {
+                return $imdb;
+            }
+        }
+        return null;
     }
 }

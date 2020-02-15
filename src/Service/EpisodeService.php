@@ -96,6 +96,7 @@ class EpisodeService
                 // TODO: что-то левое
                 continue;
             }
+            echo $item->getTitle().PHP_EOL;
 
             $item->addFile($file);
             $this->em->persist($item);

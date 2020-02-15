@@ -64,6 +64,15 @@ class TorrentService
         $this->em = $em;
     }
 
+    public function searchMovieByTitleAndYear(string $title, int $year)
+    {
+        return $this->movieInfo->searchMovieByTitleAndYear($title, $year);
+    }
+    public function searchShowByTitle(string $title)
+    {
+        return $this->movieInfo->searchShowByTitle($title);
+    }
+
     /**
      * @param BaseTorrent $newTorrent
      * @param string      $imdbId

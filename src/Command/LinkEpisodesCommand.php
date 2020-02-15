@@ -62,7 +62,7 @@ class LinkEpisodesCommand extends Command
 
     private function sendDelayed(Message $message)
     {
-        $message->setDelay(random_int(120, 3600));
+        //$message->setDelay(random_int(120, 3600));
         $this->producer->sendEvent(
             ShowTorrentProcessor::TOPIC,
             $message

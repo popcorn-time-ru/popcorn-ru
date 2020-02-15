@@ -141,8 +141,10 @@ class NnmClub extends AbstractSpider
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
-            // TODO: пока так, только imdb
-            return;
+            $imdb = $this->getImdbByTitle($title);
+            if (!$imdb) {
+                return;
+            }
         }
 
         $quality = $this->getQuality($post);
@@ -262,5 +264,40 @@ class NnmClub extends AbstractSpider
 
         $topic->seed = (int) $seed;
         $topic->leech = (int) $leech;
+    }
+
+    private function getImdbByTitle(string $titleStr): ?string
+    {
+        $isSerial = false;
+        if (mb_stripos($titleStr, 'сезон') !== false ||
+            mb_stripos($titleStr, 'серии') !== false ||
+            mb_stripos($titleStr, 'сериал') !== false
+        ) {
+            $isSerial = true;
+        }
+        preg_match('#\((\d{4})\)#', $titleStr, $match);
+        if ($match) {
+            $year = $match[1];
+        } else {
+            $isSerial = true;
+        }
+
+        preg_match('#(.*)\((\d{4})#', $titleStr, $match);
+        if (count($match) != 3) {
+            return null;
+        }
+        $titleStr = preg_replace('#\(.*?\)#', '', $match[1]);
+        $names = array_map('trim', explode('/', $titleStr));
+
+        foreach ($names as $name) {
+            $imdb = $isSerial
+                ? $this->torrentService->searchShowByTitle($name)
+                : $this->torrentService->searchMovieByTitleAndYear($name, $year)
+            ;
+            if ($imdb) {
+                return $imdb;
+            }
+        }
+        return null;
     }
 }

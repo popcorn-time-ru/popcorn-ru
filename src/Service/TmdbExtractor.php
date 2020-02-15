@@ -69,6 +69,52 @@ class TmdbExtractor
         return $info['translations'];
     }
 
+    public function searchMovieByTitleAndYear(string $title, int $year): ?string
+    {
+        $movies = $this->client->getSearchApi()->searchMovies($title, ['year' => $year]);
+        if (count($movies['results']) == 1) {
+            $id = $movies['results'][0]['id'];
+            /** @var TmdbMovie $movieInfo */
+            $movieInfo = $this->movieRepo->load($id);
+            if ($movieInfo->getTitle() === $title) {
+                return $movieInfo->getImdbId();
+            }
+            foreach ($movieInfo->getTranslations() as $translation) {
+                /** @var array $data */
+                $data = $translation->getData();
+                $translatedTitle = $data['title'] ?? '';
+                if ($translatedTitle == $title) {
+                    return $movieInfo->getImdbId();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function searchShowByTitle(string $title): ?string
+    {
+        $serials = $this->client->getSearchApi()->searchTv($title);
+        if (count($serials['results']) == 1) {
+            $id = $serials['results'][0]['id'];
+            /** @var TmdbShow $showInfo */
+            $showInfo = $this->showRepo->load($id);
+            if ($showInfo->getName() === $title) {
+                return $showInfo->getExternalIds()->getImdbId();
+            }
+            foreach ($showInfo->getTranslations() as $translation) {
+                /** @var array $data */
+                $data = $translation->getData();
+                $translatedTitle = $data['title'] ?? '';
+                if ($translatedTitle == $title) {
+                    return $showInfo->getExternalIds()->getImdbId();
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function fetchByImdb(string $imdbId): ?BaseMedia
     {
         $search = $this->client->getFindApi()->findBy($imdbId, ['external_source' => 'imdb_id']);
