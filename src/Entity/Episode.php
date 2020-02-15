@@ -103,7 +103,7 @@ class Episode
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="File")
+     * @ORM\ManyToMany(targetEntity="File", mappedBy="episodes")
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")}

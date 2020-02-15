@@ -56,4 +56,14 @@ class File
         return $this->size == $file->size
             && $this->name === $file->name;
     }
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|File[]
+     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files")
+     * @ORM\JoinTable(name="episodes_files",
+     *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")}
+     * )
+     */
+    protected $episodes;
 }

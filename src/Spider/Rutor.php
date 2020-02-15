@@ -205,7 +205,7 @@ class Rutor extends AbstractSpider
         }
         preg_match('#\((\d{4})\)#', $titleStr, $match);
         if ($match) {
-            $year = $match[1];
+            $year = (int) $match[1];
         }
 
         preg_match('#^(.*?)[(\[].*#', $titleStr, $match);
