@@ -59,7 +59,7 @@ class File
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files")
+     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"remove"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")}
