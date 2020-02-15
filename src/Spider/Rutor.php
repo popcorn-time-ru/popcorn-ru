@@ -111,6 +111,7 @@ class Rutor extends AbstractSpider
         $fileListId = $m[1];
 
         $post = $crawler->filter('#details')->first();
+        $title = $crawler->filter('#all h1')->first()->text();
 
         $imdb = $this->getImdb($post);
 
@@ -144,6 +145,7 @@ class Rutor extends AbstractSpider
 
         $torrent = new MovieTorrent();
         $torrent
+            ->setProviderTitle($title)
             ->setProvider($this->getName())
             ->setProviderExternalId($topic->id)
             ->setUrl($url)
@@ -179,19 +181,5 @@ class Rutor extends AbstractSpider
         });
 
         return array_filter($files);
-    }
-
-    private function getImdb(Crawler $post): ?string
-    {
-
-        $links = $post->filter('a[href*="imdb.com"]')->each(function (Crawler $c) {
-            preg_match('#tt\d+#', $c->attr('href'), $m);
-            return $m[0] ?? false;
-        });
-
-        $ids = array_unique(array_filter($links));
-
-        // пропускаем сборники
-        return count($ids) == 1 ? current($ids) : null;
     }
 }

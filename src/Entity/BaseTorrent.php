@@ -88,6 +88,14 @@ abstract class BaseTorrent
     public function getProviderExternalId() { return $this->providerExternalId; }
     public function setProviderExternalId($providerExternalId) { $this->providerExternalId = $providerExternalId; return $this;}
 
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=1024)
+     */
+    protected $providerTitle;
+    public function getProviderTitle() { return $this->providerTitle; }
+    public function setProviderTitle($providerTitle) { $this->providerTitle = $providerTitle; return $this;}
+
     //<editor-fold desc="Movie Api Data">
     /**
      * @var string

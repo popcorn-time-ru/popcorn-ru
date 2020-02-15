@@ -52,4 +52,18 @@ abstract class AbstractSpider implements SpiderInterface
         $time = str_replace($ru, $en, $time);
         return DateTime::createFromFormat($format, $time);
     }
+
+    protected function getImdb(Crawler $post): ?string
+    {
+
+        $links = $post->filter('a[href*="imdb.com"]')->each(function (Crawler $c) {
+            preg_match('#tt\d+#', $c->attr('href'), $m);
+            return $m[0] ?? false;
+        });
+
+        $ids = array_unique(array_filter($links));
+
+        // пропускаем сборники
+        return count($ids) == 1 ? current($ids) : null;
+    }
 }

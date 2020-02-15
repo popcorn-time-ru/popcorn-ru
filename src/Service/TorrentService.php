@@ -106,6 +106,7 @@ class TorrentService
             $this->em->persist($torrent);
         }
 
+        $torrent->setProviderTitle($newTorrent->getProviderTitle());
         $torrent
             ->setUrl($newTorrent->getUrl())
             ->setLanguage($newTorrent->getLanguage())

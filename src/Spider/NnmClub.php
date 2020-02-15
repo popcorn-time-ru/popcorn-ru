@@ -135,6 +135,7 @@ class NnmClub extends AbstractSpider
         $fileListId = $m[1];
 
         $post = $crawler->filter('.postbody')->first();
+        $title = $crawler->filter('h1 a.maintitle')->first()->text();
 
         $imdb = $this->getImdb($post);
 
@@ -164,6 +165,7 @@ class NnmClub extends AbstractSpider
 
         $torrent = new MovieTorrent();
         $torrent
+            ->setProviderTitle($title)
             ->setProvider($this->getName())
             ->setProviderExternalId($topic->id)
             ->setUrl($url)
@@ -205,18 +207,15 @@ class NnmClub extends AbstractSpider
         return array_filter($files);
     }
 
-    private function getImdb(Crawler $post): ?string
+    protected function getImdb(Crawler $post): ?string
     {
         $plugins = $post->filter('.imdbRatingPlugin')->each(function (Crawler $c) {
             return $c->attr('data-title');
         });
 
-        $links = $post->filter('a[href*="imdb.com"]')->each(function (Crawler $c) {
-            preg_match('#tt\d+#', $c->attr('href'), $m);
-            return $m[0] ?? false;
-        });
+        $ids = parent::getImdb($post);
 
-        $ids = array_unique(array_filter(array_merge($plugins, $links)));
+        $ids = array_unique(array_filter(array_merge($plugins, [$ids] ?: [])));
 
         // пропускаем сборники
         return count($ids) == 1 ? current($ids) : null;

@@ -160,6 +160,7 @@ class Rutracker extends AbstractSpider
         $crawler = new Crawler($html);
 
         $post = $crawler->filter('#topic_main tbody.row1')->first();
+        $title = $crawler->filter('h1.maintitle a#topic-title')->first()->text();
 
         $imdb = $this->getImdb($post);
 
@@ -206,6 +207,7 @@ class Rutracker extends AbstractSpider
 
         $torrent = new MovieTorrent();
         $torrent
+            ->setProviderTitle($title)
             ->setProvider($this->getName())
             ->setProviderExternalId($topic->id)
             ->setUrl($url)
@@ -258,19 +260,5 @@ class Rutracker extends AbstractSpider
         }
 
         return $files;
-    }
-
-    private function getImdb(Crawler $post): ?string
-    {
-
-        $links = $post->filter('a[href*="imdb.com"]')->each(function (Crawler $c) {
-            preg_match('#tt\d+#', $c->attr('href'), $m);
-            return $m[0] ?? false;
-        });
-
-        $ids = array_unique(array_filter($links));
-
-        // пропускаем сборники
-        return count($ids) == 1 ? current($ids) : null;
     }
 }
