@@ -105,7 +105,7 @@ class TmdbExtractor
             foreach ($showInfo->getTranslations() as $translation) {
                 /** @var array $data */
                 $data = $translation->getData();
-                $translatedTitle = $data['title'] ?? '';
+                $translatedTitle = $data['name'] ?? '';
                 if ($translatedTitle == $title) {
                     return $showInfo->getExternalIds()->getImdbId();
                 }
