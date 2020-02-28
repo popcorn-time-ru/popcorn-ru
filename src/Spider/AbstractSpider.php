@@ -24,7 +24,7 @@ abstract class AbstractSpider implements SpiderInterface
 
     public function getName(): string
     {
-            return (new ReflectionClass($this))->getShortName();
+        return (new ReflectionClass($this))->getShortName();
     }
 
     protected function getQuality(Crawler $post): string

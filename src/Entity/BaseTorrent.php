@@ -48,6 +48,10 @@ abstract class BaseTorrent
         $this->syncAt = new \DateTime();
         return $this;
     }
+    public function isSynced() {
+        $lastSyncInterval = $this->lastCheckAt->diff(new \DateTime());
+        return $lastSyncInterval->days < 1;
+    }
 
     /**
      * @var File[]|ArrayCollection
