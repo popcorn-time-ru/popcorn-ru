@@ -6,6 +6,7 @@ use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
 use Tmdb\Client;
+use Tmdb\Exception\TmdbApiException;
 use Tmdb\Model\Common\Country;
 use Tmdb\Model\Common\GenericCollection;
 use Tmdb\Model\Common\Video;
@@ -54,7 +55,11 @@ class TmdbExtractor
         $search = $this->client->getFindApi()->findBy($show->getImdb(), ['external_source' => 'imdb_id']);
         $id = $search['tv_results'][0]['id'];
 
-        $seasonInfo = $this->client->getTvSeasonApi()->getSeason($id, $season);
+        try {
+            $seasonInfo = $this->client->getTvSeasonApi()->getSeason($id, $season);
+        } catch (TmdbApiException $e) {
+            return [];
+        }
 
         return $seasonInfo['episodes'];
     }
@@ -64,7 +69,11 @@ class TmdbExtractor
         $search = $this->client->getFindApi()->findBy($show->getImdb(), ['external_source' => 'imdb_id']);
         $id = $search['tv_results'][0]['id'];
 
-        $info = $this->client->getTvSeasonApi()->get(sprintf('tv/%s/season/%s/episode/%s/translations', $id, $season, $episode));
+        try {
+            $info = $this->client->getTvSeasonApi()->get(sprintf('tv/%s/season/%s/episode/%s/translations', $id, $season, $episode));
+        } catch (TmdbApiException $e) {
+            return [];
+        }
 
         return $info['translations'];
     }

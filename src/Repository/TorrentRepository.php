@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
-use App\Entity\BaseTorrent;
-use App\Entity\MovieTorrent;
-use App\Entity\ShowTorrent;
+use App\Entity\Torrent\BaseTorrent;
+use App\Entity\Torrent\MovieTorrent;
+use App\Entity\Torrent\ShowTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMapping;

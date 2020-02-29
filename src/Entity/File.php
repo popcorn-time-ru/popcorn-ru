@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Torrent\BaseTorrent;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,7 +32,7 @@ class File
 
     /**
      * @var BaseTorrent
-     * @ORM\ManyToOne(targetEntity="App\Entity\BaseTorrent", inversedBy="files", cascade={"remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent\BaseTorrent", inversedBy="files", cascade={"remove"})
      */
     protected $torrent;
     public function getTorrent(): BaseTorrent { return $this->torrent; }

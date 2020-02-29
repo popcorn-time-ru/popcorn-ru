@@ -3,12 +3,12 @@
 namespace App\Service;
 
 use App\Entity\BaseMedia;
-use App\Entity\BaseTorrent;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\File;
 use App\Entity\Movie;
-use App\Entity\MovieTorrent;
+use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
-use App\Entity\ShowTorrent;
+use App\Entity\Torrent\ShowTorrent;
 use App\Processors\ShowTorrentProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;

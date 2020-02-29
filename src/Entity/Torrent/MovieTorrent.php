@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Torrent;
 
+use App\Entity\Movie;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

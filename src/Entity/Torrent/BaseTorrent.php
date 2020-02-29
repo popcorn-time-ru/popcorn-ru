@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Torrent;
 
+use App\Entity\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -12,7 +13,7 @@ use Ramsey\Uuid\UuidInterface;
  * @ORM\Table(name="torrent")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"movie" = "MovieTorrent", "show" = "ShowTorrent"})
+ * @ORM\DiscriminatorMap({"movie" = "MovieTorrent", "show" = "ShowTorrent", "episode"="EpisodeTorrent"})
  */
 abstract class BaseTorrent
 {

@@ -2,9 +2,9 @@
 
 namespace App\Serializer\Normalizer;
 
-use App\Entity\BaseTorrent;
-use App\Entity\MovieTorrent;
-use App\Entity\ShowTorrent;
+use App\Entity\Torrent\BaseTorrent;
+use App\Entity\Torrent\MovieTorrent;
+use App\Entity\Torrent\ShowTorrent;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;

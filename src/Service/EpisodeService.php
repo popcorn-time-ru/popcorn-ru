@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\Episode;
 use App\Entity\Show;
-use App\Entity\ShowTorrent;
+use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\UuidInterface;
@@ -59,6 +59,9 @@ class EpisodeService
             }
 
             $item = $this->getEpisode($torrent->getShow(), $s, $e);
+            if (!$item) {
+                continue;
+            }
 
             $item->addFile($file);
             $this->em->flush();
@@ -73,7 +76,7 @@ class EpisodeService
     }
 
     protected $showCache = [];
-    public function getEpisode(Show $show, int $s, int $e)
+    public function getEpisode(Show $show, int $s, int $e): ?Episode
     {
         $item = null;
         foreach ($show->getEpisodes() as $episode) {
@@ -89,15 +92,15 @@ class EpisodeService
                 ->setSeason($s)
                 ->setEpisode($e)
             ;
-            $this->em->persist($item);
         }
 
         $key = $show->getImdb().':'.$s;
-        if (empty($showInfo[$key])) {
-            $showInfo[$key] = $this->movieInfo
+        if (empty($this->showCache[$key])) {
+            $this->showCache[$key] = $this->movieInfo
                 ->getSeasonEpisodes($show, $s);
         }
-        foreach ($showInfo[$key] as $episodeInfo) {
+        $found = false;
+        foreach ($this->showCache[$key] as $episodeInfo) {
             if ($episodeInfo['episode_number'] == $e) {
                 $item
                     ->setTitle($episodeInfo['name'] ?: '')
@@ -106,9 +109,14 @@ class EpisodeService
                     ->setTvdb($episodeInfo['id'] ?? random_int(100000, 1000000))
                     // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
                 ;
+                $found = true;
             }
         }
+        if (!$found) {
+            return null;
+        }
 
+        $this->em->persist($item);
         return $item;
     }
 

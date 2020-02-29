@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Locale\BaseLocale;
 use App\Entity\Locale\MovieLocale;
+use App\Entity\Torrent\MovieTorrent;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,7 +23,7 @@ class Movie extends BaseMedia
 
     /**
      * @var MovieTorrent[]
-     * @ORM\OneToMany(targetEntity="App\Entity\MovieTorrent", fetch="EAGER", mappedBy="movie")
+     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\MovieTorrent", fetch="EAGER", mappedBy="movie")
      * @ORM\OrderBy({"peer" = "ASC"})
      */
     protected $torrents;

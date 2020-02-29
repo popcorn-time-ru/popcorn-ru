@@ -3,7 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\File;
-use App\Entity\MovieTorrent;
+use App\Entity\Torrent\MovieTorrent;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;

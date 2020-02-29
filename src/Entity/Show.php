@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Locale\MovieLocale;
 use App\Entity\Locale\ShowLocale;
+use App\Entity\Torrent\ShowTorrent;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,7 +23,7 @@ class Show extends BaseMedia
 
     /**
      * @var ShowTorrent[]&Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\ShowTorrent", fetch="EAGER", mappedBy="show")
+     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\ShowTorrent", fetch="EAGER", mappedBy="show")
      * @ORM\OrderBy({"peer" = "ASC"})
      */
     protected $torrents;

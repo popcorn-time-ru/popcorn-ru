@@ -2,7 +2,7 @@
 
 namespace App\Processors;
 
-use App\Entity\BaseTorrent;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Movie;
 use App\Entity\Show;
 use App\Repository\MovieRepository;
