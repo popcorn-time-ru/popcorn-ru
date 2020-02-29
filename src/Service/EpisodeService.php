@@ -65,13 +65,6 @@ class EpisodeService
 
             $item->addFile($file);
             $this->em->flush();
-
-            if ($this->localeService->needFillEpisode($item)) {
-                $translations = $this->movieInfo->getEpisodeTranslations($torrent->getShow(), $s, $e);
-                $this->localeService->fillEpisode($item, $translations);
-            }
-
-            $this->em->flush();
         }
     }
 
@@ -117,6 +110,15 @@ class EpisodeService
         }
 
         $this->em->persist($item);
+        $this->em->flush();
+
+        if ($this->localeService->needFillEpisode($item)) {
+            $translations = $this->movieInfo->getEpisodeTranslations($show, $s, $e);
+            $this->localeService->fillEpisode($item, $translations);
+        }
+
+        $this->em->flush();
+
         return $item;
     }
 

@@ -109,8 +109,8 @@ class LocaleService
 
             foreach ($translations as $translation) {
                 if ($translation['iso_639_1'] == $locale) {
-                    $object->setTitle($translation['data']['name']);
-                    $object->setOverview($translation['data']['overview']);
+                    $object->setTitle($translation['data']['name'] ?? '');
+                    $object->setOverview($translation['data']['overview'] ?? '');
                 }
             }
         }

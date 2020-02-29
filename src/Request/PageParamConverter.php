@@ -8,6 +8,17 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PageParamConverter implements ParamConverterInterface
 {
+    /** @var array */
+    private $extractLocales;
+
+    /**
+     * @param array $extractLocales
+     */
+    public function __construct(array $extractLocales)
+    {
+        $this->extractLocales = $extractLocales;
+    }
+
     public function apply(Request $request, ParamConverter $configuration)
     {
         $pageRequest = new PageRequest();
@@ -17,9 +28,12 @@ class PageParamConverter implements ParamConverterInterface
         if (preg_match('/science[-\s]fuction/i', $genre) || preg_match('/sci[-\s]fi/i', $genre)) {
             $genre = 'science-fiction';
         }
-        $pageRequest->genre = $genre == 'all' ? '' : $genre;
+        $pageRequest->genre = $genre === 'all' ? '' : $genre;
         $pageRequest->keywords = $request->query->get('keywords', '');
         $pageRequest->locale = $request->query->get('locale', 'en');
+        if (!in_array($pageRequest->locale, $this->extractLocales)) {
+            $pageRequest->locale = 'en';
+        }
         $pageRequest->sort = $request->query->get('sort', '');
         $order = (int) $request->query->get('order', -1);
         $pageRequest->order = $order > 0 ? 'ASC' : 'DESC';
@@ -31,6 +45,6 @@ class PageParamConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getConverter() === 'page_params' && $configuration->getClass() == PageRequest::class;
+        return $configuration->getConverter() === 'page_params' && $configuration->getClass() === PageRequest::class;
     }
 }

@@ -6,6 +6,7 @@
 parameters:
     extractLocales:
         - ru
+        - en
 
 services:
     # default configuration for services in *this* file
