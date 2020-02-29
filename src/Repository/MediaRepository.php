@@ -82,9 +82,9 @@ abstract class MediaRepository extends ServiceEntityRepository
                     'title' => '%'.$pageRequest->keywords.'%',
                 ]);
         }
+        $qb->andWhere('m.existTranslations LIKE :locale')
+            ->setParameter('locale', '%'.$pageRequest->locale.'%');
         if ($this instanceof ShowRepository) {
-            $qb->andWhere('m.existTranslations LIKE :locale')
-                ->setParameter('locale', '%'.$pageRequest->locale.'%');
             $qb->andWhere('m.episodes iS NOT EMPTY');
         }
         switch ($pageRequest->sort) {

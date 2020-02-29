@@ -85,6 +85,8 @@ class Yts extends AbstractSpider
                     ->setQuality($torrentData['quality'])
                     ->setLanguage('en');
 
+                $torrent->setSize($torrentData['size_bytes']);
+
                 $this->torrentService->updateTorrent($torrent);
                 $exist = true;
             }
