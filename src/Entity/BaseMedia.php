@@ -46,13 +46,16 @@ abstract class BaseMedia
 
     /**
      * @var string[]
-     * @ORM\Column(type="simple_array")
+     * @ORM\Column(type="simple_array", nullable=true)
      */
-    protected $existTranslations = [];
+    protected $existTranslations;
     public function getExistTranslations(): array { return $this->existTranslations ?? []; }
     public function setExistTranslations(array $existTranslations) { $this->existTranslations = $existTranslations; return $this;}
     public function addExistTranslation(string $translations) {
-        if (!in_array($translations, $this->getExistTranslations(), true)) {
+        if (!is_array($this->existTranslations)) {
+            $this->existTranslations = [];
+        }
+        if (!in_array($translations, $this->existTranslations, true)) {
             $this->existTranslations[] = $translations;
         }
         $this->existTranslations = array_filter($this->existTranslations);

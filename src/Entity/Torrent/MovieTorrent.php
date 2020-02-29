@@ -14,6 +14,7 @@ class MovieTorrent extends BaseTorrent
     /**
      * @var Movie
      * @ORM\ManyToOne(targetEntity="App\Entity\Movie", inversedBy="torrents")
+     * @ORM\JoinColumn(name="media_id")
      */
     protected $movie;
     public function getMovie(): Movie { return $this->movie; }
