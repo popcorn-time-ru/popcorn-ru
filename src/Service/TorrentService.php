@@ -118,7 +118,9 @@ class TorrentService
     public function updateTorrent(BaseTorrent $torrent)
     {
         $torrent->sync();
+        $this->em->flush();
 
+        $torrent->getMedia()->addExistTranslation($torrent->getLanguage());
         $this->em->flush();
 
         if ($torrent instanceof ShowTorrent) {

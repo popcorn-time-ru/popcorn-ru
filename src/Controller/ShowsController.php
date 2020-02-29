@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Repository\ShowRepository;
+use App\Request\PageRequest;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,30 +44,18 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/shows/{page}", name="shows_page")
+     * @ParamConverter(name="pageParams", converter="page_params")
      */
-    public function page($page, Request $r, SerializerInterface $serializer)
+    public function page($page, Request $r, PageRequest $pageParams, SerializerInterface $serializer)
     {
-        $sort = $r->query->get('sort', '');
-        $order = (int) $r->query->get('order', -1);
-
-        $genre = $r->query->get('genre', 'all');
-        $genre = strtolower($genre);
-        if (preg_match('/science[-\s]fuction/i', $genre) || preg_match('/sci[-\s]fi/i', $genre)) {
-            $genre = 'science-fiction';
-        }
-
-        $keywords = $r->query->get('keywords', '');
-
-        $shows = $this->repo->getPage(
-            $genre, $keywords,
-            $sort, $order > 0 ? 'ASC' : 'DESC',
+        $shows = $this->repo->getPage($pageParams,
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'list',
-            'locale' => $r->query->get('locale', ''),
+            'locale' => $pageParams->locale,
         ];
         $data = $serializer->serialize($shows, 'json', $context);
 

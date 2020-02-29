@@ -2,6 +2,7 @@
 
 namespace App\Entity\Torrent;
 
+use App\Entity\BaseMedia;
 use App\Entity\Episode;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,4 +18,6 @@ class EpisodeTorrent extends BaseTorrent
     protected $episode;
     public function getEpisode(): Episode { return $this->episode; }
     public function setEpisode(Episode $episode): self { $this->episode = $episode; return $this; }
+
+    public function getMedia(): BaseMedia { return $this->episode->getShow();}
 }

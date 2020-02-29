@@ -2,6 +2,7 @@
 
 namespace App\Entity\Torrent;
 
+use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,4 +18,6 @@ class MovieTorrent extends BaseTorrent
     protected $movie;
     public function getMovie(): Movie { return $this->movie; }
     public function setMovie(Movie $movie): self { $this->movie = $movie; return $this; }
+
+    public function getMedia(): BaseMedia { return $this->movie;}
 }

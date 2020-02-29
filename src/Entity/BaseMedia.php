@@ -44,6 +44,21 @@ abstract class BaseMedia
     public function sync() { $this->syncAt = new \DateTime(); return $this;}
     public function getSynAt() { return $this->syncAt;}
 
+    /**
+     * @var string[]
+     * @ORM\Column(type="simple_array")
+     */
+    protected $existTranslations = [];
+    public function getExistTranslations(): array { return $this->existTranslations ?? []; }
+    public function setExistTranslations(array $existTranslations) { $this->existTranslations = $existTranslations; return $this;}
+    public function addExistTranslation(string $translations) {
+        if (!in_array($translations, $this->getExistTranslations(), true)) {
+            $this->existTranslations[] = $translations;
+        }
+        $this->existTranslations = array_filter($this->existTranslations);
+        return $this;
+    }
+
     abstract public function getTorrents();
     abstract public function getLocales();
     public function getLocale(string $locale): ?BaseLocale {

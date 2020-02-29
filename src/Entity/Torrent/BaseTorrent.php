@@ -2,6 +2,7 @@
 
 namespace App\Entity\Torrent;
 
+use App\Entity\BaseMedia;
 use App\Entity\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -162,4 +163,6 @@ abstract class BaseTorrent
 
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
+
+    abstract public function getMedia(): BaseMedia;
 }

@@ -7,6 +7,7 @@ use App\Entity\Locale\MovieLocale;
 use App\Entity\Locale\ShowLocale;
 use App\Entity\Movie;
 use App\Repository\Locale\BaseLocaleRepository;
+use App\Request\PageRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -59,48 +60,50 @@ abstract class MediaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $genre
-     * @param string $keywords
-     * @param string $sort
-     * @param string $order
-     * @param int    $offset
-     * @param int    $limit
+     * @param PageRequest $pageRequest
+     * @param int         $offset
+     * @param int         $limit
      * @return BaseMedia[]
      */
-    public function getPage(string $genre, string $keywords, string $sort, string $order, int $offset, int $limit): array
+    public function getPage(PageRequest $pageRequest, int $offset, int $limit): array
     {
         $qb = $this->createQueryBuilder('m');
-        if ($genre && $genre !== 'all') {
-            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$genre.'%');
+        if ($pageRequest->genre) {
+            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
         }
-        if ($keywords) {
+        if ($pageRequest->keywords) {
             $class = $this instanceof ShowRepository ? ShowLocale::class : MovieLocale::class;
-            $mediaIds = $this->localeRepository->findMediaIdsByTitle($keywords, $class);
+            $mediaIds = $this->localeRepository->findMediaIdsByTitle($pageRequest->keywords, $class);
             $qb
                 ->andWhere('m.title LIKE :title OR m.imdb = :imdb OR m.id IN (:ids)')
                 ->setParameters([
                     'ids' => $mediaIds,
-                    'imdb' => $keywords,
-                    'title' => '%'.$keywords.'%',
+                    'imdb' => $pageRequest->keywords,
+                    'title' => '%'.$pageRequest->keywords.'%',
                 ]);
         }
-        switch ($sort) {
+        if ($this instanceof ShowRepository) {
+            $qb->andWhere('m.existTranslations LIKE :locale')
+                ->setParameter('locale', '%'.$pageRequest->locale.'%');
+            $qb->andWhere('m.episodes iS NOT EMPTY');
+        }
+        switch ($pageRequest->sort) {
             case 'name':
-                $qb->addOrderBy('m.title', $order);
+                $qb->addOrderBy('m.title', $pageRequest->order);
                 break;
             case 'released':
             case 'updated':
                 if ($this instanceof MovieRepository) {
-                    $qb->addOrderBy('m.released', $order);
+                    $qb->addOrderBy('m.released', $pageRequest->order);
                 } else {
                     $qb->addOrderBy('m.rating.watching', 'DESC');
                 }
                 break;
             case 'trending':
-                $qb->addOrderBy('m.rating.watching', $order);
+                $qb->addOrderBy('m.rating.watching', $pageRequest->order);
                 break;
             case 'year':
-                $qb->addOrderBy('m.year', $order);
+                $qb->addOrderBy('m.year', $pageRequest->order);
                 break;
             default:
                 $qb->addOrderBy('m.rating.watching', 'DESC');

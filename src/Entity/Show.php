@@ -19,6 +19,7 @@ class Show extends BaseMedia
     {
         parent::__construct();
         $this->torrents = new ArrayCollection();
+        $this->episodes = new ArrayCollection();
     }
 
     /**

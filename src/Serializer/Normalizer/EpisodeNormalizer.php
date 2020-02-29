@@ -30,6 +30,14 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         }
 
         $torrents = [];
+        $locale = $context['locale'] ?? 'en';
+        foreach ($object->getTorrents() as $torrent) {
+            if ($torrent->getLanguage() !== $locale) {
+                continue;
+            }
+            $torrents[$torrent->getQuality()] =
+                $this->normalizer->normalize($torrent, $format, $context);
+        }
         foreach ($object->getShow()->getTorrents() as $torrent) {
             $file = null;
             foreach ($torrent->getFiles() as $torrentFile) {
@@ -41,6 +49,9 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
                 }
             }
 
+            if ($torrent->getLanguage() !== $locale) {
+                continue;
+            }
             if (!$file) {
                 continue;
             }

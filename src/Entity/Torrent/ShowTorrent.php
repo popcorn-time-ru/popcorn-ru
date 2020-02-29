@@ -2,6 +2,7 @@
 
 namespace App\Entity\Torrent;
 
+use App\Entity\BaseMedia;
 use App\Entity\File;
 use App\Entity\Show;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,6 +20,8 @@ class ShowTorrent extends BaseTorrent
     protected $show;
     public function getShow(): Show { return $this->show; }
     public function setShow(Show $show): self { $this->show = $show; return $this; }
+
+    public function getMedia(): BaseMedia { return $this->show;}
 
     /**
      * @var File[]|ArrayCollection
