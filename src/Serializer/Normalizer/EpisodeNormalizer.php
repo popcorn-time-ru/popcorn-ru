@@ -48,7 +48,7 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             $torrents[$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context + ['file' => $file]);
         }
-        if (empty($torrents['0'])) {
+        if ($torrents && empty($torrents['0'])) {
             $torrents['0'] = current($torrents);
         }
 

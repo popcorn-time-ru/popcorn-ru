@@ -157,18 +157,21 @@ class Rutor extends AbstractSpider
             }
         );
 
-        $torrent = new MovieTorrent();
+        $torrent = $this->getTorrentByImdb($topic->id, $imdb);
+        if (!$torrent) {
+            return;
+        }
         $torrent
             ->setProviderTitle($title)
-            ->setProvider($this->getName())
-            ->setProviderExternalId($topic->id)
             ->setUrl($url)
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
             ->setLanguage('ru');
 
-        $this->torrentService->updateTorrent($torrent, $imdb, $files);
+        $torrent->setFiles($files);
+
+        $this->torrentService->updateTorrent($torrent);
     }
 
     protected function getFiles($fileListId): array

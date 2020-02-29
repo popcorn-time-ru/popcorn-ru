@@ -24,13 +24,16 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             return [];
         }
         if ($object instanceof ShowTorrent) {
-            return [
+            $data = [
                 'url' => $object->getUrl(),
                 'seeds' => $object->getSeed(),
                 'peers' => $object->getPeer(),
                 'provider' => $object->getProvider(),
-                'file' => $context['file']->getName() ?? '',
             ];
+            if (!empty($context['file'])) {
+                $data['file'] = $context['file']->getName();
+            }
+            return $data;
         }
         return [
             'url' => $object->getUrl(),

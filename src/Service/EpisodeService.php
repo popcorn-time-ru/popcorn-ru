@@ -52,54 +52,16 @@ class EpisodeService
             return;
         }
 
-        $showInfo = [];
         foreach ($torrent->getFiles() as $file) {
             [$s, $e] = $this->getSEFromName($file->getName(), $torrent->getShow());
             if ($s === false) {
                 continue;
             }
 
-            $item = null;
-            foreach ($torrent->getShow()->getEpisodes() as $episode) {
-                if ($episode->getSeason() === $s && $episode->getEpisode() === $e) {
-                    $item = $episode;
-                    break;
-                }
-            }
-            if (!$item) {
-                $item = new Episode();
-                $item
-                    ->setShow($torrent->getShow())
-                    ->setSeason($s)
-                    ->setEpisode($e)
-                ;
-            }
-
-            $episodeInfo = null;
-
-            if (empty($showInfo[$s])) {
-                $showInfo[$s] = $this->movieInfo
-                    ->getSeasonEpisodes($torrent->getShow(), $s);
-            }
-            foreach ($showInfo[$s] as $episodeInfo) {
-                if ($episodeInfo['episode_number'] == $e) {
-                    $item
-                        ->setTitle($episodeInfo['name'] ?: '')
-                        ->setOverview($episodeInfo['overview'] ?: '')
-                        ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
-                        ->setTvdb($episodeInfo['id'] ?? random_int(100000, 1000000))
-                        // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
-                    ;
-                }
-            }
-            if (!$item->getTitle()) {
-                // TODO: что-то левое
-                continue;
-            }
-            echo $item->getTitle().PHP_EOL;
+            $item = $this->getEpisode($torrent->getShow(), $s, $e);
 
             $item->addFile($file);
-            $this->em->persist($item);
+            $this->em->flush();
 
             if ($this->localeService->needFillEpisode($item)) {
                 $translations = $this->movieInfo->getEpisodeTranslations($torrent->getShow(), $s, $e);
@@ -108,6 +70,46 @@ class EpisodeService
 
             $this->em->flush();
         }
+    }
+
+    protected $showCache = [];
+    public function getEpisode(Show $show, int $s, int $e)
+    {
+        $item = null;
+        foreach ($show->getEpisodes() as $episode) {
+            if ($episode->getSeason() === $s && $episode->getEpisode() === $e) {
+                $item = $episode;
+                break;
+            }
+        }
+        if (!$item) {
+            $item = new Episode();
+            $item
+                ->setShow($show)
+                ->setSeason($s)
+                ->setEpisode($e)
+            ;
+            $this->em->persist($item);
+        }
+
+        $key = $show->getImdb().':'.$s;
+        if (empty($showInfo[$key])) {
+            $showInfo[$key] = $this->movieInfo
+                ->getSeasonEpisodes($show, $s);
+        }
+        foreach ($showInfo[$key] as $episodeInfo) {
+            if ($episodeInfo['episode_number'] == $e) {
+                $item
+                    ->setTitle($episodeInfo['name'] ?: '')
+                    ->setOverview($episodeInfo['overview'] ?: '')
+                    ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
+                    ->setTvdb($episodeInfo['id'] ?? random_int(100000, 1000000))
+                    // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
+                ;
+            }
+        }
+
+        return $item;
     }
 
     protected function getSEFromName($filePathAndName, Show $show)

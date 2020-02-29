@@ -59,11 +59,25 @@ class File
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"remove"})
+     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")}
      * )
      */
     protected $episodes;
+    public function linkEpisode(Episode $episode)
+    {
+        if ($this->episodes->contains($episode)) {
+            return;
+        }
+        $this->episodes->add($episode);
+    }
+    public function unlinkEpisode(Episode $episode)
+    {
+        if (!$this->episodes->contains($episode)) {
+            return;
+        }
+        $this->episodes->removeElement($episode);
+    }
 }

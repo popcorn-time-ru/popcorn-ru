@@ -53,33 +53,13 @@ abstract class BaseTorrent
         return $lastSyncInterval->days < 1;
     }
 
-    /**
-     * @var File[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="App\Entity\File", mappedBy="torrent",
-     *     cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $files;
-    public function getFiles() { return $this->files; }
     public function setFiles(array $files):self {
         /** @var File[] $files */
-        $existFiles = [];
-        foreach ($files as $n => $file) {
-            foreach ($this->files as $exist) {
-                if ($exist->equals($file)) {
-                    $existFiles[] = $exist;
-                    unset($files[$n]);
-                }
-            }
-        }
-        foreach ($this->files as $file) {
-            if (!in_array($file, $existFiles)) {
-                $this->files->removeElement($file);
-            }
-        }
+        $size = 0;
         foreach ($files as $file) {
-            $file->setTorrent($this);
-            $this->files->add($file);
+            $size+=$file->getSize();
         }
+        $this->setSize($size);
 
         return $this;
     }
@@ -139,7 +119,6 @@ abstract class BaseTorrent
      */
     protected $filesize;
     public function getFilesize() { return $this->filesize; }
-    public function setFilesize($filesize) { $this->filesize = $filesize; return $this;}
 
     /**
      * @var integer
@@ -147,7 +126,11 @@ abstract class BaseTorrent
      */
     protected $size;
     public function getSize() { return $this->size; }
-    public function setSize($size) { $this->size = $size; return $this;}
+
+    public function setSize($size) {
+        $this->size = $size;
+        $this->filesize = $this->formatBytes($size);
+    }
 
     /**
      * @var integer
@@ -165,4 +148,17 @@ abstract class BaseTorrent
     public function getSeed() { return $this->seed; }
     public function setSeed($seed) { $this->seed = $seed; return $this;}
     //</editor-fold>
+
+    protected function formatBytes($bytes, $precision = 2): string
+    {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= 1024 ** $pow;
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Spider;
 
+use App\Entity\Movie;
+use App\Entity\MovieTorrent;
+use App\Entity\Show;
+use App\Entity\ShowTorrent;
 use App\Service\TorrentService;
 use DateTime;
 use Psr\Log\LoggerInterface;
@@ -65,5 +69,24 @@ abstract class AbstractSpider implements SpiderInterface
 
         // пропускаем сборники
         return count($ids) == 1 ? current($ids) : null;
+    }
+
+    protected function getTorrentByImdb(string $topicId, string $imdb)
+    {
+        $media = $this->torrentService->getMediaByImdb($imdb);
+        if (!$media) {
+            return null;
+        }
+        $newTorrent = null;
+        if ($media instanceof Movie) {
+            $newTorrent = new MovieTorrent();
+            $newTorrent->setMovie($media);
+        }
+        if ($media instanceof Show) {
+            $newTorrent = new ShowTorrent();
+            $newTorrent->setShow($media);
+        }
+
+        return $this->torrentService->findExistOrCreateTorrent($this->getName(), $topicId, $newTorrent);
     }
 }

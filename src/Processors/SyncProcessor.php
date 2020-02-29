@@ -74,7 +74,7 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
             if ($data['type'] === 'torrent') {
                 /** @var BaseTorrent $torrent */
                 $torrent = $this->torrentRepository->find($data['id']);
-                if ($torrent->isSynced()) {
+                if (!$torrent || $torrent->isSynced()) {
                     return self::ACK;
                 }
                 $topicMessage = new \Enqueue\Client\Message(JSON::encode([
@@ -91,12 +91,18 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
             if ($data['type'] === 'movie') {
                 /** @var Movie $movie */
                 $movie = $this->movieRepository->find($data['id']);
+                if (!$movie) {
+                    return self::ACK;
+                }
                 $this->extractor->updateMedia($movie);
                 $movie->sync();
             }
             if ($data['type'] === 'show') {
                 /** @var Show $show */
                 $show = $this->showRepository->find($data['id']);
+                if (!$show) {
+                    return self::ACK;
+                }
                 $this->extractor->updateMedia($show);
                 $show->sync();
             }

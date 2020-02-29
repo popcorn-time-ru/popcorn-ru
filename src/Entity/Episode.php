@@ -103,7 +103,7 @@ class Episode
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="File", mappedBy="episodes", cascade={"remove"})
+     * @ORM\ManyToMany(targetEntity="File", mappedBy="episodes", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")}
@@ -116,13 +116,13 @@ class Episode
             return;
         }
         $this->files->add($file);
-        //$file->add($this);
+        $file->linkEpisode($this);
     }
     public function removeFile(File $file) {
         if (!$this->files->contains($file)) {
             return;
         }
         $this->files->removeElement($file);
-        //$file->remove($this);
+        $file->unlinkEpisode($this);
     }
 }

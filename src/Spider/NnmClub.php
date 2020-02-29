@@ -3,7 +3,10 @@
 namespace App\Spider;
 
 use App\Entity\File;
+use App\Entity\Movie;
 use App\Entity\MovieTorrent;
+use App\Entity\Show;
+use App\Entity\ShowTorrent;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
@@ -165,11 +168,12 @@ class NnmClub extends AbstractSpider
             $this->getPeers($topic);
         }
 
-        $torrent = new MovieTorrent();
+        $torrent = $this->getTorrentByImdb($topic->id, $imdb);
+        if (!$torrent) {
+            return;
+        }
         $torrent
             ->setProviderTitle($title)
-            ->setProvider($this->getName())
-            ->setProviderExternalId($topic->id)
             ->setUrl($url)
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
@@ -177,7 +181,9 @@ class NnmClub extends AbstractSpider
             ->setLanguage('ru')
         ;
 
-        $this->torrentService->updateTorrent($torrent, $imdb, $files);
+        $torrent->setFiles($files);
+
+        $this->torrentService->updateTorrent($torrent);
     }
 
     protected function getFiles($fileListId): array

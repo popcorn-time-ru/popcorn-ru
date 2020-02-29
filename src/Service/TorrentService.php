@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\BaseMedia;
 use App\Entity\BaseTorrent;
 use App\Entity\File;
 use App\Entity\Movie;
@@ -73,12 +74,7 @@ class TorrentService
         return $this->movieInfo->searchShowByTitle($title);
     }
 
-    /**
-     * @param BaseTorrent $newTorrent
-     * @param string      $imdbId
-     * @param File[]      $files
-     */
-    public function updateTorrent(BaseTorrent $newTorrent, string $imdbId, array $files)
+    public function getMediaByImdb(string $imdbId): ?BaseMedia
     {
         $media = $this->movieRepo->findByImdb($imdbId);
         if (!$media) {
@@ -89,51 +85,38 @@ class TorrentService
             $media = $this->movieInfo->fetchByImdb($imdbId);
             if (!$media) {
                 // TODO: log
-                return;
+                return null;
             }
             $media->sync();
             $this->em->persist($media);
             $this->em->flush();
         }
 
+        return $media;
+    }
+
+    public function findExistOrCreateTorrent(string $provider, string $externalId, BaseTorrent $new)
+    {
         $torrent = $this->torrentRepo->findByProviderAndExternalId(
-            $newTorrent->getProvider(),
-            $newTorrent->getProviderExternalId()
+            $provider,
+            $externalId
         );
 
-        if (!$torrent) {
-            if ($media instanceof Movie) {
-                $torrent = new MovieTorrent();
-                $torrent->setMovie($media);
-            }
-            if ($media instanceof Show) {
-                $torrent = new ShowTorrent();
-                $torrent->setShow($media);
-            }
-            $torrent->setProviderExternalId($newTorrent->getProviderExternalId());
-            $torrent->setProvider($newTorrent->getProvider());
-            $this->em->persist($torrent);
+        if ($torrent) {
+            return $torrent;
         }
 
-        $torrent->setProviderTitle($newTorrent->getProviderTitle());
-        $torrent
-            ->setUrl($newTorrent->getUrl())
-            ->setLanguage($newTorrent->getLanguage())
-            ->setQuality($newTorrent->getQuality())
-            ->setPeer($newTorrent->getPeer())
-            ->setSeed($newTorrent->getSeed())
-        ;
+        $new->setProvider($provider);
+        $new->setProviderExternalId($externalId);
+        $this->em->persist($new);
+        return $new;
+    }
 
-        $size = 0;
-        foreach ($files as $file) {
-            $size+=$file->getSize();
-        }
-
-        $torrent
-            ->setFiles($files)
-            ->setFilesize($this->formatBytes($size))
-            ->setSize($size)
-        ;
+    /**
+     * @param BaseTorrent $torrent
+     */
+    public function updateTorrent(BaseTorrent $torrent)
+    {
         $torrent->sync();
 
         $this->em->flush();
@@ -145,18 +128,4 @@ class TorrentService
             $this->producer->sendEvent(ShowTorrentProcessor::TOPIC, $torrentMessage);
         }
     }
-
-    protected function formatBytes($bytes, $precision = 2): string
-    {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-
-        $bytes /= 1024 ** $pow;
-
-        return round($bytes, $precision) . ' ' . $units[$pow];
-    }
-
 }
