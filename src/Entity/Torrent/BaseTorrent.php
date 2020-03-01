@@ -55,7 +55,7 @@ abstract class BaseTorrent
         return $lastSyncInterval->days < 1;
     }
 
-    public function setFiles(array $files):self {
+    public function setFiles(array $files) {
         /** @var File[] $files */
         $size = 0;
         foreach ($files as $file) {

@@ -32,7 +32,7 @@ class ShowTorrent extends BaseTorrent
     protected $files;
     public function getFiles() { return $this->files; }
 
-    public function setFiles(array $files):self {
+    public function setFiles(array $files) {
         /** @var File[] $files */
         $existFiles = [];
         foreach ($files as $n => $file) {
