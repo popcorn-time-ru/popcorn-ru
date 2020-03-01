@@ -1,0 +1,12 @@
+- name: restart supervisor
+  service:
+    name: supervisor
+    state: restarted
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+- name: restart php-fpm
+  service:
+    name: php7.3-fpm
+    state: restarted

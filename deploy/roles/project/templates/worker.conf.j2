@@ -1,0 +1,8 @@
+[program:worker]
+command={{ path }}/bin/console enqueue:consume --no-debug --memory-limit=200
+autostart=true
+autorestart=true
+user={{ user }}
+directory={{ path }}
+stopsignal=KILL
+numprocs=1

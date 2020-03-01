@@ -1,0 +1,35 @@
+- name: Install basic packages
+  apt:
+    pkg:
+      - htop
+      - git
+      - aptitude
+
+- name: Install php stack packages
+  apt:
+    pkg:
+      - nginx-light
+      - php-bcmath
+      - php-cli
+      - php-curl
+      - php-fpm
+      - php-intl
+      - php-json
+      - php-mbstring
+      - php-mysql
+      - php-xml
+      - composer
+      - supervisor
+
+- name: Web user
+  user:
+    name: web
+    shell: /bin/bash
+    home: /srv
+
+- name: Web home
+  file:
+    path: /srv
+    owner: web
+    group: web
+    mode: '0755'

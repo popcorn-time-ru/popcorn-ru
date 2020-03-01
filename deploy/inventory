@@ -1,0 +1,1 @@
+main    ansible_host=35.239.205.20  ansible_connection=ssh  ansible_user=ivan   ansible_become=yes

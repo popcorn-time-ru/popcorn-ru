@@ -1,0 +1,16 @@
+[popcorn]
+user = web
+group = web
+
+listen = /run/php/popcorn-fpm.sock
+listen.owner = web
+listen.group = web
+listen.mode = 0666
+
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 1
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+
+

@@ -1,0 +1,15 @@
+[mysqld]
+
+max_allowed_packet          = 32M
+key_buffer_size             = 32M
+read_buffer_size            = 32M
+sort_buffer_size            = 16M
+
+innodb_buffer_pool_size     = 256M
+innodb_file_per_table       = 1
+innodb_flush_method         = O_DIRECT
+innodb_flush_log_at_trx_commit  = 0
+innodb_log_file_size        = 32M
+
+max_connections             = 10
+query_cache_size            = 0

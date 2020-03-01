@@ -1,0 +1,10 @@
+- hosts: all
+  order: sorted
+  gather_facts: False
+  tasks:
+    - import_role:
+        name: common
+    - import_role:
+        name: db
+    - import_role:
+        name: project

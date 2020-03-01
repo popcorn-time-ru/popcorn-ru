@@ -1,0 +1,30 @@
+- name: Nginx site conf
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-enabled/popcorn.conf
+    mode: '0644'
+  notify:
+    - restart nginx
+
+- name: delete php fpm default pool
+  file:
+    path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
+    state: absent
+  notify:
+    - restart php-fpm
+
+- name: php fpm pool
+  template:
+    src: pool.conf.j2
+    dest: /etc/php/{{ php_version }}/fpm/pool.d/popcorn.conf
+    mode: '0644'
+  notify:
+    - restart php-fpm
+
+- name: supervisor config
+  template:
+    src: worker.conf.j2
+    dest: /etc/supervisor/conf.d/popcorn.conf
+    mode: '0644'
+  notify:
+    - restart supervisor
