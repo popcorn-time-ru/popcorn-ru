@@ -60,8 +60,8 @@ class LocaleService
                 if ($translation->getIso6391() !== $locale)
                     continue;
                 $data = $translation->getData();
-                $mediaLocale->setTitle($data['title'] ?? $data['name']);
-                $mediaLocale->setSynopsis($data['overview']);
+                $mediaLocale->setTitle($data['title'] ?? $data['name'] ?? '');
+                $mediaLocale->setSynopsis($data['overview'] ?? '');
             }
 
             $posterRate = 0;
