@@ -33,3 +33,8 @@
     owner: web
     group: web
     mode: '0755'
+
+- name: web sudo
+  copy:
+    content: "web ALL=(ALL:ALL) NOPASSWD:ALL"
+    dest: /etc/sudoers.d/web
