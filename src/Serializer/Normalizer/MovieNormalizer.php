@@ -52,7 +52,7 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             'year' => $object->getYear(),
             'synopsis' => $object->getSynopsis(),
             'runtime' => $object->getRuntime(),
-            'released' => $object->getReleased(),
+            'released' => $object->getReleased()->getTimestamp(),
             'certification' => $object->getCertification(),
             'torrents' => $torrents,
             'trailer' => $object->getTrailer(),

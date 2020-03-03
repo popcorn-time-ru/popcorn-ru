@@ -204,8 +204,7 @@ class TmdbExtractor
             ->setImdb($movieInfo->getImdbId())
             ->setTitle($movieInfo->getTitle())
             ->setSynopsis($movieInfo->getOverview())
-            // fix for very old films (1898 year - fail) - it's not issue to 38 year
-            ->setReleased(max(-2147483648, $movieInfo->getReleaseDate()->getTimestamp()))
+            ->setReleased($movieInfo->getReleaseDate())
             ->setCertification($certification)
             ->setYear($movieInfo->getReleaseDate()->format('Y'))
             ->setRuntime((string)$movieInfo->getRuntime())

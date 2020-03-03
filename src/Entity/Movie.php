@@ -46,8 +46,8 @@ class Movie extends BaseMedia
     public function setImdb($imdb) { $this->imdb = $imdb; return $this;}
 
     /**
-     * @var integer
-     * @ORM\Column(type="integer")
+     * @var \DateTime
+     * @ORM\Column(type="datetime")
      */
     protected $released;
     public function getReleased() { return $this->released; }
