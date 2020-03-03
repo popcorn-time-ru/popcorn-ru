@@ -32,7 +32,7 @@ class File
 
     /**
      * @var BaseTorrent
-     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent\BaseTorrent", inversedBy="files", cascade={"remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent\BaseTorrent", inversedBy="files")
      */
     protected $torrent;
     public function getTorrent(): BaseTorrent { return $this->torrent; }
@@ -60,7 +60,7 @@ class File
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"persist"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")}
