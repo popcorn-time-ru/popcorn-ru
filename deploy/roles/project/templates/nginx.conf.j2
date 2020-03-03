@@ -5,6 +5,9 @@ map $request $loggable {
 
 server {
 
+  listen 80;
+  listen [::]:80;
+
   server_name {{ site_main }} {{ site2 }} localhost;
   root {{ path }}/public;
 
