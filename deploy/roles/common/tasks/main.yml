@@ -19,7 +19,6 @@
       - php-mysql
       - php-xml
       - composer
-      - supervisor
 
 - name: Web user
   user:

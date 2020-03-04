@@ -21,10 +21,20 @@
   notify:
     - restart php-fpm
 
-- name: supervisor config
+- name: user cron config
   template:
-    src: worker.conf.j2
-    dest: /etc/supervisor/conf.d/popcorn.conf
-    mode: '0644'
+    src: crontab.j2
+    dest: /var/spool/cron/crontabs/{{ user }}
+    owner: '{{ user }}'
+    group: 'crontab'
+    mode: '0600'
   notify:
-    - restart supervisor
+    - restart cron
+
+- name: logrotate
+  template:
+    src: crontab.j2
+    dest: /var/spool/cron/crontabs/{{ user }}
+    owner: '{{ user }}'
+    group: 'crontab'
+    mode: '0600'

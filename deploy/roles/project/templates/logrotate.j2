@@ -1,0 +1,16 @@
+{{ path }}/var/log/*.log
+{
+	su www-data root
+    weekly
+    missingok
+    rotate 8
+    compress
+    delaycompress
+    notifempty
+    create 0666 www-data root
+    sharedscripts
+    postrotate
+            [ -s /run/nginx.pid ] && kill -USR1 `cat /run/nginx.pid`
+    endscript
+}
+

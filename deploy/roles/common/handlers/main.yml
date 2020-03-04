@@ -1,6 +1,6 @@
-- name: restart supervisor
+- name: restart cron
   service:
-    name: supervisor
+    name: cron
     state: restarted
 - name: restart nginx
   service:

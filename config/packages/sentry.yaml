@@ -11,3 +11,7 @@ monolog:
         sentry:
             type: service
             id: Sentry\Monolog\Handler
+        file_log:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: error
