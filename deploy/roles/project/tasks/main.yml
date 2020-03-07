@@ -6,6 +6,12 @@
   notify:
     - restart nginx
 
+- name: Nginx cache folder
+  file:
+    dest: "{{ path }}/var/nginx"
+    state: directory
+    mode: '0666'
+
 - name: delete php fpm default pool
   file:
     path: /etc/php/{{ php_version }}/fpm/pool.d/www.conf

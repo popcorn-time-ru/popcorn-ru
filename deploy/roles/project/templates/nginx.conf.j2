@@ -3,6 +3,9 @@ map $request $loggable {
     default 1;
 }
 
+fastcgi_cache_path {{ path }}/var/nginx levels=1:2 keys_zone=fcgi:8m max_size=1g inactive=12h;
+fastcgi_cache_key "$request_method $request_uri";
+
 server {
 
   listen 80;
@@ -25,6 +28,7 @@ server {
 
     fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
     fastcgi_param DOCUMENT_ROOT $realpath_root;
+    fastcgi_cache fcgi;
     internal;
   }
 
