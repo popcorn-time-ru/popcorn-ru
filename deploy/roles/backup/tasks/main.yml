@@ -1,0 +1,32 @@
+- name: Install packages for backup
+  apt:
+    pkg:
+      - backup-manager
+      - megatools
+
+- name: root configs for backups
+  copy:
+    content: "{{ item.content }}"
+    dest: /root/{{ item.name }}
+  with_items:
+    - name: .backup-manager_my.cnf
+      content: |
+        [client]
+        password=""
+# TODO: i know about vault
+#    - name: .megarc
+#      content: |
+#        [Login]
+#        Username = <email>
+#        Password = <password>
+
+- name: backup config file
+  copy:
+    src: backup-manager.conf
+    dest: /etc/backup-manager.conf
+
+- name: cron file
+  copy:
+    src: backup.sh
+    dest: /etc/cron.daily/backup
+    mode: '0755'
