@@ -22,9 +22,13 @@ class ShowsController extends AbstractController
      */
     protected $repo;
 
-    public function __construct(ShowRepository $repo)
+    /** @var string */
+    private $defaultLocale;
+
+    public function __construct(ShowRepository $repo, string $defaultLocale)
     {
         $this->repo = $repo;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -72,7 +76,7 @@ class ShowsController extends AbstractController
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'item',
-            'locale' => $r->query->get('locale', ''),
+            'locale' => $r->query->get('locale', $this->defaultLocale),
         ];
         $data = $serializer->serialize($show, 'json', $context);
 

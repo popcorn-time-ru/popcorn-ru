@@ -50,6 +50,10 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             case 'list':
                 return $base;
             case 'item':
+                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context);
+                $episodes = array_filter($episodes, static function ($episode) {
+                    return !empty($episode['torrents']);
+                });
                 return array_merge(
                     $base,
                     [
@@ -63,7 +67,7 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                         'air_time' => $object->getAirTime(),
                         'status' => $object->getStatus(),
                         'genres' => $object->getGenres(),
-                        'episodes' => $this->normalizer->normalize($object->getEpisodes(), $format, $context),
+                        'episodes' => $episodes,
                     ]
                 );
             default:

@@ -43,6 +43,12 @@ class Show extends BaseMedia
      */
     protected $episodes;
     public function getEpisodes() { return $this->episodes; }
+    public function addEpisode(Episode $episode) {
+        if (!$this->episodes->contains($episode)) {
+            $this->episodes->add($episode);
+        }
+        return $this;
+    }
 
     //<editor-fold desc="Show Api Data">
     /**

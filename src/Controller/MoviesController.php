@@ -24,9 +24,13 @@ class MoviesController extends AbstractController
      */
     protected $repo;
 
-    public function __construct(MovieRepository $repo)
+    /** @var string */
+    private $defaultLocale;
+
+    public function __construct(MovieRepository $repo, string $defaultLocale)
     {
         $this->repo = $repo;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -74,7 +78,7 @@ class MoviesController extends AbstractController
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'item',
-            'locale' => $r->query->get('locale', ''),
+            'locale' => $r->query->get('locale', $this->defaultLocale),
         ];
         $data = $serializer->serialize($movie, 'json', $context);
 

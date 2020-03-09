@@ -110,6 +110,7 @@ class EpisodeService
         }
 
         $this->em->persist($item);
+        $show->addEpisode($item);
         $this->em->flush();
 
         if ($this->localeService->needFillEpisode($item)) {
