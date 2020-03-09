@@ -121,6 +121,7 @@ class Rutor extends AbstractSpider
 
         $post = $crawler->filter('#details')->first();
         $title = $crawler->filter('#all h1')->first()->text();
+        $title = preg_replace('/([\xF0-\xF7]...)|([\xE0-\xEF]..)/s', '#', $title);
 
         $imdb = $this->getImdb($post);
 
