@@ -148,6 +148,9 @@
     "kevinrob/guzzle-cache-middleware": {
         "version": "v2.1.1"
     },
+    "laminas/laminas-zendframework-bridge": {
+        "version": "1.0.1"
+    },
     "long-running/long-running": {
         "version": "0.1",
         "recipe": {
@@ -172,11 +175,11 @@
     "php-http/client-common": {
         "version": "2.1.0"
     },
-    "php-http/curl-client": {
-        "version": "2.1.0"
-    },
     "php-http/discovery": {
         "version": "1.7.3"
+    },
+    "php-http/guzzle6-adapter": {
+        "version": "v2.0.1"
     },
     "php-http/httplug": {
         "version": "2.1.0"
@@ -427,6 +430,9 @@
     "symfony/polyfill-php73": {
         "version": "v1.13.0"
     },
+    "symfony/polyfill-uuid": {
+        "version": "v1.14.0"
+    },
     "symfony/property-access": {
         "version": "v4.4.0"
     },
@@ -494,14 +500,14 @@
     "twig/twig": {
         "version": "v2.12.2"
     },
+    "webimpress/safe-writer": {
+        "version": "2.0.0"
+    },
     "webmozart/assert": {
         "version": "1.6.0"
     },
     "zendframework/zend-code": {
         "version": "3.4.0"
-    },
-    "zendframework/zend-diactoros": {
-        "version": "2.2.1"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"

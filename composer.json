@@ -10,6 +10,7 @@
         "enqueue/enqueue-bundle": "^0.9.13",
         "long-running/long-running": "^0.4.2",
         "ramsey/uuid-doctrine": "^1.5",
+        "php-tmdb/symfony": "^2.2",
         "sensio/framework-extra-bundle": "^5.5",
         "sentry/sentry-symfony": "^3.2",
         "symfony/console": "^4.4",
