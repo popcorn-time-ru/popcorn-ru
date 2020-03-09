@@ -13,6 +13,7 @@ class ShowLocale extends BaseLocale
     /**
      * @var Show
      * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="torrents")
+     * @ORM\JoinColumn(name="media_id")
      */
     protected $show;
     public function getShow(): Show { return $this->show; }

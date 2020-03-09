@@ -13,6 +13,7 @@ class MovieLocale extends BaseLocale
     /**
      * @var Movie
      * @ORM\ManyToOne(targetEntity="App\Entity\Movie", inversedBy="locales")
+     * @ORM\JoinColumn(name="media_id")
      */
     protected $movie;
     public function getMovie(): Movie { return $this->movie; }
