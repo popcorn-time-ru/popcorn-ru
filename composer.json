@@ -31,6 +31,9 @@
         "symfony/maker-bundle": "^1.14"
     },
     "config": {
+        "platform": {
+            "php": "7.3"
+        },
         "preferred-install": {
             "*": "dist"
         },

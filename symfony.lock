@@ -172,6 +172,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.3"
     },
+    "php": {
+        "version": "7.3"
+    },
     "php-http/client-common": {
         "version": "2.1.0"
     },
@@ -499,9 +502,6 @@
     },
     "twig/twig": {
         "version": "v2.12.2"
-    },
-    "webimpress/safe-writer": {
-        "version": "2.0.0"
     },
     "webmozart/assert": {
         "version": "1.6.0"
