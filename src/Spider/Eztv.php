@@ -105,16 +105,4 @@ class Eztv extends AbstractSpider
     public function getTopic(TopicDto $topic)
     {
     }
-
-    protected function getTorrentByImdb(string $topicId, string $imdb)
-    {
-        $media = $this->torrentService->getMediaByImdb($imdb);
-        if (!($media instanceof Show)) {
-            return null;
-        }
-        $newTorrent = new EpisodeTorrent();
-        $newTorrent->setShow($media);
-
-        return $this->torrentService->findExistOrCreateTorrent($this->getName(), $topicId, $newTorrent);
-    }
 }
