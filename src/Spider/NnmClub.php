@@ -139,7 +139,6 @@ class NnmClub extends AbstractSpider
 
         $post = $crawler->filter('.postbody')->first();
         $title = $crawler->filter('h1 a.maintitle')->first()->text();
-        $title = preg_replace('/([\xF0-\xF7]...)|([\xE0-\xEF]..)/s', '#', $title);
 
         $imdb = $this->getImdb($post);
 

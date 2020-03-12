@@ -4,6 +4,7 @@ namespace App\Entity\Torrent;
 
 use App\Entity\BaseMedia;
 use App\Entity\File;
+use App\Entity\MySqlString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -18,6 +19,8 @@ use Ramsey\Uuid\UuidInterface;
  */
 abstract class BaseTorrent
 {
+    use MySqlString;
+
     /**
      * @var UuidInterface
      *
@@ -80,7 +83,7 @@ abstract class BaseTorrent
      */
     protected $providerTitle;
     public function getProviderTitle() { return $this->providerTitle; }
-    public function setProviderTitle($providerTitle) { $this->providerTitle = $providerTitle; return $this;}
+    public function setProviderTitle($providerTitle) { $this->providerTitle = $this->clearUtf($providerTitle); return $this;}
 
     //<editor-fold desc="Movie Api Data">
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Entity\Locale;
 
+use App\Entity\MySqlString;
 use App\Entity\VO\Images;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -16,6 +17,8 @@ use Ramsey\Uuid\UuidInterface;
  */
 abstract class BaseLocale
 {
+    use MySqlString;
+
     /**
      * @var UuidInterface
      *
@@ -45,7 +48,7 @@ abstract class BaseLocale
      */
     protected $title = '';
     public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $title; return $this;}
+    public function setTitle($title) { $this->title = $this->clearUtf($title); return $this;}
 
     /**
      * @var string
@@ -53,7 +56,7 @@ abstract class BaseLocale
      */
     protected $synopsis = '';
     public function getSynopsis() { return $this->synopsis; }
-    public function setSynopsis($synopsis) { $this->synopsis = $synopsis; return $this;}
+    public function setSynopsis($synopsis) { $this->synopsis = $this->clearUtf($synopsis); return $this;}
 
     /**
      * @var Images

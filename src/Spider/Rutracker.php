@@ -161,7 +161,6 @@ class Rutracker extends AbstractSpider
 
         $post = $crawler->filter('#topic_main tbody.row1')->first();
         $title = $crawler->filter('h1.maintitle a#topic-title')->first()->text();
-        $title = preg_replace('/([\xF0-\xF7]...)|([\xE0-\xEF]..)/s', '#', $title);
 
         $imdb = $this->getImdb($post);
 
