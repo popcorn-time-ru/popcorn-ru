@@ -48,7 +48,7 @@ class SpiderRunCommand extends Command
         $spiders = $input->getArgument('name');
 
         if ($input->getOption('all')) {
-            $spiders = array_keys($this->selector->gerAll());
+            $spiders = array_keys($this->selector->getAll());
         }
         $last = $input->getOption('last');
 

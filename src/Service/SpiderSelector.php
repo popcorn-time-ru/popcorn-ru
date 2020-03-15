@@ -25,7 +25,7 @@ class SpiderSelector
     /**
      * @return SpiderInterface[]
      */
-    public function gerAll(): array
+    public function getAll(): array
     {
         return $this->spiders;
     }
