@@ -39,7 +39,7 @@ class File
     public function setTorrent(BaseTorrent $torrent): self { $this->torrent = $torrent; return $this; }
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=500)
      */
     private $name;
     public function getName(): string { return $this->name; }
@@ -59,7 +59,7 @@ class File
     }
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|File[]
+     * @var \Doctrine\Common\Collections\Collection|Episode[]
      * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"persist"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
