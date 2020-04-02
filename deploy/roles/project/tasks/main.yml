@@ -39,8 +39,6 @@
 
 - name: logrotate
   template:
-    src: crontab.j2
-    dest: /var/spool/cron/crontabs/{{ user }}
-    owner: '{{ user }}'
-    group: 'crontab'
-    mode: '0600'
+    src: logrotate.j2
+    dest: /etc/logrotate.d/popcorn
+    mode: '0644'
