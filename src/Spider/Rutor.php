@@ -4,6 +4,7 @@ namespace App\Spider;
 
 use App\Entity\File;
 use App\Entity\Torrent\MovieTorrent;
+use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
@@ -23,9 +24,9 @@ class Rutor extends AbstractSpider
 
     private $context;
 
-    public function __construct(TorrentService $torrentService, LoggerInterface $logger, string $torProxy)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
     {
-        parent::__construct($torrentService, $logger);
+        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client(
             [
                 'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,

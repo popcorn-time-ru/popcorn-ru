@@ -2,10 +2,13 @@
 
 namespace App\Spider;
 
+use App\Entity\Episode;
 use App\Entity\Movie;
+use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
+use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use DateTime;
 use Psr\Log\LoggerInterface;
@@ -17,12 +20,16 @@ abstract class AbstractSpider implements SpiderInterface
     /** @var TorrentService */
     protected $torrentService;
 
+    /** @var EpisodeService */
+    protected $episodeService;
+
     /** @var LoggerInterface */
     protected $logger;
 
-    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
     {
         $this->torrentService = $torrentService;
+        $this->episodeService = $episodeService;
         $this->logger = $logger;
     }
 
@@ -94,6 +101,25 @@ abstract class AbstractSpider implements SpiderInterface
         }
 
         return $this->torrentService->findExistOrCreateTorrent($this->getName(), $topicId, $newTorrent);
+    }
+
+    protected function getEpisodeTorrentByImdb(string $topicId, string $imdb, int $s, int $e)
+    {
+        $media = $this->torrentService->getMediaByImdb($imdb);
+        if (!($media instanceof Show)) {
+            return null;
+        }
+        $episode = $this->episodeService->getEpisode($media, $s, $e);
+        if (!($episode instanceof Episode)) {
+            return null;
+        }
+        $newTorrent = new EpisodeTorrent();
+        $newTorrent->setEpisode($episode);
+        return $this->torrentService->findExistOrCreateTorrent(
+            $this->getName(),
+            $topicId,
+            $newTorrent
+        );
     }
 
     protected function langName2IsoCode(string $lang): string
@@ -286,5 +312,24 @@ abstract class AbstractSpider implements SpiderInterface
         ];
 
         return array_search($lang, $languages) ?: 'en';
+    }
+
+    public function approximateSize(string $size): int
+    {
+        preg_match('#([\d.]+)\W*([KMG]?B)#i', $size, $m);
+        if (!$m) {
+            return 0;
+        }
+        $size = (float) $m[1];
+        switch (strtoupper($m[2])) {
+            case 'GB':
+                $size *= 1024;
+            case 'MB':
+                $size *= 1024;
+            case 'KB':
+                $size *= 1024;
+        }
+
+        return (int)$size;
     }
 }

@@ -23,17 +23,13 @@ class Eztv extends AbstractSpider
     /** @var Client */
     private $client;
 
-    /** @var EpisodeService */
-    private $episodeService;
-
-    public function __construct(EpisodeService $episodeService, TorrentService $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
     {
-        parent::__construct($torrentService, $logger);
+        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
         ]);
-        $this->episodeService = $episodeService;
     }
 
     public function getForumKeys(): array

@@ -2,10 +2,7 @@
 
 namespace App\Spider;
 
-use App\Entity\Episode;
 use App\Entity\File;
-use App\Entity\Show;
-use App\Entity\Torrent\EpisodeTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
@@ -16,9 +13,9 @@ use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
-class T1337x extends AbstractSpider
+class TorrentGalaxy extends AbstractSpider
 {
-    public const BASE_URL = 'https://1337x.to/';
+    public const BASE_URL = 'https://torrentgalaxy.to/';
 
     /** @var Client */
     private $client;
@@ -31,15 +28,19 @@ class T1337x extends AbstractSpider
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
-            'cookies' => new FileCookieJar(sys_get_temp_dir() . '/1337x.cookie.json', true)
+            'cookies' => new FileCookieJar(sys_get_temp_dir() . '/torrentgalaxy.cookie.json', true)
         ]);
     }
 
     public function getForumKeys(): array
     {
         return [
-            'Movies',
-            'TV',
+            1, // Movies - SD
+            3, // Movies - 4K UHD
+            42, // Movies - HD
+            5, // Movies - SD
+            6, // TV - Packs
+            41, // Movies - HD
         ];
     }
 
@@ -51,8 +52,14 @@ class T1337x extends AbstractSpider
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
-        $post = $crawler->filter('#description')->first();
-        $title = $crawler->filter('.box-info-heading h1')->first()->text();
+        $panels = $crawler->filter('#panelmain')->each(static function (Crawler $c) { return $c;});
+        foreach ($panels as $panel) {
+            if (strpos($panel->html(), 'Torrent details')) {
+                $post = $panel;
+            }
+        }
+        preg_match('#Torrent details for "(.*?)"#', $post->text(), $m);
+        $title = $m[1];
 
         $imdb = $this->getImdb($post);
 
@@ -66,24 +73,22 @@ class T1337x extends AbstractSpider
 
         $quality = $this->getQuality($post);
 
-        $torrentTable = $crawler->filter('.torrent-detail-page')->first();
-
-        preg_match('#"(magnet[^"]+)"#', $torrentTable->html(), $m);
+        preg_match('#"(magnet[^"]+)"#', $post->html(), $m);
         if (empty($m[1])) {
             $this->logger->warning('Not Magnet torrent', $this->context);
             return;
         }
         $url = $m[1];
 
-        $files = $this->getFiles($crawler);
+        $files = $this->getFiles($post);
 
         $lang = current(array_filter(
-            $crawler->filter('ul.list li')->each(static function (Crawler $c) { return $c;}),
+            $post->filter('div.tprow')->each(static function (Crawler $c) { return $c;}),
             static function (Crawler $c) {
                 return strpos($c->html(), 'Language') !== false;
             }
         ));
-        $lang = $lang->filter('span')->first()->text();
+        $lang = $lang->filter('img')->first()->attr('alt');
 
         if (preg_match('#S(\d\d)E(\d\d)#', $title, $m)) {
             $torrent = $this->getEpisodeTorrentByImdb($topic->id, $imdb, (int)$m[1], (int)$m[2]);
@@ -110,14 +115,19 @@ class T1337x extends AbstractSpider
 
     public function getPage(ForumDto $forum): \Generator
     {
-        $res = $this->client->get("/cat/{$forum->id}/{$forum->page}/");
+        $res = $this->client->get('/torrents.php', [
+            'query' => [
+                'cat' => $forum->id,
+                'page' => $forum->page-1,
+            ]
+        ]);
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
         /** @var Crawler $table */
-        $table = $crawler->filter('.featured-list table');
+        $table = $crawler->filter('div.tgxtable');
         $lines = array_filter(
-            $table->filter('tr')->each(
+            $table->filter('div.tgxtablerow')->each(
                 static function (Crawler $c) {
                     return $c;
                 }
@@ -133,7 +143,7 @@ class T1337x extends AbstractSpider
         foreach ($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
-                $timeString = $line->filter('td.coll-date')->first()->html();
+                $timeString = $line->filter('div.tgxtablecell')->last()->text();
                 try {
                     $time = new \DateTime($timeString);
                 } catch (\Exception $e) {
@@ -143,9 +153,9 @@ class T1337x extends AbstractSpider
                     continue;
                 }
 
-                $seed = $line->filter('td.seeds')->first()->text();
+                $seed = $line->filter('span[title] font')->first()->text();
                 $seed = preg_replace('#[^0-9]#', '', $seed);
-                $leech = $line->filter('td.leeches')->text();
+                $leech = $line->filter('span[title] font')->last()->text();
                 $leech = preg_replace('#[^0-9]#', '', $leech);
 
                 yield new TopicDto(
@@ -163,49 +173,30 @@ class T1337x extends AbstractSpider
             return;
         }
 
-        $pages = $crawler->filter('.pagination');
-        if (strpos($pages->html(), 'Last') !== false) {
-            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
+        $pages = $crawler->filter('#pager');
+        if ($pages->count() === 0) {
+            return;
         }
+        yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
     }
 
     protected function getFiles(Crawler $c): array
     {
-        $crawlerFiles = $c->filter('#files');
-        $files = $crawlerFiles->children('ul')->each(\Closure::fromCallable([$this, 'subTree']));
-        $flat = array();
-        array_walk_recursive($files, function($a) use (&$flat) { $flat[] = $a; });
-        return array_filter($flat);
-    }
-
-    public function subTree(Crawler $c): array
-    {
-        $files = [];
-        if ($c->previousAll()->attr('class') === 'head') {
-            $dir = trim($c->previousAll()->text()) . '/';
-        } else {
-            $dir = '';
-        }
-
-        $subs = $c->children('ul')->each(static function (Crawler $c) { return $c;});
-        foreach($subs as $sub) {
-            $subfiles = $this->subTree($sub);
-            foreach($subfiles as $item) {
-                /** @var File $item */
-                $item->setName($dir . $item->getName());
-                $files[] = $item;
+        $crawlerFiles = $c->filter('#k1');
+        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
+            $col = $c->filter('td.table_col1');
+            if (!$col->count()) {
+                return false;
             }
-        }
+            $name = trim($c->filter('td.table_col1')->html());
+            $size = $this->approximateSize($c->filter('td.table_col2')->text());
+            if (!$size) {
+                return false;
+            }
 
-        $items = $c->children('li')->each(static function (Crawler $c) { return $c;});
-        foreach($items as $item) {
-            preg_match('#(.*?)\((.*?)\)#', $item->text(), $m);
-            $name = trim($m[1]);
-            $size = $this->approximateSize($m[2]);
-            $files[] = new File($dir . $name, $size);
-        }
-
-        return $files;
+            return new File($name, $size);
+        });
+        return array_filter($files);
     }
 
     private function getImdbByTitle(string $titleStr): ?string
@@ -235,7 +226,7 @@ class T1337x extends AbstractSpider
         if (count($match) != 3) {
             preg_match('#^(.*?) (\d{4})#', $titleStr, $match);
         }
-       if (count($match) != 3) {
+        if (count($match) != 3) {
             return null;
         }
         $name = trim($match[1]);
@@ -244,3 +235,4 @@ class T1337x extends AbstractSpider
         return $this->torrentService->searchMovieByTitleAndYear($name, $year);
     }
 }
+

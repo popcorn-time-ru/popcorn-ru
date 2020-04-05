@@ -7,6 +7,7 @@ use App\Entity\Movie;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
+use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
@@ -30,9 +31,9 @@ class NnmClub extends AbstractSpider
 
     private $context;
 
-    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
     {
-        parent::__construct($torrentService, $logger);
+        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,

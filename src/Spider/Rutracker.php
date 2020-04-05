@@ -4,6 +4,7 @@ namespace App\Spider;
 
 use App\Entity\File;
 use App\Entity\Torrent\MovieTorrent;
+use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
@@ -27,9 +28,9 @@ class Rutracker extends AbstractSpider
 
     private $context;
 
-    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
     {
-        parent::__construct($torrentService, $logger);
+        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
