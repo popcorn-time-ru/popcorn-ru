@@ -33,11 +33,17 @@ abstract class AbstractSpider implements SpiderInterface
 
     protected function getQuality(Crawler $post): string
     {
+        if (strpos($post->text(), '2160p')) {
+            return '2160p';
+        }
         if (strpos($post->text(), '1080p')) {
             return '1080p';
         }
         if (strpos($post->text(), '720p')) {
             return '720p';
+        }
+        if (preg_match('#3840\s*[xхXХ*]\s*\d+#u', $post->html())) {
+            return '2160p';
         }
         if (preg_match('#1920\s*[xхXХ*]\s*\d+#u', $post->html())) {
             return '1080p';
