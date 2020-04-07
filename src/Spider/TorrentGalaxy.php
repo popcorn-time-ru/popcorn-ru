@@ -88,7 +88,7 @@ class TorrentGalaxy extends AbstractSpider
                 return strpos($c->html(), 'Language') !== false;
             }
         ));
-        $lang = $lang->filter('img')->first()->attr('alt');
+        $lang = $lang ? $lang->filter('img')->first()->attr('alt') : 'en';
 
         if (preg_match('#S(\d\d)E(\d\d)#', $title, $m)) {
             $torrent = $this->getEpisodeTorrentByImdb($topic->id, $imdb, (int)$m[1], (int)$m[2]);
