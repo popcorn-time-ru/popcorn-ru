@@ -17,19 +17,13 @@ class TestTopicCommand extends Command
     protected static $defaultName = 'test:topic';
 
     /**
-     * @var TmdbExtractor
-     */
-    private $movieInfo;
-
-    /**
      * @var TopicProcessor
      */
     private $processor;
 
-    public function __construct(TmdbExtractor $movieInfo, TopicProcessor $processor)
+    public function __construct(TopicProcessor $processor)
     {
         parent::__construct();
-        $this->movieInfo = $movieInfo;
         $this->processor = $processor;
     }
 

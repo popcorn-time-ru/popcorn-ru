@@ -18,11 +18,6 @@ class TestTorrentCommand extends Command
     protected static $defaultName = 'test:torrent';
 
     /**
-     * @var TmdbExtractor
-     */
-    private $movieInfo;
-
-    /**
      * @var ShowTorrentProcessor
      */
     private $processor;

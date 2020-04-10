@@ -22,7 +22,7 @@ class TorrentService
     private const SYNC_TIMEOUT = 3600 * 24 * 7;
 
     /** @var TmdbExtractor */
-    protected $movieInfo;
+    protected $mediaInfo;
 
     /** @var EntityManagerInterface */
     protected $em;
@@ -42,7 +42,7 @@ class TorrentService
     /**
      * TorrentService constructor.
      *
-     * @param TmdbExtractor          $movieInfo
+     * @param TmdbExtractor          $mediaInfo
      * @param EntityManagerInterface $em
      * @param ProducerInterface      $producer
      * @param TorrentRepository      $torrentRepo
@@ -50,14 +50,14 @@ class TorrentService
      * @param ShowRepository         $showRepo
      */
     public function __construct(
-        TmdbExtractor $movieInfo,
+        TmdbExtractor $mediaInfo,
         EntityManagerInterface $em,
         ProducerInterface $producer,
         TorrentRepository $torrentRepo,
         MovieRepository $movieRepo,
         ShowRepository $showRepo
     ) {
-        $this->movieInfo = $movieInfo;
+        $this->mediaInfo = $mediaInfo;
         $this->torrentRepo = $torrentRepo;
         $this->movieRepo = $movieRepo;
         $this->showRepo = $showRepo;
@@ -67,11 +67,11 @@ class TorrentService
 
     public function searchMovieByTitleAndYear(string $title, int $year)
     {
-        return $this->movieInfo->searchMovieByTitleAndYear($title, $year);
+        return $this->mediaInfo->searchMovieByTitleAndYear($title, $year);
     }
     public function searchShowByTitle(string $title)
     {
-        return $this->movieInfo->searchShowByTitle($title);
+        return $this->mediaInfo->searchShowByTitle($title);
     }
 
     public function getMediaByImdb(string $imdbId): ?BaseMedia
@@ -82,7 +82,7 @@ class TorrentService
         }
 
         if (!$media) {
-            $media = $this->movieInfo->fetchByImdb($imdbId);
+            $media = $this->mediaInfo->fetchByImdb($imdbId);
             if (!$media) {
                 // TODO: log
                 return null;

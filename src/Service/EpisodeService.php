@@ -16,7 +16,7 @@ class EpisodeService
     protected $torrentRepo;
 
     /** @var TmdbExtractor */
-    protected $movieInfo;
+    protected $mediaInfo;
 
     /** @var EntityManagerInterface */
     protected $em;
@@ -28,19 +28,19 @@ class EpisodeService
      * EpisodeService constructor.
      *
      * @param TorrentRepository      $torrentRepo
-     * @param TmdbExtractor          $movieInfo
+     * @param TmdbExtractor          $mediaInfo
      * @param EntityManagerInterface $em
      * @param LocaleService          $localeService
      */
     public function __construct(
         TorrentRepository $torrentRepo,
-        TmdbExtractor $movieInfo,
+        TmdbExtractor $mediaInfo,
         EntityManagerInterface $em,
         LocaleService $localeService
     )
     {
         $this->torrentRepo = $torrentRepo;
-        $this->movieInfo = $movieInfo;
+        $this->mediaInfo = $mediaInfo;
         $this->em = $em;
         $this->localeService = $localeService;
     }
@@ -89,7 +89,7 @@ class EpisodeService
 
         $key = $show->getImdb().':'.$s;
         if (empty($this->showCache[$key])) {
-            $this->showCache[$key] = $this->movieInfo
+            $this->showCache[$key] = $this->mediaInfo
                 ->getSeasonEpisodes($show, $s);
         }
         $found = false;
@@ -114,7 +114,7 @@ class EpisodeService
         $this->em->flush();
 
         if ($this->localeService->needFillEpisode($item)) {
-            $translations = $this->movieInfo->getEpisodeTranslations($show, $s, $e);
+            $translations = $this->mediaInfo->getEpisodeTranslations($show, $s, $e);
             $this->localeService->fillEpisode($item, $translations);
         }
 

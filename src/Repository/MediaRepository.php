@@ -96,7 +96,7 @@ abstract class MediaRepository extends ServiceEntityRepository
                 if ($this instanceof MovieRepository) {
                     $qb->addOrderBy('m.released', $pageRequest->order);
                 } else {
-                    $qb->addOrderBy('m.rating.watching', 'DESC');
+                    $qb->addOrderBy('m.rating.watching', $pageRequest->order);
                 }
                 break;
             case 'trending':
