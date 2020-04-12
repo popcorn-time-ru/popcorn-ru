@@ -1,4 +1,7 @@
 {
+    "alanly/traktor": {
+        "version": "dev-master"
+    },
     "php": {
         "version": "7.3"
     },

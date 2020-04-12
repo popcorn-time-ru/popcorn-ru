@@ -30,6 +30,9 @@ class MediaService
     /** @var TvRepository */
     protected $showRepo;
 
+    /** @var \Traktor\Client */
+    private $trakt;
+
     /** @var Client */
     private $client;
 
@@ -37,13 +40,15 @@ class MediaService
         Client $client,
         MovieRepository $movieRepo,
         TvRepository $showRepo,
-        LocaleService $localeService
+        LocaleService $localeService,
+        \Traktor\Client $trakt
     )
     {
         $this->movieRepo = $movieRepo;
         $this->showRepo = $showRepo;
         $this->client = $client;
         $this->localeService = $localeService;
+        $this->trakt = $trakt;
     }
 
     public function getSeasonEpisodes(Show $show, int $season): array
@@ -237,9 +242,21 @@ class MediaService
      */
     private function fillRating(BaseMedia $media, $info): void
     {
+        try {
+            if ($media instanceof Movie) {
+                $trakt = $this->trakt->get("movies/{$media->getImdb()}/stats");
+            } elseif ($media instanceof Show) {
+                $trakt = $this->trakt->get("shows/{$media->getImdb()}/stats");
+            }
+        } catch (\Exception $e) {
+            $trakt = new \stdClass();
+            $trakt->votes = $info->getVoteCount();
+            $trakt->watchers = $info->getPopularity() * 10000;
+        }
+
         $media->getRating()
-            ->setVotes($info->getVoteCount())
-            ->setWatching($info->getPopularity() * 10000)
+            ->setVotes($trakt->votes)
+            ->setWatching($trakt->watchers)
             ->setPercentage($info->getVoteAverage() * 10)
         ;
     }
