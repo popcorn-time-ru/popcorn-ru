@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Processors\TopicProcessor;
-use App\Service\TmdbExtractor;
+use App\Service\MediaService;
 use Enqueue\Null\NullContext;
 use Interop\Amqp\Impl\AmqpMessage;
 use Symfony\Component\Console\Command\Command;

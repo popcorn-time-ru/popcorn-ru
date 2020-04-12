@@ -8,7 +8,6 @@ use App\Entity\Show;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;
 use Tmdb\Model\Common\Country;
-use Tmdb\Model\Common\GenericCollection;
 use Tmdb\Model\Common\Video;
 use Tmdb\Model\Movie as TmdbMovie;
 use Tmdb\Model\Network;
@@ -16,14 +15,11 @@ use Tmdb\Model\Tv as TmdbShow;
 use Tmdb\Repository\MovieRepository;
 use Tmdb\Repository\TvRepository;
 
-class TmdbExtractor
+class MediaService
 {
     private const US = 'US';
-    private const LOCALE = 'en';
     private const TYPE_TRAILER = 'Trailer';
     public const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
-
-    private const SYNC_TIMEOUT = 3600 * 24 * 7;
 
     /** @var LocaleService */
     protected $localeService;

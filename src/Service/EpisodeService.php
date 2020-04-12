@@ -8,14 +8,13 @@ use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\UuidInterface;
-use Tmdb\Model\Tv\Season;
 
 class EpisodeService
 {
     /** @var TorrentRepository */
     protected $torrentRepo;
 
-    /** @var TmdbExtractor */
+    /** @var MediaService */
     protected $mediaInfo;
 
     /** @var EntityManagerInterface */
@@ -28,13 +27,13 @@ class EpisodeService
      * EpisodeService constructor.
      *
      * @param TorrentRepository      $torrentRepo
-     * @param TmdbExtractor          $mediaInfo
+     * @param MediaService           $mediaInfo
      * @param EntityManagerInterface $em
      * @param LocaleService          $localeService
      */
     public function __construct(
         TorrentRepository $torrentRepo,
-        TmdbExtractor $mediaInfo,
+        MediaService $mediaInfo,
         EntityManagerInterface $em,
         LocaleService $localeService
     )

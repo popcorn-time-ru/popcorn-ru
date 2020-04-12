@@ -9,7 +9,6 @@ use App\Entity\Movie;
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Repository\Locale\EpisodeLocaleRepository;
-use App\Repository\TorrentRepository;
 use Tmdb\Model\Image;
 use Tmdb\Model\Movie as TmdbMovie;
 use Tmdb\Model\Tv as TmdbShow;
@@ -71,12 +70,12 @@ class LocaleService
                     continue;
                 /** @var Image $image */
                 if ($image instanceof Image\PosterImage && $image->getVoteAverage() >= $posterRate) {
-                    $mediaLocale->getImages()->setPoster(TmdbExtractor::IMAGE_BASE . $image->getFilePath());
-                    $mediaLocale->getImages()->setBanner(TmdbExtractor::IMAGE_BASE . $image->getFilePath());
+                    $mediaLocale->getImages()->setPoster(MediaService::IMAGE_BASE . $image->getFilePath());
+                    $mediaLocale->getImages()->setBanner(MediaService::IMAGE_BASE . $image->getFilePath());
                     $posterRate = $image->getVoteAverage();
                 }
                 if ($image instanceof Image\BackdropImage && $image->getVoteAverage() >= $fanartRate) {
-                    $mediaLocale->getImages()->setFanart(TmdbExtractor::IMAGE_BASE . $image->getFilePath());
+                    $mediaLocale->getImages()->setFanart(MediaService::IMAGE_BASE . $image->getFilePath());
                     $fanartRate = $image->getVoteAverage();
                 }
             }

@@ -8,7 +8,7 @@ use App\Entity\Show;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
-use App\Service\TmdbExtractor;
+use App\Service\MediaService;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
@@ -23,7 +23,7 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
 {
     public const TOPIC = 'sync';
 
-    /** @var TmdbExtractor */
+    /** @var MediaService */
     private $extractor;
 
     /** @var ProducerInterface */
@@ -46,7 +46,7 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
 
     public function __construct(
         EntityManagerInterface $em,
-        TmdbExtractor $extractor,
+        MediaService $extractor,
         TorrentRepository $torrentRepository,
         MovieRepository $movieRepository,
         ShowRepository $showRepository,

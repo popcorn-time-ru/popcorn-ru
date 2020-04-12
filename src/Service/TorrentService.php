@@ -4,10 +4,6 @@ namespace App\Service;
 
 use App\Entity\BaseMedia;
 use App\Entity\Torrent\BaseTorrent;
-use App\Entity\File;
-use App\Entity\Movie;
-use App\Entity\Torrent\MovieTorrent;
-use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
 use App\Processors\ShowTorrentProcessor;
 use App\Repository\MovieRepository;
@@ -19,9 +15,7 @@ use Enqueue\Util\JSON;
 
 class TorrentService
 {
-    private const SYNC_TIMEOUT = 3600 * 24 * 7;
-
-    /** @var TmdbExtractor */
+    /** @var MediaService */
     protected $mediaInfo;
 
     /** @var EntityManagerInterface */
@@ -42,7 +36,7 @@ class TorrentService
     /**
      * TorrentService constructor.
      *
-     * @param TmdbExtractor          $mediaInfo
+     * @param MediaService           $mediaInfo
      * @param EntityManagerInterface $em
      * @param ProducerInterface      $producer
      * @param TorrentRepository      $torrentRepo
@@ -50,7 +44,7 @@ class TorrentService
      * @param ShowRepository         $showRepo
      */
     public function __construct(
-        TmdbExtractor $mediaInfo,
+        MediaService $mediaInfo,
         EntityManagerInterface $em,
         ProducerInterface $producer,
         TorrentRepository $torrentRepo,
