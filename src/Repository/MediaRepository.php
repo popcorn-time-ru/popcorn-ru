@@ -88,6 +88,7 @@ abstract class MediaRepository extends ServiceEntityRepository
             $qb->andWhere('m.episodes iS NOT EMPTY');
         }
         switch ($pageRequest->sort) {
+            case 'title':
             case 'name':
                 $qb->addOrderBy('m.title', $pageRequest->order);
                 break;
@@ -97,10 +98,11 @@ abstract class MediaRepository extends ServiceEntityRepository
                 break;
             case 'released':
             case 'updated':
+            case 'last added':
                 if ($this instanceof MovieRepository) {
                     $qb->addOrderBy('m.released', $pageRequest->order);
                 } else {
-                    $qb->addOrderBy('m.rating.watching', $pageRequest->order);
+                    $qb->addOrderBy('m.lastUpdated', $pageRequest->order);
                 }
                 break;
             case 'trending':
