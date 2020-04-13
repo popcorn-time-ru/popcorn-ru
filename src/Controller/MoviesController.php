@@ -19,6 +19,7 @@ class MoviesController extends AbstractController
     const PAGE_SIZE = 50;
 
     const CACHE = 3600 * 12;
+
     /**
      * @var MovieRepository
      */

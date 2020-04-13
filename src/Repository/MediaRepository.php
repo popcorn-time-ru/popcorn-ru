@@ -10,6 +10,7 @@ use App\Repository\Locale\BaseLocaleRepository;
 use App\Request\PageRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @method BaseMedia|null find($id, $lockMode = null, $lockVersion = null)
@@ -120,5 +121,21 @@ abstract class MediaRepository extends ServiceEntityRepository
         $qb->setFirstResult($offset)->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function getRandom(): BaseMedia
+    {
+        $uuid = Uuid::uuid4();
+        $media = $this->createQueryBuilder('m')
+            ->where('m.id > :uuid')->setParameter('uuid', $uuid)
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
+        if (!$media) {
+            $media = $this->createQueryBuilder('m')
+                ->setMaxResults(1)
+                ->getQuery()->getOneOrNullResult();
+        }
+
+        return $media;
     }
 }
