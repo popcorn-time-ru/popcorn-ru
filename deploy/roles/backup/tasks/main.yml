@@ -13,12 +13,14 @@
       content: |
         [client]
         password=""
+
+#     - name: .megarc
+#       content: |
+#         [Login]
+#         Username = <email>
+#         Password = <password>
+
 # TODO: i know about vault
-#    - name: .megarc
-#      content: |
-#        [Login]
-#        Username = <email>
-#        Password = <password>
 
 - name: backup config file
   copy:
