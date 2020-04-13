@@ -3,7 +3,6 @@
 namespace App\Spider;
 
 use App\Entity\File;
-use App\Entity\Torrent\MovieTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
@@ -120,7 +119,7 @@ class Rutor extends AbstractSpider
         }
         $fileListId = $m[1];
 
-        $post = $crawler->filter('#details')->first();
+        $post = $crawler->filter('#details tr')->first();
         $title = $crawler->filter('#all h1')->first()->text();
 
         $imdb = $this->getImdb($post);
