@@ -13,3 +13,6 @@ innodb_log_file_size        = 32M
 
 max_connections             = 10
 query_cache_size            = 0
+
+tmp_table_size              = 16M
+max_heap_table_size         = 16M
