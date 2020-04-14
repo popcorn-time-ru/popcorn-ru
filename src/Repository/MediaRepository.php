@@ -80,7 +80,7 @@ abstract class MediaRepository extends ServiceEntityRepository
                 ->setParameters([
                     'ids' => $mediaIds,
                     'imdb' => $pageRequest->keywords,
-                    'title' => '%'.$pageRequest->keywords.'%',
+                    'title' => '%'.str_replace('%', '%%', $pageRequest->keywords).'%',
                 ]);
         }
         $qb->andWhere('m.existTranslations LIKE :locale')
