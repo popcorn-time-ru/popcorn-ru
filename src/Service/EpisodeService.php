@@ -100,18 +100,18 @@ class EpisodeService
         $found = false;
         foreach ($this->showCache[$key] as $episodeInfo) {
             if ($episodeInfo['episode_number'] == $e) {
-                try {
-                    $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
-                    $tvdb = $trakt->ids->tvdb;
-                } catch (\Exception $e) {
-                    $tvdb = 0;
+                if (!$item->getTvdb()) {
+                    try {
+                        $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
+                        $item->setTvdb($trakt->ids->tvdb);
+                    } catch (\Exception $e) {
+                    }
                 }
 
                 $item
                     ->setTitle($episodeInfo['name'] ?: '')
                     ->setOverview($episodeInfo['overview'] ?: '')
                     ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
-                    ->setTvdb($tvdb)
                 ;
                 $found = true;
             }
