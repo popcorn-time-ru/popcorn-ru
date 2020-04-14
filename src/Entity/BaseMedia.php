@@ -61,6 +61,7 @@ abstract class BaseMedia
             $this->existTranslations[] = $translations;
         }
         $this->existTranslations = array_filter($this->existTranslations);
+        sort($this->existTranslations);
         return $this;
     }
 
