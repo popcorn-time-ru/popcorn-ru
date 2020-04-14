@@ -23,6 +23,9 @@ class EpisodeService
     /** @var LocaleService */
     protected $localeService;
 
+    /** @var \Traktor\Client */
+    private $trakt;
+
     /**
      * EpisodeService constructor.
      *
@@ -30,18 +33,21 @@ class EpisodeService
      * @param MediaService           $mediaInfo
      * @param EntityManagerInterface $em
      * @param LocaleService          $localeService
+     * @param \Traktor\Client        $trakt
      */
     public function __construct(
         TorrentRepository $torrentRepo,
         MediaService $mediaInfo,
         EntityManagerInterface $em,
-        LocaleService $localeService
+        LocaleService $localeService,
+        \Traktor\Client $trakt
     )
     {
         $this->torrentRepo = $torrentRepo;
         $this->mediaInfo = $mediaInfo;
         $this->em = $em;
         $this->localeService = $localeService;
+        $this->trakt = $trakt;
     }
 
     public function link(UuidInterface $torrentId): void
@@ -94,12 +100,18 @@ class EpisodeService
         $found = false;
         foreach ($this->showCache[$key] as $episodeInfo) {
             if ($episodeInfo['episode_number'] == $e) {
+                try {
+                    $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
+                    $tvdb = $trakt->ids->tvdb;
+                } catch (\Exception $e) {
+                    $tvdb = 0;
+                }
+
                 $item
                     ->setTitle($episodeInfo['name'] ?: '')
                     ->setOverview($episodeInfo['overview'] ?: '')
                     ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
-                    ->setTvdb($episodeInfo['id'] ?? random_int(100000, 1000000))
-                    // TODO: нужно откуда-то все дергать, смотрим что реально нужно клиенту
+                    ->setTvdb($tvdb)
                 ;
                 $found = true;
             }
