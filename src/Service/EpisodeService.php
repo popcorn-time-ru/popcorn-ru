@@ -7,6 +7,7 @@ use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class EpisodeService
@@ -26,6 +27,9 @@ class EpisodeService
     /** @var \Traktor\Client */
     private $trakt;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * EpisodeService constructor.
      *
@@ -33,6 +37,7 @@ class EpisodeService
      * @param MediaService           $mediaInfo
      * @param EntityManagerInterface $em
      * @param LocaleService          $localeService
+     * @param LoggerInterface        $logger
      * @param \Traktor\Client        $trakt
      */
     public function __construct(
@@ -40,6 +45,7 @@ class EpisodeService
         MediaService $mediaInfo,
         EntityManagerInterface $em,
         LocaleService $localeService,
+        LoggerInterface $logger,
         \Traktor\Client $trakt
     )
     {
@@ -48,6 +54,7 @@ class EpisodeService
         $this->em = $em;
         $this->localeService = $localeService;
         $this->trakt = $trakt;
+        $this->logger = $logger;
     }
 
     public function link(UuidInterface $torrentId): void
@@ -104,7 +111,8 @@ class EpisodeService
                     try {
                         $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
                         $item->setTvdb($trakt->ids->tvdb);
-                    } catch (\Exception $e) {
+                    } catch (\Exception $exception) {
+                        $this->logger->error($exception->getMessage());
                     }
                 }
 

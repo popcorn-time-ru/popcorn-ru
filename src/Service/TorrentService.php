@@ -12,6 +12,7 @@ use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
+use Psr\Log\LoggerInterface;
 
 class TorrentService
 {
@@ -33,6 +34,9 @@ class TorrentService
     /** @var ProducerInterface */
     private $producer;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * TorrentService constructor.
      *
@@ -42,6 +46,7 @@ class TorrentService
      * @param TorrentRepository      $torrentRepo
      * @param MovieRepository        $movieRepo
      * @param ShowRepository         $showRepo
+     * @param LoggerInterface        $logger
      */
     public function __construct(
         MediaService $mediaInfo,
@@ -49,7 +54,8 @@ class TorrentService
         ProducerInterface $producer,
         TorrentRepository $torrentRepo,
         MovieRepository $movieRepo,
-        ShowRepository $showRepo
+        ShowRepository $showRepo,
+        LoggerInterface $logger
     ) {
         $this->mediaInfo = $mediaInfo;
         $this->torrentRepo = $torrentRepo;
@@ -57,6 +63,7 @@ class TorrentService
         $this->showRepo = $showRepo;
         $this->producer = $producer;
         $this->em = $em;
+        $this->logger = $logger;
     }
 
     public function searchMovieByTitleAndYear(string $title, int $year)
@@ -78,7 +85,7 @@ class TorrentService
         if (!$media) {
             $media = $this->mediaInfo->fetchByImdb($imdbId);
             if (!$media) {
-                // TODO: log
+                $this->logger->warning('Not found media', ['imdb' => $imdbId]);
                 return null;
             }
             $media->sync();
