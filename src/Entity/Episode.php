@@ -109,7 +109,7 @@ class Episode
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $tvdb;
+    protected $tvdb = 0;
     public function getTvdb() { return $this->tvdb; }
     public function setTvdb($tvdb) { $this->tvdb = $tvdb; return $this;}
 
