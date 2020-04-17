@@ -11,12 +11,13 @@ class PageParamConverter implements ParamConverterInterface
     /** @var array */
     private $extractLocales;
 
-    /**
-     * @param array $extractLocales
-     */
-    public function __construct(array $extractLocales)
+    /** @var string */
+    private $defaultLocale;
+
+    public function __construct(array $extractLocales, string $defaultLocale)
     {
         $this->extractLocales = $extractLocales;
+        $this->defaultLocale = $defaultLocale;
     }
 
     public function apply(Request $request, ParamConverter $configuration)
@@ -30,9 +31,9 @@ class PageParamConverter implements ParamConverterInterface
         }
         $pageRequest->genre = $genre === 'all' ? '' : $genre;
         $pageRequest->keywords = $request->query->get('keywords', '');
-        $pageRequest->locale = $request->query->get('locale', 'en');
+        $pageRequest->locale = $request->query->get('locale', $this->defaultLocale);
         if (!in_array($pageRequest->locale, $this->extractLocales)) {
-            $pageRequest->locale = 'en';
+            $pageRequest->locale = $this->defaultLocale;
         }
         $pageRequest->sort = $request->query->get('sort', '');
         $order = (int) $request->query->get('order', -1);
