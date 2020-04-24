@@ -45,11 +45,9 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
             $file = null;
             foreach ($torrent->getFiles() as $torrentFile) {
-                foreach ($object->getFiles() as $objectFile) {
-                    if ($objectFile->getId() === $torrentFile->getId()) {
-                        $file = $objectFile;
-                        break 2;
-                    }
+                if ($torrentFile->isEpisode($object)) {
+                    $file = $torrentFile;
+                    break;
                 }
             }
 

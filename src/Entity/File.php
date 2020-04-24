@@ -81,4 +81,7 @@ class File
         }
         $this->episodes->removeElement($episode);
     }
+    public function isEpisode(Episode $episode) {
+        return $this->episodes->contains($episode);
+    }
 }
