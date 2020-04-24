@@ -58,6 +58,14 @@ abstract class BaseTorrent
         return $lastSyncInterval->days < 1;
     }
 
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    protected $active = true;
+    public function getActive() { return $this->active; }
+    public function setActive($active) { $this->active = $active; return $this;}
+
     public function setFiles(array $files) {
         /** @var File[] $files */
         $size = 0;

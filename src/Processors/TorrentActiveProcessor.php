@@ -2,9 +2,8 @@
 
 namespace App\Processors;
 
-use App\Entity\Torrent\ShowTorrent;
 use App\Service\EpisodeService;
-use Enqueue\Client\ProducerInterface;
+use App\Service\TorrentService;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
 use GuzzleHttp\Exception\GuzzleException;
@@ -14,18 +13,15 @@ use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
+class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
 {
-    public const TOPIC = 'linkShowTorrent';
+    public const TOPIC = 'torrentActive';
 
-    /** @var EpisodeService */
-    protected $episodes;
+    /** @var TorrentService */
+    private $torrentService;
 
     /** @var LoggerInterface */
     private $logger;
-
-    /** @var ProducerInterface */
-    private $producer;
 
     /**
      * ShowTorrentProducer constructor.
@@ -33,11 +29,10 @@ class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
      * @param EpisodeService  $episodes
      * @param LoggerInterface $logger
      */
-    public function __construct(EpisodeService $episodes, ProducerInterface $producer, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
     {
-        $this->episodes = $episodes;
+        $this->torrentService = $torrentService;
         $this->logger = $logger;
-        $this->producer = $producer;
     }
 
     public function process(Message $message, Context $context)
@@ -49,8 +44,7 @@ class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
                 return self::REJECT;
             }
             $id = Uuid::fromString($data['torrentId']);
-            $this->episodes->link($id);
-            $this->producer->sendEvent(ShowTorrentProcessor::TOPIC, $message);
+            $this->torrentService->updateActive($id);
 
             return self::ACK;
         } catch (GuzzleException $e) {

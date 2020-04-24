@@ -6,6 +6,7 @@ use App\Entity\BaseMedia;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\ShowTorrent;
 use App\Processors\ShowTorrentProcessor;
+use App\Processors\TorrentActiveProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
@@ -13,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
 
 class TorrentService
 {
@@ -119,16 +121,21 @@ class TorrentService
     public function updateTorrent(BaseTorrent $torrent)
     {
         $torrent->sync();
+        $torrent->setActive(true);
         $this->em->flush();
 
         $torrent->getMedia()->addExistTranslation($torrent->getLanguage());
         $this->em->flush();
 
-        if ($torrent instanceof ShowTorrent) {
-            $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
-                'torrentId' => $torrent->getId()->toString(),
-            ]));
-            $this->producer->sendEvent(ShowTorrentProcessor::TOPIC, $torrentMessage);
-        }
+        $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
+            'torrentId' => $torrent->getId()->toString(),
+        ]));
+        $topic = $torrent instanceof ShowTorrent ? ShowTorrentProcessor::TOPIC : TorrentActiveProcessor::TOPIC;
+        $this->producer->sendEvent($topic, $torrentMessage);
+    }
+
+    public function updateActive(UuidInterface $torrentId)
+    {
+        $torrent = $this->torrentRepo->find($torrentId);
     }
 }
