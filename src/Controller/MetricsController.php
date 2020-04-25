@@ -58,9 +58,13 @@ class MetricsController
         $content.= '# TYPE app_shows_all gauge'.PHP_EOL;
         $content.= 'app_shows_all '.$this->show->count([]).PHP_EOL;
 
-        $content.= '# Help app_torrent_all All Torrents count'.PHP_EOL;
-        $content.= '# TYPE app_torrent_all gauge'.PHP_EOL;
-        $content.= 'app_torrent_all '.$this->torrent->count([]).PHP_EOL;
+        $content.= '# Help app_torrent_active Active Torrents count'.PHP_EOL;
+        $content.= '# TYPE app_torrent_active gauge'.PHP_EOL;
+        $content.= 'app_torrent_active '.$this->torrent->count(['active' => true]).PHP_EOL;
+
+        $content.= '# Help app_torrent_inactive Inactive Torrents count'.PHP_EOL;
+        $content.= '# TYPE app_torrent_inactive gauge'.PHP_EOL;
+        $content.= 'app_torrent_inactive '.$this->torrent->count(['active' => false]).PHP_EOL;
 
         $content.= '# Help app_torrent Torrents by provider count'.PHP_EOL;
         $content.= '# TYPE app_torrent gauge'.PHP_EOL;
