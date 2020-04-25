@@ -4,6 +4,7 @@ namespace App\Serializer\Normalizer;
 
 use App\Entity\Episode;
 use App\Entity\Show;
+use App\Repository\TorrentRepository;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -13,9 +14,12 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 {
     private $normalizer;
 
-    public function __construct(ObjectNormalizer $normalizer)
+    /** @var TorrentRepository */
+    private $torrents;
+
+    public function __construct(TorrentRepository $torrents)
     {
-        $this->normalizer = $normalizer;
+        $this->torrents = $torrents;
     }
 
     public function setNormalizer(NormalizerInterface $normalizer)
@@ -31,18 +35,11 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
         $torrents = [];
         $locale = $context['locale'] ?? 'en';
-        foreach ($object->getTorrents() as $torrent) {
-            if ($torrent->getLanguage() !== $locale) {
-                continue;
-            }
+        foreach ($this->torrents->getEpisodeTorrents($object, $locale) as $torrent) {
             $torrents[$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
-        foreach ($object->getShow()->getTorrents() as $torrent) {
-            if ($torrent->getLanguage() !== $locale) {
-                continue;
-            }
-
+        foreach ($this->torrents->getMediaTorrents($object->getShow(), $locale) as $torrent) {
             $file = null;
             foreach ($torrent->getFiles() as $torrentFile) {
                 if ($torrentFile->isEpisode($object)) {

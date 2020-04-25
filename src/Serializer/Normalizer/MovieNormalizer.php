@@ -3,6 +3,7 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Movie;
+use App\Repository\TorrentRepository;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -12,9 +13,12 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
 {
     private $normalizer;
 
-    public function __construct(ObjectNormalizer $normalizer)
+    /** @var TorrentRepository */
+    private $torrents;
+
+    public function __construct(TorrentRepository $torrents)
     {
-        $this->normalizer = $normalizer;
+        $this->torrents = $torrents;
     }
 
     public function setNormalizer(NormalizerInterface $normalizer)
@@ -30,10 +34,7 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         $torrents = [];
         // force english
         $locale = $context['locale'] ?? 'en';
-        foreach ($object->getTorrents() as $torrent) {
-            if ($torrent->getLanguage() !== $locale) {
-                continue;
-            }
+        foreach ($this->torrents->getMediaTorrents($object, $locale) as $torrent) {
             $torrents[$locale][$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
