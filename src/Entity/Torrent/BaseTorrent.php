@@ -37,6 +37,12 @@ abstract class BaseTorrent
     }
 
     /**
+     * @var string
+     * @ORM\Column(type="uuid")
+     */
+    protected $mediaId;
+
+    /**
      * @var \DateTime
      * @ORM\Column(type="datetime")
      */

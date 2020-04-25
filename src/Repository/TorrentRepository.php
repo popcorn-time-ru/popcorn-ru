@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\BaseMedia;
+use App\Entity\Episode;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Torrent\ShowTorrent;
@@ -62,6 +64,42 @@ class TorrentRepository extends ServiceEntityRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param BaseMedia $media
+     * @param string    $language
+     * @param bool      $onlyActive
+     * @return BaseTorrent[]
+     */
+    public function getMediaTorrents(BaseMedia $media, string $language, bool $onlyActive = true): array
+    {
+        $qb = $this->createQueryBuilder('t');
+        $qb->where('t.mediaId = :media')->setParameter('media', $media->getId());
+        $qb->andWhere('t.language = :lang')->setParameter('lang', $language);
+        if ($onlyActive) {
+            $qb->andWhere('t.active = true');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Episode $episode
+     * @param string  $language
+     * @param bool    $onlyActive
+     * @return BaseTorrent[]
+     */
+    public function getEpisodeTorrents(Episode $episode, string $language, bool $onlyActive = true): array
+    {
+        $qb = $this->createQueryBuilder('t');
+        $qb->where('t.mediaId = :media')->setParameter('media', $episode->getId());
+        $qb->andWhere('t.language = :lang')->setParameter('lang', $language);
+        if ($onlyActive) {
+            $qb->andWhere('t.active = true');
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

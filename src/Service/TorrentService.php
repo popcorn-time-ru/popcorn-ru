@@ -3,7 +3,10 @@
 namespace App\Service;
 
 use App\Entity\BaseMedia;
+use App\Entity\Movie;
+use App\Entity\Show;
 use App\Entity\Torrent\BaseTorrent;
+use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Torrent\ShowTorrent;
 use App\Processors\ShowTorrentProcessor;
 use App\Processors\TorrentActiveProcessor;
@@ -137,5 +140,68 @@ class TorrentService
     public function updateActive(UuidInterface $torrentId)
     {
         $torrent = $this->torrentRepo->find($torrentId);
+        if ($torrent instanceof MovieTorrent) {
+            $this->selectActiveForMovie($torrent->getMedia(), $torrent->getLanguage());
+        } else {
+            $this->selectActiveForShow($torrent->getMedia(), $torrent->getLanguage());
+        }
+        $this->torrentRepo->flush();
+    }
+
+    protected function selectActiveForMovie(Movie $movie, string $language, bool $onlyActive = true)
+    {
+        /** @var BaseTorrent[] $active */
+        $active = [];
+        foreach ($this->torrentRepo->getMediaTorrents($movie, $language, $onlyActive) as $torrent) {
+            $torrent->setActive(false);
+            if (empty($active[$torrent->getQuality()])
+                || $active[$torrent->getQuality()]->getPeer() < $torrent->getPeer()) {
+                $active[$torrent->getQuality()] = $torrent;
+            }
+        }
+        /** @var BaseTorrent[] $all */
+        foreach ($active as $q => $t) {
+            $t->setActive(true);
+        }
+    }
+
+    protected function selectActiveForShow(Show $show, string $language, bool $onlyActive = true)
+    {
+        /** @var BaseTorrent[][] $active */
+        $active = [];
+        foreach ($show->getEpisodes() as $episode) {
+            $key = $episode->getSeason() . ':' . $episode->getEpisode();
+            foreach ($this->torrentRepo->getEpisodeTorrents($episode, $language, $onlyActive) as $torrent) {
+                $torrent->setActive(false);
+                if (empty($active[$key][$torrent->getQuality()])
+                    || $active[$key][$torrent->getQuality()]->getPeer() < $torrent->getPeer()) {
+                    $active[$key][$torrent->getQuality()] = $torrent;
+                }
+            }
+            foreach ($this->torrentRepo->getMediaTorrents($show, $language, $onlyActive) as $torrent) {
+                $torrent->setActive(false);
+                $file = null;
+                foreach ($torrent->getFiles() as $torrentFile) {
+                    if ($torrentFile->isEpisode($episode)) {
+                        $file = $torrentFile;
+                        break;
+                    }
+                }
+
+                if (!$file) {
+                    continue;
+                }
+                if (empty($active[$key][$torrent->getQuality()])
+                    || $active[$key][$torrent->getQuality()]->getPeer() < $torrent->getPeer()) {
+                    $active[$key][$torrent->getQuality()] = $torrent;
+                }
+            }
+        }
+        /** @var BaseTorrent[] $all */
+        foreach ($active as $key => $ql) {
+            foreach ($ql as $q => $t) {
+                $t->setActive(true);
+            }
+        }
     }
 }
