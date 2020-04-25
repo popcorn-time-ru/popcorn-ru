@@ -50,7 +50,7 @@ class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
             }
             $id = Uuid::fromString($data['torrentId']);
             $this->episodes->link($id);
-            $this->producer->sendEvent(ShowTorrentProcessor::TOPIC, $message);
+            $this->producer->sendEvent(ShowTorrentProcessor::TOPIC, JSON::encode($data));
 
             return self::ACK;
         } catch (GuzzleException $e) {
