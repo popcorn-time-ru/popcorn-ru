@@ -26,7 +26,7 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
     /**
      * ShowTorrentProducer constructor.
      *
-     * @param EpisodeService  $episodes
+     * @param TorrentService  $torrentService
      * @param LoggerInterface $logger
      */
     public function __construct(TorrentService $torrentService, LoggerInterface $logger)
