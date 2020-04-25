@@ -58,6 +58,10 @@ class TorrentGalaxy extends AbstractSpider
                 $post = $panel;
             }
         }
+        if (!$post) {
+            $this->logger->info('empty torrent details', $this->context);
+            return;
+        }
         preg_match('#Torrent details for "(.*?)"#', $post->text(), $m);
         $title = $m[1];
 
