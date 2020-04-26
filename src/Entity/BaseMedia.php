@@ -116,7 +116,7 @@ abstract class BaseMedia
      */
     protected $genres;
     public function getGenres() { return $this->genres; }
-    public function setGenres($genres) { $this->genres = $genres; return $this;}
+    public function setGenres($genres) { $this->genres = $genres; sort($this->genres); return $this;}
 
     /**
      * @var Images
