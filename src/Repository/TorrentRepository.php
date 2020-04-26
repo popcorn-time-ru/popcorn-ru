@@ -5,12 +5,9 @@ namespace App\Repository;
 use App\Entity\BaseMedia;
 use App\Entity\Episode;
 use App\Entity\Torrent\BaseTorrent;
-use App\Entity\Torrent\MovieTorrent;
-use App\Entity\Torrent\ShowTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMapping;
-use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method BaseTorrent|null find($id, $lockMode = null, $lockVersion = null)

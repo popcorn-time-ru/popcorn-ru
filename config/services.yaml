@@ -41,6 +41,7 @@ services:
     Tmdb\Client: '@tmdb.client'
     Tmdb\Repository\MovieRepository: '@tmdb.movie_repository'
     Tmdb\Repository\TvRepository: '@tmdb.tv_repository'
+    Tmdb\Repository\GenreRepository: '@tmdb.genre_repository'
     Traktor\Client:
         calls:
             - [setApiKey, ['%env(resolve:TRAKT_KEY)%']]

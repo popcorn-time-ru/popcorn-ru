@@ -1,6 +1,7 @@
 0 0 1 */3 * cd {{ path }} && bin/console spider:run --all
 0 0 * * * cd {{ path }} && bin/console spider:run --all --last=48
 
+0 8 * * 1 cd {{ path }} && bin/console stat:update
 0 * * * * cd {{ path }} && bin/console sync:old 180 500
 0 23 * * * cd {{ path }} && bin/console cache:clear
 

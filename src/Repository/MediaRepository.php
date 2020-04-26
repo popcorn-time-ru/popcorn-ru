@@ -138,4 +138,12 @@ abstract class MediaRepository extends ServiceEntityRepository
 
         return $media;
     }
+
+    public function getGenreStatistics(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m.existTranslations, m.genres, COUNT(m) as c')
+            ->groupBy('m.existTranslations, m.genres')
+            ->getQuery()->getResult();
+    }
 }

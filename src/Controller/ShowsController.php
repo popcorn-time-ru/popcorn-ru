@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Repository\MediaStatRepository;
 use App\Repository\ShowRepository;
 use App\Request\PageRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,18 +19,21 @@ class ShowsController extends AbstractController
     const PAGE_SIZE = 50;
 
     const CACHE = 3600 * 12;
-    /**
-     * @var ShowRepository
-     */
+
+    /** @var ShowRepository */
     protected $repo;
+
+    /** @var MediaStatRepository */
+    private $statRepo;
 
     /** @var string */
     private $defaultLocale;
 
-    public function __construct(ShowRepository $repo, string $defaultLocale)
+    public function __construct(ShowRepository $repo, MediaStatRepository $statRepo, string $defaultLocale)
     {
         $this->repo = $repo;
         $this->defaultLocale = $defaultLocale;
+        $this->statRepo = $statRepo;
     }
 
     /**
@@ -44,6 +49,26 @@ class ShowsController extends AbstractController
         }
 
         return $this->resp(json_encode($links, JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
+     * @Route("/shows/stat", name="shows_stat")
+     */
+    public function stat(Request $r)
+    {
+        $locale = $r->query->get('locale', $this->defaultLocale);
+        $stat = $this->statRepo->getByTypeAndLang('show', $locale);
+        $data = [];
+        foreach ($stat as $s) {
+            $data[$s->getGenre()] = [
+                'count' => $s->getCount(),
+                'title' => $s->getTitle(),
+            ];
+        }
+
+        return (new JsonResponse($data, 200))
+            ->setEncodingOptions(JSON_UNESCAPED_UNICODE)
+            ->setSharedMaxAge(self::CACHE);
     }
 
     /**
