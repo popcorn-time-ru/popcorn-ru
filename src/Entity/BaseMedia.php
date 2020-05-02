@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Entity\Locale\BaseLocale;
 use App\Entity\Locale\EpisodeLocale;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
 use Doctrine\ORM\Mapping as ORM;
+use Generator;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -65,6 +67,9 @@ abstract class BaseMedia
         return $this;
     }
 
+    /**
+     * @return BaseTorrent[]
+     */
     abstract public function getTorrents();
     abstract public function getLocales();
     public function getLocale(string $locale): ?BaseLocale {
@@ -75,6 +80,19 @@ abstract class BaseMedia
         }
 
         return null;
+    }
+
+    /**
+     * @param string $locale
+     * @return BaseTorrent[]&Generator
+     */
+    public function getLocaleTorrents(string $locale)
+    {
+        foreach ($this->getTorrents() as $torrent) {
+            if ($torrent->getLanguage() == $locale) {
+                yield $torrent;
+            }
+        }
     }
 
     //<editor-fold desc="Api Data">

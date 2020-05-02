@@ -3,6 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\File;
+use App\Entity\Torrent\BaseTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
@@ -30,6 +31,11 @@ class TorrentGalaxy extends AbstractSpider
             RequestOptions::TIMEOUT => 10,
             'cookies' => new FileCookieJar(sys_get_temp_dir() . '/torrentgalaxy.cookie.json', true)
         ]);
+    }
+
+    public function getSource(BaseTorrent $torrent): string
+    {
+        return self::BASE_URL . ltrim($torrent->getProviderExternalId(), '/');
     }
 
     public function getForumKeys(): array

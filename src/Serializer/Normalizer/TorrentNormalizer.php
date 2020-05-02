@@ -5,17 +5,27 @@ namespace App\Serializer\Normalizer;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Torrent\ShowTorrent;
+use App\Service\SpiderSelector;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
+    /**
+     * @var SpiderSelector
+     */
+    private $spiderSelector;
+
+    /**
+     * @var ObjectNormalizer
+     */
     private $normalizer;
 
-    public function __construct(ObjectNormalizer $normalizer)
+    public function __construct(ObjectNormalizer $normalizer, SpiderSelector $spiderSelector)
     {
         $this->normalizer = $normalizer;
+        $this->spiderSelector = $spiderSelector;
     }
 
     public function normalize($object, $format = null, array $context = array()): array
@@ -29,6 +39,11 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
             'peers' => $object->getPeer(),
             'provider' => $object->getProvider(),
         ];
+        if ($context['mode'] === 'list') {
+            $data['title'] = $object->getProviderTitle();
+            $provider = $this->spiderSelector->get($object->getProvider());
+            $data['source'] = $provider ? $provider->getSource($object) : '';
+        }
 
         if ($object instanceof ShowTorrent) {
             if (!empty($context['file'])) {

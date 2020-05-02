@@ -4,6 +4,7 @@ namespace App\Spider;
 
 use App\Entity\File;
 use App\Entity\Movie;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
@@ -38,6 +39,11 @@ class NnmClub extends AbstractSpider
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
         ]);
+    }
+
+    public function getSource(BaseTorrent $torrent): string
+    {
+        return self::BASE_URL . 'viewtopic.php?t='.$torrent->getProviderExternalId();
     }
 
     public function getForumKeys(): array

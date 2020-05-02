@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Show;
 use App\Repository\MediaStatRepository;
 use App\Repository\ShowRepository;
 use App\Request\PageRequest;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -97,6 +99,9 @@ class ShowsController extends AbstractController
     public function show($id, Request $r, SerializerInterface $serializer)
     {
         $show = $this->repo->findByImdb($id);
+        if (!$show) {
+            throw new NotFoundHttpException();
+        }
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
@@ -104,6 +109,27 @@ class ShowsController extends AbstractController
             'locale' => $r->query->get('locale', $this->defaultLocale),
         ];
         $data = $serializer->serialize($show, 'json', $context);
+
+        return $this->resp($data);
+    }
+
+
+    /**
+     * @Route("/show/{id}/torrents", name="show_torrents")
+     */
+    public function torrents($id, Request $r, SerializerInterface $serializer)
+    {
+        $show = $this->repo->findByImdb($id);
+        if (!$show) {
+            throw new NotFoundHttpException();
+        }
+
+        $locale = $r->query->get('locale', $this->defaultLocale);
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+        ];
+        $data = $serializer->serialize($show->getLocaleTorrents($locale), 'json', $context);
 
         return $this->resp($data);
     }

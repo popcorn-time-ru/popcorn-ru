@@ -3,6 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\File;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
@@ -36,6 +37,11 @@ class Rutracker extends AbstractSpider
             RequestOptions::TIMEOUT => 10,
             'cookies' => new FileCookieJar(sys_get_temp_dir() . '/rutracker.cookie.json', true)
         ]);
+    }
+
+    public function getSource(BaseTorrent $torrent): string
+    {
+        return self::BASE_URL . 'viewtopic.php?t='.$torrent->getProviderExternalId();
     }
 
     public function getForumKeys(): array

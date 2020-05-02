@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -99,6 +100,9 @@ class MoviesController extends AbstractController
     public function movie($id, Request $r, SerializerInterface $serializer)
     {
         $movie = $this->repo->findByImdb($id);
+        if (!$movie) {
+            throw new NotFoundHttpException();
+        }
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
@@ -106,6 +110,26 @@ class MoviesController extends AbstractController
             'locale' => $r->query->get('locale', $this->defaultLocale),
         ];
         $data = $serializer->serialize($movie, 'json', $context);
+
+        return $this->resp($data);
+    }
+
+    /**
+     * @Route("/movie/{id}/torrents", name="movie_torrents")
+     */
+    public function torrents($id, Request $r, SerializerInterface $serializer)
+    {
+        $movie = $this->repo->findByImdb($id);
+        if (!$movie) {
+            throw new NotFoundHttpException();
+        }
+
+        $locale = $r->query->get('locale', $this->defaultLocale);
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+        ];
+        $data = $serializer->serialize($movie->getLocaleTorrents($locale), 'json', $context);
 
         return $this->resp($data);
     }

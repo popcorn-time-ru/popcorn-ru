@@ -3,6 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\File;
+use App\Entity\Torrent\BaseTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
@@ -36,6 +37,11 @@ class Rutor extends AbstractSpider
                 ],
             ]
         );
+    }
+
+    public function getSource(BaseTorrent $torrent): string
+    {
+        return self::BASE_URL . $torrent->getProviderExternalId();
     }
 
     public function getForumKeys(): array

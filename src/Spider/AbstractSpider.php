@@ -4,6 +4,7 @@ namespace App\Spider;
 
 use App\Entity\Episode;
 use App\Entity\Movie;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
@@ -36,6 +37,11 @@ abstract class AbstractSpider implements SpiderInterface
     public function getName(): string
     {
         return (new ReflectionClass($this))->getShortName();
+    }
+
+    public function getSource(BaseTorrent $torrent): string
+    {
+        return '';
     }
 
     protected function getQuality(Crawler $post): string

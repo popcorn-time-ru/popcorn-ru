@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use App\Entity\Locale\MovieLocale;
 use App\Entity\Locale\ShowLocale;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\ShowTorrent;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Generator;
 
 /**
  * @ORM\Table(name="shows")
@@ -25,10 +27,25 @@ class Show extends BaseMedia
     /**
      * @var ShowTorrent[]&Collection
      * @ORM\OneToMany(targetEntity="App\Entity\Torrent\ShowTorrent", fetch="EAGER", mappedBy="show")
-     * @ORM\OrderBy({"peer" = "ASC"})
+     * @ORM\OrderBy({"peer" = "DESC"})
      */
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
+
+    /**
+     * @param string $locale
+     * @return BaseTorrent[]&Generator
+     */
+    public function getLocaleTorrents(string $locale) {
+        yield from parent::getLocaleTorrents($locale);
+        foreach ($this->getEpisodes() as $episode) {
+            foreach ($episode->getTorrents() as $torrent) {
+                if ($torrent->getLanguage() === $locale) {
+                    yield $torrent;
+                }
+            }
+        }
+    }
 
     /**
      * @var ShowLocale[]
