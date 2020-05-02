@@ -29,6 +29,14 @@ class Rating
      * @var integer
      * @ORM\Column(type="integer")
      */
+    protected $watchers = 0;
+    public function getWatchers() { return $this->watchers; }
+    public function setWatchers($watchers) { $this->watchers = $watchers; return $this;}
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer")
+     */
     protected $votes = 0;
     public function getVotes() { return $this->votes; }
     public function setVotes($votes) { $this->votes = $votes; return $this;}

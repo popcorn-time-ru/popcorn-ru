@@ -245,18 +245,22 @@ class MediaService
         try {
             if ($media instanceof Movie) {
                 $trakt = $this->trakt->get("movies/{$media->getImdb()}/stats");
+                $watching = $this->trakt->get("movies/{$media->getImdb()}/watching");
             } elseif ($media instanceof Show) {
                 $trakt = $this->trakt->get("shows/{$media->getImdb()}/stats");
+                $watching = $this->trakt->get("shows/{$media->getImdb()}/watching");
             }
         } catch (\Exception $e) {
             $trakt = new \stdClass();
             $trakt->votes = $info->getVoteCount();
             $trakt->watchers = $info->getPopularity() * 10000;
+            $watching = [];
         }
 
         $media->getRating()
             ->setVotes($trakt->votes)
-            ->setWatching($trakt->watchers)
+            ->setWatching(count($watching))
+            ->setWatchers($trakt->watchers)
             ->setPercentage($info->getVoteAverage() * 10)
         ;
     }

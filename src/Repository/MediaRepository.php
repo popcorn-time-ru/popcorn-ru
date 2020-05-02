@@ -108,6 +108,7 @@ abstract class MediaRepository extends ServiceEntityRepository
                 break;
             case 'trending':
                 $qb->addOrderBy('m.rating.watching', $pageRequest->order);
+                $qb->addOrderBy('m.rating.watchers', $pageRequest->order);
                 break;
             case 'year':
                 $qb->addOrderBy('m.year', $pageRequest->order);
@@ -116,6 +117,7 @@ abstract class MediaRepository extends ServiceEntityRepository
                 $qb->addOrderBy('m.rating.votes', 'DESC');
                 $qb->addOrderBy('m.rating.percentage', 'DESC');
                 $qb->addOrderBy('m.rating.watching', 'DESC');
+                $qb->addOrderBy('m.rating.watchers', 'DESC');
                 break;
         }
         $qb->setFirstResult($offset)->setMaxResults($limit);
