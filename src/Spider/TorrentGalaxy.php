@@ -155,7 +155,7 @@ class TorrentGalaxy extends AbstractSpider
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
                 $timeString = $line->filter('div.tgxtablecell')->last()->text();
                 try {
-                    $time = new \DateTime($timeString);
+                    $time = \DateTime::createFromFormat('d/m/y H:i', $timeString);
                 } catch (\Exception $e) {
                     $time = false;
                 }
