@@ -5,6 +5,9 @@ sentry:
         error_handler:
             enabled: true
             level: error
+    options:
+        excluded_exceptions:
+            - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 
 monolog:
     handlers:
