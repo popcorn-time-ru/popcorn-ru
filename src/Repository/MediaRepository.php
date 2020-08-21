@@ -69,9 +69,6 @@ abstract class MediaRepository extends ServiceEntityRepository
     public function getPage(PageRequest $pageRequest, int $offset, int $limit): array
     {
         $qb = $this->createQueryBuilder('m');
-        if ($pageRequest->genre) {
-            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
-        }
         if ($pageRequest->keywords) {
             $class = $this instanceof ShowRepository ? ShowLocale::class : MovieLocale::class;
             $mediaIds = $this->localeRepository->findMediaIdsByTitle($pageRequest->keywords, $class);
@@ -82,6 +79,9 @@ abstract class MediaRepository extends ServiceEntityRepository
                     'imdb' => $pageRequest->keywords,
                     'title' => '%'.str_replace('%', '%%', $pageRequest->keywords).'%',
                 ]);
+        }
+        if ($pageRequest->genre) {
+            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
         }
         $qb->andWhere('m.existTranslations LIKE :locale')
             ->setParameter('locale', '%'.$pageRequest->locale.'%');
