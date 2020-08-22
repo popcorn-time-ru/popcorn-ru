@@ -13,8 +13,6 @@ use Ramsey\Uuid\UuidInterface;
  */
 class EpisodeLocale
 {
-    use MySqlString;
-
     /**
      * @var UuidInterface
      *
@@ -51,7 +49,7 @@ class EpisodeLocale
      */
     protected $title = '';
     public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $this->clearUtf($title); return $this;}
+    public function setTitle($title) { $this->title = $title; return $this;}
 
     /**
      * @var string
@@ -59,5 +57,5 @@ class EpisodeLocale
      */
     protected $overview = '';
     public function getOverview() { return $this->overview; }
-    public function setOverview($overview) { $this->overview = $this->clearUtf($overview); return $this;}
+    public function setOverview($overview) { $this->overview = $overview; return $this;}
 }

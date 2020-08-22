@@ -16,8 +16,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class Episode
 {
-    use MySqlString;
-
     /**
      * @var UuidInterface
      *
@@ -95,7 +93,7 @@ class Episode
      */
     protected $title;
     public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $this->clearUtf($title); return $this;}
+    public function setTitle($title) { $this->title = $title; return $this;}
 
     /**
      * @var string
@@ -103,7 +101,7 @@ class Episode
      */
     protected $overview;
     public function getOverview() { return $this->overview; }
-    public function setOverview($overview) { $this->overview = $this->clearUtf($overview); return $this;}
+    public function setOverview($overview) { $this->overview = $overview; return $this;}
 
     /**
      * @var string

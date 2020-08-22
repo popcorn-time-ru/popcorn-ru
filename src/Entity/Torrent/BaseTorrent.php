@@ -19,8 +19,6 @@ use Ramsey\Uuid\UuidInterface;
  */
 abstract class BaseTorrent
 {
-    use MySqlString;
-
     /**
      * @var UuidInterface
      *
@@ -97,7 +95,7 @@ abstract class BaseTorrent
      */
     protected $providerTitle;
     public function getProviderTitle() { return $this->providerTitle; }
-    public function setProviderTitle($providerTitle) { $this->providerTitle = trim($this->clearUtf($providerTitle)); return $this;}
+    public function setProviderTitle($providerTitle) { $this->providerTitle = trim($providerTitle); return $this;}
 
     //<editor-fold desc="Movie Api Data">
     /**

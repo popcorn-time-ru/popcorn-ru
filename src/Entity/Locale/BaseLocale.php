@@ -17,8 +17,6 @@ use Ramsey\Uuid\UuidInterface;
  */
 abstract class BaseLocale
 {
-    use MySqlString;
-
     /**
      * @var UuidInterface
      *
@@ -48,7 +46,7 @@ abstract class BaseLocale
      */
     protected $title = '';
     public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $this->clearUtf($title); return $this;}
+    public function setTitle($title) { $this->title = $title; return $this;}
 
     /**
      * @var string
@@ -56,7 +54,7 @@ abstract class BaseLocale
      */
     protected $synopsis = '';
     public function getSynopsis() { return $this->synopsis; }
-    public function setSynopsis($synopsis) { $this->synopsis = $this->clearUtf($synopsis); return $this;}
+    public function setSynopsis($synopsis) { $this->synopsis = $synopsis; return $this;}
 
     /**
      * @var Images
