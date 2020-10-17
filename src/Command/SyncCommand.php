@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SyncCommand extends Command
@@ -64,17 +65,24 @@ class SyncCommand extends Command
         // 180 дней по 200 каждые 4 часа (???)
         $this
             ->setDescription('Generate task for sync old records')
-            ->addArgument('days', InputArgument::REQUIRED, 'Days for old')
+            ->addOption('days-check', 'c', InputOption::VALUE_REQUIRED, 'Days for check')
+            ->addOption('days-delete', 'd', InputOption::VALUE_REQUIRED, 'Days for delete')
             ->addArgument('limit', InputArgument::REQUIRED, 'Limit')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $days = $input->getArgument('days');
+        $daysDelete = $input->getOption('days-delete');
+        $daysCheck = $input->getOption('days-check');
         $limit = $input->getArgument('limit');
 
-        $torrents = $this->torrentRepository->getOld(new \DateTime($days . ' days ago'), $limit);
+        $torrentsDelete = $this->torrentRepository->getNotSyncAndInactive(new \DateTime($daysDelete . ' days ago'), $limit);
+        foreach ($torrentsDelete as $torrent) {
+            $this->torrentRepository->delete($torrent);
+        }
+
+        $torrents = $this->torrentRepository->getOld(new \DateTime($daysCheck . ' days ago'), $limit);
 
         $this->logger->info('Update old torrents', ['count' => count($torrents)]);
         foreach ($torrents as $torrent) {
@@ -83,7 +91,7 @@ class SyncCommand extends Command
             );
         }
 
-        $shows = $this->showRepository->getOld(new \DateTime($days . ' days ago'), $limit);
+        $shows = $this->showRepository->getOld(new \DateTime($daysCheck . ' days ago'), $limit);
 
         $this->logger->info('Update old shows', ['count' => count($shows)]);
         foreach ($shows as $show) {
@@ -92,7 +100,7 @@ class SyncCommand extends Command
             );
         }
 
-        $movies = $this->movieRepository->getOld(new \DateTime($days . ' days ago'), $limit);
+        $movies = $this->movieRepository->getOld(new \DateTime($daysCheck . ' days ago'), $limit);
 
         $this->logger->info('Update old movies', ['count' => count($movies)]);
         foreach ($movies as $movie) {

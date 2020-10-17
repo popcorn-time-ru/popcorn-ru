@@ -27,6 +27,12 @@ class TorrentRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    public function delete(BaseTorrent $torrent): void
+    {
+        $this->_em->remove($torrent);
+        $this->_em->flush();
+    }
+
     /**
      * @param \DateTime $before
      * @param int       $limit
@@ -36,6 +42,21 @@ class TorrentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('t');
         $qb->where('t.lastCheckAt < :before')->setParameter('before', $before);
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param \DateTime $before
+     * @param int       $limit
+     * @return BaseTorrent[]
+     */
+    public function getNotSyncAndInactive(\DateTime $before, int $limit): array
+    {
+        $qb = $this->createQueryBuilder('t');
+        $qb->andWhere('t.syncAt < :before')->setParameter('before', $before);
+        $qb->andWhere('t.active = 0');
         $qb->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
