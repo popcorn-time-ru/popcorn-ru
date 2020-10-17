@@ -19,7 +19,7 @@ use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
-class SyncProcessor implements TopicSubscriberInterface, Processor
+class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'sync';
 
@@ -110,12 +110,7 @@ class SyncProcessor implements TopicSubscriberInterface, Processor
             $this->em->flush();
             return self::ACK;
         } catch (RequestException $e) {
-            if ($e->getResponse()) {
-                echo $e->getMessage().PHP_EOL;
-                return self::ACK;
-            }
-            echo $e->getMessage().PHP_EOL;
-            return self::REQUEUE;
+            return $this->catchRequestException($e);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }

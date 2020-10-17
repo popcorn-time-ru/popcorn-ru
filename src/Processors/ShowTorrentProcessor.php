@@ -8,13 +8,14 @@ use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
+class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'linkShowTorrent';
 
@@ -53,13 +54,8 @@ class ShowTorrentProcessor implements TopicSubscriberInterface, Processor
             $this->producer->sendEvent(TorrentActiveProcessor::TOPIC, JSON::encode($data));
 
             return self::ACK;
-        } catch (GuzzleException $e) {
-            if ($e->getResponse()) {
-                echo $e->getMessage().PHP_EOL;
-                return self::ACK;
-            }
-            echo $e->getMessage().PHP_EOL;
-            return self::REQUEUE;
+        } catch (RequestException $e) {
+            return $this->catchRequestException($e);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }

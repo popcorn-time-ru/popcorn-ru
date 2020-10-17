@@ -47,13 +47,6 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
             $this->torrentService->updateActive($id);
 
             return self::ACK;
-        } catch (GuzzleException $e) {
-            if ($e->getResponse()) {
-                echo $e->getMessage().PHP_EOL;
-                return self::ACK;
-            }
-            echo $e->getMessage().PHP_EOL;
-            return self::REQUEUE;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }

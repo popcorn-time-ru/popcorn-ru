@@ -15,7 +15,7 @@ use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
-class TopicProcessor implements TopicSubscriberInterface, Processor
+class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'getTopic';
 
@@ -53,12 +53,7 @@ class TopicProcessor implements TopicSubscriberInterface, Processor
 
             return self::ACK;
         } catch (RequestException $e) {
-            if ($e->getResponse()) {
-                echo $e->getMessage().PHP_EOL;
-                return self::ACK;
-            }
-            echo $e->getMessage().PHP_EOL;
-            return self::REQUEUE;
+            return $this->catchRequestException($e);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
