@@ -157,10 +157,10 @@ class EpisodeService
 
         // S01E02 S01 E02
         $patterns = [
-            '#s\s*(\d\d?)\s*ep?\s*(\d\d?)#i', //S01 E01
-            '#(?:\s|^)(\d\d?)\s*[xXхХ]\s*(\d\d?)(?:\s|$)#iu', // ' 01x01 '
-            '#\((\d\d?)[xXхХ](\d\d?)\)#iu', // (01x01)
-            '#\s*(\d\d?)[xXхХ](\d\d?)\s*#iu', // (01x01)
+            '#s\s*(\d+)\s*ep?\s*(\d+)#i', //S01 E01
+            '#(?:\s|^)(\d+)\s*[xXхХ]\s*(\d+)(?:\s|$)#iu', // ' 01x01 '
+            '#\((\d+)[xXхХ](\d+)\)#iu', // (01x01)
+            '#\s*(\d+)[xXхХ](\d+)\s*#iu', // (01x01)
         ];
         foreach($patterns as $pattern) {
             if (preg_match($pattern, $dir . '/' . $file, $m)) {
@@ -168,7 +168,7 @@ class EpisodeService
             }
         }
         $patterns = [
-            '#ep?\s*(\d\d?)\s*s\s*(\d\d?)#i', //E01 S01
+            '#ep?\s*(\d+)\s*s\s*(\d+)#i', //E01 S01
         ];
         foreach($patterns as $pattern) {
             if (preg_match($pattern, $dir . '/' . $file, $m)) {
@@ -219,16 +219,16 @@ class EpisodeService
         }
         if ($show->getNumSeasons() === 1) {
             $patterns = [
-                '#\s+e(\d\d?)#i', //S01 E01
-                '#(?:\s|^)(\d\d?)(?:\s|$)#iu', // ' 01 '
-                '#\((\d\d?)\s+(?:iz|of)\s+(?:\d\d?)\)#iu', // (01x01)
+                '#\s+e(\d+)#i', //S01 E01
+                '#(?:\s|^)(\d+)(?:\s|$)#iu', // ' 01 '
+                '#\((\d+)\s+(?:iz|of)\s+(?:\d+)\)#iu', // (01x01)
             ];
             foreach($patterns as $pattern) {
                 if (preg_match($pattern, $file, $m)) {
                     return [1, (int) $m[1]];
                 }
             }
-            if (preg_match('#e(\d\d)#iu', $file, $m)) {
+            if (preg_match('#e(\d+)#iu', $file, $m)) {
                 return [1, (int) $m[1]];
             }
             if (preg_match('#(?:\S) - (\d+) ' . $episode . '#iu', $file, $m)) {
