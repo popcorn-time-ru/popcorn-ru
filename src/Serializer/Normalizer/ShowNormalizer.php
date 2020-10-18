@@ -51,9 +51,9 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 return $base;
             case 'item':
                 $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context);
-                $episodes = array_filter($episodes, static function ($episode) {
+                $episodes = array_values(array_filter($episodes, static function ($episode) {
                     return !empty($episode['torrents']);
-                });
+                }));
                 return array_merge(
                     $base,
                     [
