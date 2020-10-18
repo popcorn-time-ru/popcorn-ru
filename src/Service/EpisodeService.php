@@ -113,6 +113,7 @@ class EpisodeService
                         $item->setTvdb($trakt->ids->tvdb);
                     } catch (\Exception $exception) {
                         $this->logger->error($exception->getMessage());
+                        continue;
                     }
                 }
 
