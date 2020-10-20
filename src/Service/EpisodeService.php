@@ -110,7 +110,7 @@ class EpisodeService
                 if (!$item->getTvdb()) {
                     try {
                         $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
-                        $item->setTvdb($trakt->ids->tvdb);
+                        $item->setTvdb($trakt->ids->tvdb ?? 0);
                     } catch (\Exception $exception) {
                         $this->logger->error($exception->getMessage());
                     }
