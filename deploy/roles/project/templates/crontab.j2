@@ -2,7 +2,7 @@
 0 0 * * * cd {{ path }} && bin/console spider:run --all --last=48
 
 0 8 * * 1 cd {{ path }} && bin/console stat:update
-0 * * * * cd {{ path }} && bin/console sync:old 180 500
+0 1 * * * cd {{ path }} && bin/console sync:old 180 500 --days-check=180 --days-delete=360
 0 23 * * * cd {{ path }} && bin/console cache:clear
 
 10 * * * * cd {{ path }} && bin/console enqueue:consume --time-limit="now + 55 minutes" --no-debug --memory-limit=200
