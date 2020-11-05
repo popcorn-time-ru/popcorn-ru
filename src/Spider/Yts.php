@@ -84,7 +84,7 @@ class Yts extends AbstractSpider
                     ->setSeed($torrentData['seeds'])
                     ->setPeer($torrentData['peers'])
                     ->setQuality($torrentData['quality'])
-                    ->setLanguage('en');
+                    ->setLanguage($movieData['language']);
 
                 $torrent->setSize($torrentData['size_bytes']);
 
