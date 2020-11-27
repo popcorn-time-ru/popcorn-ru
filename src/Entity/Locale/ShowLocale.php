@@ -18,4 +18,6 @@ class ShowLocale extends BaseLocale
     protected $show;
     public function getShow(): Show { return $this->show; }
     public function setShow(Show $show): self { $this->show = $show; return $this; }
+
+    public function getMedia() { return $this->show; }
 }

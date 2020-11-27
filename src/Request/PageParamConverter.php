@@ -30,7 +30,7 @@ class PageParamConverter implements ParamConverterInterface
             $genre = 'science-fiction';
         }
         $pageRequest->genre = $genre === 'all' ? '' : $genre;
-        $pageRequest->keywords = $request->query->get('keywords', '');
+        $pageRequest->keywords = trim($request->query->get('keywords', ''));
         $pageRequest->locale = $request->query->get('locale', $this->defaultLocale);
         // if (!in_array($pageRequest->locale, $this->extractLocales)) {
         //     $pageRequest->locale = $this->defaultLocale;

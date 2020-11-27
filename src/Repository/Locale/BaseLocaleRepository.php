@@ -80,14 +80,12 @@ class BaseLocaleRepository extends ServiceEntityRepository
             ->select('l')
             ->from($class, 'l')
             ->where('l.title LIKE :title')
-            ->setParameter('title', '%'.$title.'%');
+            ->setParameter('title', '%'.$title.'%')
+            ->setMaxResults(100) // just first 100 - for possible mem limit
+        ;
 
         return array_map(static function(BaseLocale $l) {
-            if ($l instanceof ShowLocale) {
-                return $l->getShow()->getId();
-            } elseif ($l instanceof MovieLocale) {
-                return $l->getMovie()->getId();
-            }
+            return $l->getMedia()->getId();
         }, $qb->getQuery()->getResult());
     }
 }

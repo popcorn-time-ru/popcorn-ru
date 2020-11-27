@@ -2,6 +2,7 @@
 
 namespace App\Entity\Locale;
 
+use App\Entity\BaseMedia;
 use App\Entity\MySqlString;
 use App\Entity\VO\Images;
 use Doctrine\ORM\Mapping as ORM;
@@ -62,4 +63,9 @@ abstract class BaseLocale
      */
     protected $images;
     public function getImages() { return $this->images; }
+
+    /**
+     * @return BaseMedia
+     */
+    abstract public function getMedia();
 }
