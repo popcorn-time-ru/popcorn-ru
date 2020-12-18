@@ -27,16 +27,14 @@ class Rutor extends AbstractSpider
     public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
     {
         parent::__construct($torrentService, $episodeService, $logger);
-        $this->client = new Client(
-            [
-                'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
-                RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
-                RequestOptions::PROXY => $torProxy,
-                'curl' => [
-                    CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
-                ],
-            ]
-        );
+        $this->client = new Client([
+            'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
+            RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
+            RequestOptions::PROXY => $torProxy,
+            'curl' => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
+        ]);
     }
 
     public function getSource(BaseTorrent $torrent): string

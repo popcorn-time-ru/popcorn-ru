@@ -9,7 +9,7 @@ use App\Entity\Locale\ShowLocale;
 use App\Entity\Movie;
 use App\Entity\Show;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method BaseLocale|null find($id, $lockMode = null, $lockVersion = null)

@@ -18,17 +18,24 @@ class TorrentGalaxy extends AbstractSpider
 {
     public const BASE_URL = 'https://torrentgalaxy.to/';
 
+    public const BASE_URL_TOR = 'http://galaxy2gchufcb3z.onion';
+
     /** @var Client */
     private $client;
 
     private $context;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
     {
+        //$torProxy = '';
         parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
-            'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
+            'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
+            RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
+            RequestOptions::PROXY => $torProxy,
+            'curl' => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
             'cookies' => new FileCookieJar(sys_get_temp_dir() . '/torrentgalaxy.cookie.json', true)
         ]);
     }

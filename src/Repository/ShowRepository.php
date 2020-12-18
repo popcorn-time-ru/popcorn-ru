@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Show|null find($id, $lockMode = null, $lockVersion = null)

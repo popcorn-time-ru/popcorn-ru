@@ -6,7 +6,7 @@ use App\Entity\BaseMedia;
 use App\Entity\Episode;
 use App\Entity\Torrent\BaseTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 /**

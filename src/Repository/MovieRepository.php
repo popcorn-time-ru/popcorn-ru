@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Movie;
 use App\Repository\Locale\BaseLocaleRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Movie|null find($id, $lockMode = null, $lockVersion = null)

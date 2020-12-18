@@ -9,7 +9,7 @@ use App\Entity\Movie;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Request\PageRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
 
 /**
