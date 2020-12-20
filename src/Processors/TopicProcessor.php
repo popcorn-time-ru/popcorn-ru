@@ -49,7 +49,7 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
                 $data['topicId'],
                 $data['seed'],
                 $data['leech']
-            ));echo 'ok';
+            ));
 
             return self::ACK;
         } catch (RequestException $e) {
