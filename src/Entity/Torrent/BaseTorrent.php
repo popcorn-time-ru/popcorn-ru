@@ -12,7 +12,9 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TorrentRepository")
- * @ORM\Table(name="torrent")
+ * @ORM\Table(name="torrent", indexes={
+ *     @ORM\Index(name="providerId", columns={"provider","provider_external_id"})
+ * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"movie" = "MovieTorrent", "show" = "ShowTorrent", "episode"="EpisodeTorrent"})
