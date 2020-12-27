@@ -11,6 +11,13 @@
   notify:
     - restart mysql
 
+- name: tune mysql
+  copy:
+    src: mysql-slow-log.cnf
+    dest: /etc/mysql/mariadb.conf.d/99-slow-log.cnf
+  notify:
+    - restart mysql
+
 - name: systemd mysql dir
   file:
     dest: /etc/systemd/system/mariadb.service.d
