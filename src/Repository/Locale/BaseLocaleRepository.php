@@ -80,7 +80,7 @@ class BaseLocaleRepository extends ServiceEntityRepository
             ->select('l')
             ->from($class, 'l')
             ->where('l.title LIKE :title')
-            ->setParameter('title', '%'.$title.'%')
+            ->setParameter('title', '%'.str_replace('%', '%%', $title).'%')
             ->setMaxResults(100) // just first 100 - for possible mem limit
         ;
 
