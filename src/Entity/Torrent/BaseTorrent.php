@@ -147,6 +147,9 @@ abstract class BaseTorrent
     public function getSize() { return $this->size; }
 
     public function setSize($size) {
+        if ($size == 0) {
+            $size = 1024 ** 3;
+        }
         $this->size = $size;
         $this->filesize = $this->formatBytes($size);
     }
