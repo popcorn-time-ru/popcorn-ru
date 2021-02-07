@@ -4,6 +4,8 @@
       - htop
       - git
       - aptitude
+      - crontab
+      - vim
 
 - name: Install php stack packages
   apt:

@@ -3,5 +3,5 @@ site2: popcorn.ivan1986.tk
 
 path: /srv/popcorn
 user: web
-php_version: 7.3
+php_version: 7.4
 

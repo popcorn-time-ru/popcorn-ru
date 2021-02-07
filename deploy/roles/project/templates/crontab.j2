@@ -5,4 +5,5 @@
 0 1 * * * cd {{ path }} && bin/console sync:old 500 --days-check=180 --days-delete=360
 0 23 * * * cd {{ path }} && bin/console cache:clear
 
+9  * * * * cd /srv/popcorn && killall -9 php
 10 * * * * cd {{ path }} && pgrep -c -f enqueue:consume || bin/console enqueue:consume --time-limit="now + 55 minutes" --no-debug --memory-limit=200

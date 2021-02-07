@@ -1,1 +1,1 @@
-main    ansible_host=34.70.11.110  ansible_connection=ssh  ansible_user=ivan   ansible_become=yes
+main    ansible_host=129.146.251.157  ansible_connection=ssh  ansible_user=ubuntu   ansible_become=yes
