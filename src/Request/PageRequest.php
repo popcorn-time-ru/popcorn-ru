@@ -5,9 +5,6 @@ namespace App\Request;
 class PageRequest
 {
     /** @var string */
-    public $locale;
-
-    /** @var string */
     public $genre;
 
     /** @var string */

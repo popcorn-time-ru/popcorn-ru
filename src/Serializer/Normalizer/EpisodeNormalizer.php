@@ -5,6 +5,7 @@ namespace App\Serializer\Normalizer;
 use App\Entity\Episode;
 use App\Entity\Show;
 use App\Repository\TorrentRepository;
+use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -34,12 +35,13 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         }
 
         $torrents = [];
-        $locale = $context['locale'] ?? 'en';
-        foreach ($this->torrents->getEpisodeTorrents($object, $locale) as $torrent) {
+        /** @var LocaleRequest $localeParams */
+        $localeParams = $context['localeParams'];
+        foreach ($this->torrents->getEpisodeTorrents($object, $localeParams->contentLocale) as $torrent) {
             $torrents[$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
-        foreach ($this->torrents->getMediaTorrents($object->getShow(), $locale) as $torrent) {
+        foreach ($this->torrents->getMediaTorrents($object->getShow(), $localeParams->contentLocale) as $torrent) {
             $file = null;
             foreach ($torrent->getFiles() as $torrentFile) {
                 if ($torrentFile->isEpisode($object)) {
@@ -60,8 +62,8 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         }
 
         $locale = [];
-        if (!empty($context['locale'])) {
-            $l = $object->getLocale($context['locale']);
+        if ($localeParams->needLocale) {
+            $l = $object->getLocale($localeParams->locale);
             if ($l) {
                 $locale['locale'] = [
                     'title' => $l->getTitle(),

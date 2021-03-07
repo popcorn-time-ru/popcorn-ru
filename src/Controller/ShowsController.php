@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Show;
 use App\Repository\MediaStatRepository;
 use App\Repository\ShowRepository;
+use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,14 +29,14 @@ class ShowsController extends AbstractController
     /** @var MediaStatRepository */
     private $statRepo;
 
-    /** @var string */
-    private $defaultLocale;
+    /** @var SerializerInterface */
+    private $serializer;
 
-    public function __construct(ShowRepository $repo, MediaStatRepository $statRepo, string $defaultLocale)
+    public function __construct(ShowRepository $repo, MediaStatRepository $statRepo, SerializerInterface $serializer)
     {
         $this->repo = $repo;
-        $this->defaultLocale = $defaultLocale;
         $this->statRepo = $statRepo;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -55,11 +56,11 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/shows/stat", name="shows_stat")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function stat(Request $r)
+    public function stat(LocaleRequest $localeParams)
     {
-        $locale = $r->query->get('locale', $this->defaultLocale);
-        $stat = $this->statRepo->getByTypeAndLang('show', $locale);
+        $stat = $this->statRepo->getByTypeAndLang('show', $localeParams->contentLocale);
         $data = [];
         foreach ($stat as $s) {
             $data[$s->getGenre()] = [
@@ -76,27 +77,29 @@ class ShowsController extends AbstractController
     /**
      * @Route("/shows/{page}", name="shows_page")
      * @ParamConverter(name="pageParams", converter="page_params")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function page($page, Request $r, PageRequest $pageParams, SerializerInterface $serializer)
+    public function page($page, PageRequest $pageParams, LocaleRequest $localeParams)
     {
-        $shows = $this->repo->getPage($pageParams,
+        $shows = $this->repo->getPage($pageParams, $localeParams,
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'list',
-            'locale' => $pageParams->locale,
+            'localeParams' => $localeParams,
         ];
-        $data = $serializer->serialize($shows, 'json', $context);
+        $data = $this->serializer->serialize($shows, 'json', $context);
 
         return $this->resp($data);
     }
 
     /**
      * @Route("/show/{id}", name="show")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function show($id, Request $r, SerializerInterface $serializer)
+    public function show($id, LocaleRequest $localeParams)
     {
         $show = $this->repo->findByImdb($id);
         if (!$show) {
@@ -106,9 +109,9 @@ class ShowsController extends AbstractController
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'item',
-            'locale' => $r->query->get('locale', $this->defaultLocale),
+            'localeParams' => $localeParams,
         ];
-        $data = $serializer->serialize($show, 'json', $context);
+        $data = $this->serializer->serialize($show, 'json', $context);
 
         return $this->resp($data);
     }
@@ -116,20 +119,21 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/show/{id}/torrents", name="show_torrents")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function torrents($id, Request $r, SerializerInterface $serializer)
+    public function torrents($id, LocaleRequest $localeParams)
     {
         $show = $this->repo->findByImdb($id);
         if (!$show) {
             throw new NotFoundHttpException();
         }
 
-        $locale = $r->query->get('locale', $this->defaultLocale);
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'list',
+            'localeParams' => $localeParams,
         ];
-        $data = $serializer->serialize($show->getLocaleTorrents($locale), 'json', $context);
+        $data = $this->serializer->serialize($show->getLocaleTorrents($localeParams->contentLocale), 'json', $context);
 
         return $this->resp($data);
     }

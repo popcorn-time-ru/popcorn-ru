@@ -3,6 +3,7 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Show;
+use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -39,8 +40,10 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             'images' => $object->getImages()->getApiArray(),
             'rating' => $object->getRating()->getApiArray(),
         ];
-        if (!empty($context['locale'])) {
-            $l = $object->getLocale($context['locale']);
+        /** @var LocaleRequest $localeParams */
+        $localeParams = $context['localeParams'];
+        if ($localeParams->needLocale) {
+            $l = $object->getLocale($localeParams->locale);
             if ($l) {
                 $base['locale'] = $this->normalizer->normalize($l, $format, $context);
             }

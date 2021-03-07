@@ -53,6 +53,9 @@ services:
     App\Request\PageParamConverter:
         tags:
             - { name: request.param_converter, converter: page_params }
+    App\Request\LocaleParamConverter:
+        tags:
+            - { name: request.param_converter, converter: locale_params }
     App\Service\SpiderSelector:
         arguments:
             - !tagged_iterator 'tracker.spider'

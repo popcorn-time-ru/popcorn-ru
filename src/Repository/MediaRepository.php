@@ -7,6 +7,7 @@ use App\Entity\Locale\MovieLocale;
 use App\Entity\Locale\ShowLocale;
 use App\Entity\Movie;
 use App\Repository\Locale\BaseLocaleRepository;
+use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -61,12 +62,13 @@ abstract class MediaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param PageRequest $pageRequest
-     * @param int         $offset
-     * @param int         $limit
+     * @param PageRequest   $pageRequest
+     * @param LocaleRequest $localeParams
+     * @param int           $offset
+     * @param int           $limit
      * @return BaseMedia[]
      */
-    public function getPage(PageRequest $pageRequest, int $offset, int $limit): array
+    public function getPage(PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
     {
         $qb = $this->createQueryBuilder('m');
         if ($pageRequest->keywords) {
@@ -84,7 +86,7 @@ abstract class MediaRepository extends ServiceEntityRepository
             $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
         }
         $qb->andWhere('m.existTranslations LIKE :locale')
-            ->setParameter('locale', '%'.$pageRequest->locale.'%');
+            ->setParameter('locale', '%'.$localeParams->contentLocale.'%');
         if ($this instanceof ShowRepository) {
             $qb->andWhere('m.episodes iS NOT EMPTY');
         }

@@ -4,6 +4,7 @@ namespace App\Serializer\Normalizer;
 
 use App\Entity\Movie;
 use App\Repository\TorrentRepository;
+use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -32,15 +33,15 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             return [];
         }
         $torrents = [];
-        // force english
-        $locale = $context['locale'] ?? 'en';
-        foreach ($this->torrents->getMediaTorrents($object, $locale) as $torrent) {
-            $torrents[$locale][$torrent->getQuality()] =
+        /** @var LocaleRequest $localeParams */
+        $localeParams = $context['localeParams'];
+        foreach ($this->torrents->getMediaTorrents($object, $localeParams->contentLocale) as $torrent) {
+            $torrents[$localeParams->contentLocale][$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
         $locale = [];
-        if (!empty($context['locale'])) {
-            $l = $object->getLocale($context['locale']);
+        if ($localeParams->needLocale) {
+            $l = $object->getLocale($localeParams->locale);
             if ($l) {
                 $locale['locale'] = $this->normalizer->normalize($l, $format, $context);
             }

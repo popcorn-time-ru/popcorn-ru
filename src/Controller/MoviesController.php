@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\MediaStatRepository;
 use App\Repository\MovieRepository;
+use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,14 +30,14 @@ class MoviesController extends AbstractController
     /** @var MediaStatRepository */
     protected $statRepo;
 
-    /** @var string */
-    private $defaultLocale;
+    /** @var SerializerInterface */
+    private $serializer;
 
-    public function __construct(MovieRepository $repo, MediaStatRepository $statRepo, string $defaultLocale)
+    public function __construct(MovieRepository $repo, MediaStatRepository $statRepo, SerializerInterface $serializer)
     {
         $this->repo = $repo;
-        $this->defaultLocale = $defaultLocale;
         $this->statRepo = $statRepo;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -56,11 +57,11 @@ class MoviesController extends AbstractController
 
     /**
      * @Route("/movies/stat", name="movies_stat")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function stat(Request $r)
+    public function stat(LocaleRequest $localeParams)
     {
-        $locale = $r->query->get('locale', $this->defaultLocale);
-        $stat = $this->statRepo->getByTypeAndLang('movie', $locale);
+        $stat = $this->statRepo->getByTypeAndLang('movie', $localeParams->contentLocale);
         $data = [];
         foreach ($stat as $s) {
             $data[$s->getGenre()] = [
@@ -77,27 +78,29 @@ class MoviesController extends AbstractController
     /**
      * @Route("/movies/{page}", name="movies_page")
      * @ParamConverter(name="pageParams", converter="page_params")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function page($page, Request $r, PageRequest $pageParams, SerializerInterface $serializer)
+    public function page($page, PageRequest $pageParams, LocaleRequest $localeParams)
     {
-        $movies = $this->repo->getPage($pageParams,
+        $movies = $this->repo->getPage($pageParams, $localeParams,
             self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
         );
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'list',
-            'locale' => $pageParams->locale,
+            'localeParams' => $localeParams,
         ];
-        $data = $serializer->serialize($movies, 'json', $context);
+        $data = $this->serializer->serialize($movies, 'json', $context);
 
         return $this->resp($data);
     }
 
     /**
      * @Route("/movie/{id}", name="movie")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function movie($id, Request $r, SerializerInterface $serializer)
+    public function movie($id, LocaleRequest $localeParams)
     {
         $movie = $this->repo->findByImdb($id);
         if (!$movie) {
@@ -107,29 +110,30 @@ class MoviesController extends AbstractController
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'item',
-            'locale' => $r->query->get('locale', $this->defaultLocale),
+            'localeParams' => $localeParams,
         ];
-        $data = $serializer->serialize($movie, 'json', $context);
+        $data = $this->serializer->serialize($movie, 'json', $context);
 
         return $this->resp($data);
     }
 
     /**
      * @Route("/movie/{id}/torrents", name="movie_torrents")
+     * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function torrents($id, Request $r, SerializerInterface $serializer)
+    public function torrents($id, LocaleRequest $localeParams)
     {
         $movie = $this->repo->findByImdb($id);
         if (!$movie) {
             throw new NotFoundHttpException();
         }
 
-        $locale = $r->query->get('locale', $this->defaultLocale);
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
             'mode' => 'list',
+            'localeParams' => $localeParams,
         ];
-        $data = $serializer->serialize($movie->getLocaleTorrents($locale), 'json', $context);
+        $data = $this->serializer->serialize($movie->getLocaleTorrents($localeParams->contentLocale), 'json', $context);
 
         return $this->resp($data);
     }
