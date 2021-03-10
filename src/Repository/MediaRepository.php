@@ -93,13 +93,15 @@ abstract class MediaRepository extends ServiceEntityRepository
         switch ($pageRequest->sort) {
             case 'title':
             case 'name':
-                $qb->addOrderBy('m.title', $pageRequest->order);
+                $qb->addOrderBy('m.title', 'ASC', $pageRequest->order);
                 break;
             case 'rating':
                 $qb->addOrderBy('m.rating.votes', $pageRequest->order);
                 $qb->addOrderBy('m.rating.percentage', $pageRequest->order);
                 break;
             case 'released':
+                $qb->addOrderBy('m.released', $pageRequest->order);
+                break;
             case 'updated':
                 if ($this instanceof MovieRepository) {
                     $qb->addOrderBy('m.released', $pageRequest->order);
@@ -116,6 +118,9 @@ abstract class MediaRepository extends ServiceEntityRepository
             case 'year':
                 $qb->addOrderBy('m.year', $pageRequest->order);
                 break;
+            case 'popular':
+                $qb->addOrderBy('m.rating.watchers', $pageRequest->order);
+                break
             default:
                 $qb->addOrderBy('m.rating.votes', 'DESC');
                 $qb->addOrderBy('m.rating.percentage', 'DESC');
