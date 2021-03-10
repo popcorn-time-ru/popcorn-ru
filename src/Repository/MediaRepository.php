@@ -120,7 +120,7 @@ abstract class MediaRepository extends ServiceEntityRepository
                 break;
             case 'popular':
                 $qb->addOrderBy('m.rating.watchers', $pageRequest->order);
-                break
+                break;
             default:
                 $qb->addOrderBy('m.rating.votes', 'DESC');
                 $qb->addOrderBy('m.rating.percentage', 'DESC');
