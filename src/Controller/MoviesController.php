@@ -2,27 +2,21 @@
 
 namespace App\Controller;
 
+use App\HttpFoundation\CacheJsonResponse;
 use App\Repository\MediaStatRepository;
 use App\Repository\MovieRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class MoviesController extends AbstractController
 {
     const PAGE_SIZE = 50;
-
-    const CACHE = 3600 * 12;
 
     /** @var MovieRepository */
     protected $repo;
@@ -41,21 +35,6 @@ class MoviesController extends AbstractController
     }
 
     /**
-     * @Route("/movies", name="movies")
-     */
-    public function index()
-    {
-        $count = $this->repo->count([]);
-        $pages = ceil($count / self::PAGE_SIZE);
-        $links = [];
-        for($page = 1; $page <= $pages; $page++) {
-            $links[] = 'movies/'.$page;
-        }
-
-        return $this->resp(json_encode($links, JSON_UNESCAPED_SLASHES));
-    }
-
-    /**
      * @Route("/movies/stat", name="movies_stat")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
@@ -70,9 +49,7 @@ class MoviesController extends AbstractController
             ];
         }
 
-        return (new JsonResponse($data, 200))
-            ->setEncodingOptions(JSON_UNESCAPED_UNICODE)
-            ->setSharedMaxAge(self::CACHE);
+        return new CacheJsonResponse($data, false);
     }
 
     /**
@@ -93,7 +70,7 @@ class MoviesController extends AbstractController
         ];
         $data = $this->serializer->serialize($movies, 'json', $context);
 
-        return $this->resp($data);
+        return new CacheJsonResponse($data, true);
     }
 
     /**
@@ -114,7 +91,7 @@ class MoviesController extends AbstractController
         ];
         $data = $this->serializer->serialize($movie, 'json', $context);
 
-        return $this->resp($data);
+        return new CacheJsonResponse($data, true);
     }
 
     /**
@@ -130,17 +107,11 @@ class MoviesController extends AbstractController
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'list',
+            'mode' => 'torrents',
             'localeParams' => $localeParams,
         ];
         $data = $this->serializer->serialize($movie->getLocaleTorrents($localeParams->contentLocale), 'json', $context);
 
-        return $this->resp($data);
-    }
-
-    protected function resp($data)
-    {
-        return (new Response($data, 200, ['Content-Type' => 'application/json']))
-            ->setSharedMaxAge(self::CACHE);
+        return new CacheJsonResponse($data, true);
     }
 }

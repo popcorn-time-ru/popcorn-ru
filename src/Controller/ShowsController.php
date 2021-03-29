@@ -2,16 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Show;
+use App\HttpFoundation\CacheJsonResponse;
 use App\Repository\MediaStatRepository;
 use App\Repository\ShowRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
@@ -20,8 +17,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 class ShowsController extends AbstractController
 {
     const PAGE_SIZE = 50;
-
-    const CACHE = 3600 * 12;
 
     /** @var ShowRepository */
     protected $repo;
@@ -40,21 +35,6 @@ class ShowsController extends AbstractController
     }
 
     /**
-     * @Route("/shows", name="shows")
-     */
-    public function index()
-    {
-        $count = $this->repo->count([]);
-        $pages = ceil($count / self::PAGE_SIZE);
-        $links = [];
-        for($page = 1; $page <= $pages; $page++) {
-            $links[] = 'shows/'.$page;
-        }
-
-        return $this->resp(json_encode($links, JSON_UNESCAPED_SLASHES));
-    }
-
-    /**
      * @Route("/shows/stat", name="shows_stat")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
@@ -69,9 +49,7 @@ class ShowsController extends AbstractController
             ];
         }
 
-        return (new JsonResponse($data, 200))
-            ->setEncodingOptions(JSON_UNESCAPED_UNICODE)
-            ->setSharedMaxAge(self::CACHE);
+        return new CacheJsonResponse($data, false);
     }
 
     /**
@@ -92,7 +70,7 @@ class ShowsController extends AbstractController
         ];
         $data = $this->serializer->serialize($shows, 'json', $context);
 
-        return $this->resp($data);
+        return new CacheJsonResponse($data, true);
     }
 
     /**
@@ -113,9 +91,8 @@ class ShowsController extends AbstractController
         ];
         $data = $this->serializer->serialize($show, 'json', $context);
 
-        return $this->resp($data);
+        return new CacheJsonResponse($data, true);
     }
-
 
     /**
      * @Route("/show/{id}/torrents", name="show_torrents")
@@ -130,17 +107,11 @@ class ShowsController extends AbstractController
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'list',
+            'mode' => 'torrents',
             'localeParams' => $localeParams,
         ];
         $data = $this->serializer->serialize($show->getLocaleTorrents($localeParams->contentLocale), 'json', $context);
 
-        return $this->resp($data);
-    }
-
-    protected function resp($data)
-    {
-        return (new Response($data, 200, ['Content-Type' => 'application/json']))
-            ->setSharedMaxAge(self::CACHE);
+        return new CacheJsonResponse($data, true);
     }
 }
