@@ -7,6 +7,7 @@ use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Generator;
 use Ramsey\Uuid\Uuid;
@@ -29,12 +30,19 @@ abstract class BaseMedia
     public function __construct()
     {
         $this->id = Uuid::uuid4();
+        $this->createdAt = new DateTime();
         $this->images = new Images();
         $this->rating = new Rating();
     }
 
     /**
-     * @var \DateTime
+     * @var DateTime
+     * @ORM\Column(type="datetime")
+     */
+    protected $createdAt;
+
+    /**
+     * @var DateTime
      * @ORM\Column(type="datetime")
      */
     protected $syncAt;

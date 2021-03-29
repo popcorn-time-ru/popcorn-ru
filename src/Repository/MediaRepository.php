@@ -106,8 +106,9 @@ abstract class MediaRepository extends ServiceEntityRepository
                 } else {
                     $qb->addOrderBy('m.lastUpdated', $pageRequest->order);
                 }
+                break;
             case 'last added':
-                $qb->addOrderBy('m.syncAt', $pageRequest->order);
+                $qb->addOrderBy('m.createdAt', $pageRequest->order);
                 break;
             case 'trending':
                 $qb->addOrderBy('m.rating.watching', $pageRequest->order);
