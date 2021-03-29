@@ -35,6 +35,21 @@ class ShowsController extends AbstractController
     }
 
     /**
+     * @Route("/shows", name="shows")
+     */
+    public function index()
+    {
+        $count = $this->repo->count([]);
+        $pages = ceil($count / self::PAGE_SIZE);
+        $links = [];
+        for($page = 1; $page <= $pages; $page++) {
+            $links[] = 'shows/'.$page;
+        }
+
+        return new CacheJsonResponse($links, false);
+    }
+
+    /**
      * @Route("/shows/stat", name="shows_stat")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */

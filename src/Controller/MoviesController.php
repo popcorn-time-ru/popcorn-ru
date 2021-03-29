@@ -35,6 +35,21 @@ class MoviesController extends AbstractController
     }
 
     /**
+     * @Route("/movies", name="movies")
+     */
+    public function index()
+    {
+        $count = $this->repo->count([]);
+        $pages = ceil($count / self::PAGE_SIZE);
+        $links = [];
+        for($page = 1; $page <= $pages; $page++) {
+            $links[] = 'movies/'.$page;
+        }
+
+        return new CacheJsonResponse($links, false);
+    }
+
+    /**
      * @Route("/movies/stat", name="movies_stat")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
