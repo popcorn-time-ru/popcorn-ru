@@ -56,39 +56,12 @@ class Yts extends AbstractSpider
             if (!($media instanceof Movie)) {
                 continue;
             }
-            foreach($movieData['torrents'] as $k=>$torrentData) {
+            foreach($movieData['torrents'] as $torrentData) {
                 if ($after && $after->getTimestamp() > $torrentData['date_uploaded_unix']) {
                     continue;
                 }
 
-                $url = 'magnet:?xt=urn:btih:'.$torrentData['hash'].'&'.implode('&', array_map(function ($item) {
-                    return 'tr='.$item;
-                }, [
-                    'udp://open.demonii.com:1337/announce',
-                    'udp://tracker.openbittorrent.com:80',
-                    'udp://tracker.coppersurfer.tk:6969',
-                    'udp://glotorrents.pw:6969/announce',
-                    'udp://tracker.opentrackr.org:1337/announce',
-                    'udp://torrent.gresille.org:80/announce',
-                    'udp://p4p.arenabg.com:1337',
-                    'udp://tracker.leechers-paradise.org:6969',
-                ]));
-
-                $newTorrent = new MovieTorrent();
-                $newTorrent->setMovie($media);
-
-                $torrent = $this->torrentService->findExistOrCreateTorrent($this->getName(), $movieData['id'].':'.$k, $newTorrent);
-                $torrent
-                    ->setProviderTitle($movieData['title'])
-                    ->setUrl($url)
-                    ->setSeed($torrentData['seeds'])
-                    ->setPeer($torrentData['peers'])
-                    ->setQuality($torrentData['quality'])
-                    ->setLanguage($movieData['language']);
-
-                $torrent->setSize($torrentData['size_bytes']);
-
-                $this->torrentService->updateTorrent($torrent);
+                $this->buildTorrentFromData($media, $movieData, $torrentData);
                 $exist = true;
             }
         }
@@ -102,5 +75,67 @@ class Yts extends AbstractSpider
 
     public function getTopic(TopicDto $topic)
     {
+        [$movieId, ] = explode(':', $topic->id);
+        $res = $this->client->get('/api/v2/movie_details.json', [
+            'query' => [
+                'movie_id' => $movieId,
+            ]
+        ]);
+        $json = $res->getBody()->getContents();
+        $data = json_decode($json, true);
+
+        if (empty($data['data']['movie'])) {
+            return ;
+        }
+        $movieData = $data['data']['movie'];
+        $media = $this->torrentService->getMediaByImdb($movieData['imdb_code']);
+        if (!($media instanceof Movie)) {
+            return ;
+        }
+
+        foreach($movieData['torrents'] as $torrentData) {
+            $this->buildTorrentFromData($media, $movieData, $torrentData);
+        }
+    }
+
+    /**
+     * @param Movie $media
+     * @param array $movieData
+     * @param array $torrentData
+     */
+    private function buildTorrentFromData(Movie $media, $movieData, $torrentData): void
+    {
+        $url = 'magnet:?xt=urn:btih:' . $torrentData['hash'] . '&' . implode('&', array_map(function ($item) {
+            return 'tr=' . $item;
+        }, [
+            'udp://open.demonii.com:1337/announce',
+            'udp://tracker.openbittorrent.com:80',
+            'udp://tracker.coppersurfer.tk:6969',
+            'udp://glotorrents.pw:6969/announce',
+            'udp://tracker.opentrackr.org:1337/announce',
+            'udp://torrent.gresille.org:80/announce',
+            'udp://p4p.arenabg.com:1337',
+            'udp://tracker.leechers-paradise.org:6969',
+        ]));
+
+        $newTorrent = new MovieTorrent();
+        $newTorrent->setMovie($media);
+
+        $torrent = $this->torrentService->findExistOrCreateTorrent(
+            $this->getName(),
+            $movieData['id'] . ':' . $torrentData['hash'],
+            $newTorrent
+        );
+        $torrent
+            ->setProviderTitle($movieData['title'])
+            ->setUrl($url)
+            ->setSeed($torrentData['seeds'])
+            ->setPeer($torrentData['peers'])
+            ->setQuality($torrentData['quality'])
+            ->setLanguage($movieData['language']);
+
+        $torrent->setSize($torrentData['size_bytes']);
+
+        $this->torrentService->updateTorrent($torrent);
     }
 }
