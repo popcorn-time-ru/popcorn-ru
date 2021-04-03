@@ -148,14 +148,14 @@ class TorrentService
         $this->torrentRepo->flush();
     }
 
-    protected function selectActiveForMovie(Movie $movie, string $language, bool $onlyActive = true)
+    protected function selectActiveForMovie(Movie $movie, string $language)
     {
         /** @var BaseTorrent[] $active */
         $active = [];
-        foreach ($this->torrentRepo->getMediaTorrents($movie, $language, $onlyActive) as $torrent) {
+        foreach ($this->torrentRepo->getMediaTorrents($movie, $language) as $torrent) {
             $torrent->setActive(false);
             if (empty($active[$torrent->getQuality()])
-                || $active[$torrent->getQuality()]->getPeer() < $torrent->getPeer()) {
+                || $this->needReplaceTorrent($active[$torrent->getQuality()], $torrent)) {
                 $active[$torrent->getQuality()] = $torrent;
             }
         }
@@ -165,20 +165,20 @@ class TorrentService
         }
     }
 
-    protected function selectActiveForShow(Show $show, string $language, bool $onlyActive = true)
+    protected function selectActiveForShow(Show $show, string $language)
     {
         /** @var BaseTorrent[][] $active */
         $active = [];
         foreach ($show->getEpisodes() as $episode) {
             $key = $episode->getSeason() . ':' . $episode->getEpisode();
-            foreach ($this->torrentRepo->getEpisodeTorrents($episode, $language, $onlyActive) as $torrent) {
+            foreach ($this->torrentRepo->getEpisodeTorrents($episode, $language) as $torrent) {
                 $torrent->setActive(false);
                 if (empty($active[$key][$torrent->getQuality()])
-                    || $active[$key][$torrent->getQuality()]->getPeer() < $torrent->getPeer()) {
+                    || $this->needReplaceTorrent($active[$key][$torrent->getQuality()], $torrent)) {
                     $active[$key][$torrent->getQuality()] = $torrent;
                 }
             }
-            foreach ($this->torrentRepo->getMediaTorrents($show, $language, $onlyActive) as $torrent) {
+            foreach ($this->torrentRepo->getMediaTorrents($show, $language) as $torrent) {
                 $torrent->setActive(false);
                 $file = null;
                 foreach ($torrent->getFiles() as $torrentFile) {
@@ -192,7 +192,7 @@ class TorrentService
                     continue;
                 }
                 if (empty($active[$key][$torrent->getQuality()])
-                    || $active[$key][$torrent->getQuality()]->getPeer() < $torrent->getPeer()) {
+                    || $this->needReplaceTorrent($active[$key][$torrent->getQuality()], $torrent)) {
                     $active[$key][$torrent->getQuality()] = $torrent;
                 }
             }
@@ -203,5 +203,10 @@ class TorrentService
                 $t->setActive(true);
             }
         }
+    }
+
+    protected function needReplaceTorrent(BaseTorrent $current, BaseTorrent $new): bool
+    {
+        return $current->getPeer() < $new->getPeer();
     }
 }
