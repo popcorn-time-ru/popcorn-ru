@@ -160,11 +160,12 @@ class TorrentGalaxy extends AbstractSpider
         foreach ($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
-                $timeString = $line->filter('div.tgxtablecell')->last()->text();
-                try {
-                    $time = \DateTime::createFromFormat('d/m/y H:i', $timeString);
-                } catch (\Exception $e) {
-                    $time = false;
+                $time = false;
+                $cells = $line->filter('div.tgxtablecell');
+                foreach ($cells as $cell) {
+                    if (preg_match('#^\d{2}/\d{2}/\d{2} \d{2}:\d{2}$#', $cell->nodeValue)) {
+                        $time = \DateTime::createFromFormat('d/m/y H:i', $cell->nodeValue);
+                    }
                 }
                 if ($time && $time < $after) {
                     continue;
