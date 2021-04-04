@@ -5,6 +5,7 @@ namespace App\Entity\Torrent;
 use App\Entity\BaseMedia;
 use App\Entity\File;
 use App\Entity\MySqlString;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -43,25 +44,29 @@ abstract class BaseTorrent
     protected $mediaId;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @ORM\Column(type="datetime")
      */
     protected $lastCheckAt;
-    public function check() { $this->lastCheckAt = new \DateTime(); return $this;}
+    public function check() { $this->lastCheckAt = new DateTime(); return $this;}
+    public function isChecked(DateTime $date = null) {
+        $interval = $this->lastCheckAt->diff($date ?: new DateTime());
+        return $interval->days < 1;
+    }
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @ORM\Column(type="datetime")
      */
     protected $syncAt;
     public function sync() {
-        $this->lastCheckAt = new \DateTime();
-        $this->syncAt = new \DateTime();
+        $this->lastCheckAt = new DateTime();
+        $this->syncAt = new DateTime();
         return $this;
     }
-    public function isSynced() {
-        $lastSyncInterval = $this->lastCheckAt->diff(new \DateTime());
-        return $lastSyncInterval->days < 1;
+    public function isSynced(DateTime $date = null) {
+        $interval = $this->syncAt->diff($date ?: new DateTime());
+        return $interval->days < 1;
     }
 
     /**

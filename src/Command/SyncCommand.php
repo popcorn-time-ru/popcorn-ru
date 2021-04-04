@@ -73,16 +73,22 @@ class SyncCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $daysDelete = $input->getOption('days-delete');
-        $daysCheck = $input->getOption('days-check');
+        $dateDelete = new \DateTime($input->getOption('days-delete') . ' days ago');
+        $dateCheck = new \DateTime($input->getOption('days-check') . ' days ago');
         $limit = $input->getArgument('limit');
 
-        $torrentsDelete = $this->torrentRepository->getNotSyncAndInactive(new \DateTime($daysDelete . ' days ago'), $limit);
+        $torrentsDelete = $this->torrentRepository->getNotSyncAndInactive($dateDelete, $limit);
         foreach ($torrentsDelete as $torrent) {
-            $this->torrentRepository->delete($torrent);
+            if ($torrent->isChecked($dateCheck)) {
+                $this->torrentRepository->delete($torrent);
+            } else {
+                $this->sendDelayed(
+                    new Message(json_encode(['type' => 'torrent', 'id' => $torrent->getId()->toString()]))
+                );
+            }
         }
 
-        $torrents = $this->torrentRepository->getOld(new \DateTime($daysCheck . ' days ago'), $limit);
+        $torrents = $this->torrentRepository->getOld($dateCheck, $limit);
 
         $this->logger->info('Update old torrents', ['count' => count($torrents)]);
         foreach ($torrents as $torrent) {
@@ -91,7 +97,7 @@ class SyncCommand extends Command
             );
         }
 
-        $shows = $this->showRepository->getOld(new \DateTime($daysCheck . ' days ago'), $limit);
+        $shows = $this->showRepository->getOld($dateCheck, $limit);
 
         $this->logger->info('Update old shows', ['count' => count($shows)]);
         foreach ($shows as $show) {
@@ -100,7 +106,7 @@ class SyncCommand extends Command
             );
         }
 
-        $movies = $this->movieRepository->getOld(new \DateTime($daysCheck . ' days ago'), $limit);
+        $movies = $this->movieRepository->getOld($dateCheck, $limit);
 
         $this->logger->info('Update old movies', ['count' => count($movies)]);
         foreach ($movies as $movie) {

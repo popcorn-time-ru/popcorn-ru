@@ -74,7 +74,7 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
             if ($data['type'] === 'torrent') {
                 /** @var BaseTorrent $torrent */
                 $torrent = $this->torrentRepository->find($data['id']);
-                if (!$torrent || $torrent->isSynced()) {
+                if (!$torrent || $torrent->isChecked()) {
                     return self::ACK;
                 }
                 $topicMessage = new \Enqueue\Client\Message(JSON::encode([
