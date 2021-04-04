@@ -140,7 +140,7 @@ class T1337x extends AbstractSpider
             /** @var Crawler $line */
             if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
                 $timeString = $line->filter('td.coll-date')->first()->html();
-                $timeString = str_replace($timeString, "'", '');
+                $timeString = str_replace("'", '', $timeString);
                 try {
                     $time = new \DateTime($timeString);
                 } catch (\Exception $e) {
