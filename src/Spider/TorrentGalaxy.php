@@ -23,8 +23,6 @@ class TorrentGalaxy extends AbstractSpider
     /** @var Client */
     private $client;
 
-    private $context;
-
     public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
     {
         //$torProxy = '';

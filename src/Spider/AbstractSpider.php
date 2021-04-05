@@ -27,6 +27,8 @@ abstract class AbstractSpider implements SpiderInterface
     /** @var LoggerInterface */
     protected $logger;
 
+    protected $context;
+
     public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
     {
         $this->torrentService = $torrentService;
@@ -331,7 +333,7 @@ abstract class AbstractSpider implements SpiderInterface
             return $search;
         }
 
-        $this->logger->warning('Unknown Language', ['lang' => $lang]);
+        $this->logger->warning('Unknown Language', $this->context + ['lang' => $lang]);
 
         return '';
     }

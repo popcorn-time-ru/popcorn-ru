@@ -22,8 +22,6 @@ class Rutor extends AbstractSpider
     /** @var Client */
     private $client;
 
-    private $context;
-
     public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
     {
         parent::__construct($torrentService, $episodeService, $logger);

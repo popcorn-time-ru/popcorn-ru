@@ -30,8 +30,6 @@ class NnmClub extends AbstractSpider
     /** @var Client */
     private $client;
 
-    private $context;
-
     public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
     {
         parent::__construct($torrentService, $episodeService, $logger);
