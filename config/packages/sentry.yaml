@@ -6,6 +6,7 @@ sentry:
             enabled: true
             level: error
     options:
+        error_types: E_ALL
         excluded_exceptions:
             - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 
