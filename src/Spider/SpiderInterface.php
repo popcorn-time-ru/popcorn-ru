@@ -16,5 +16,7 @@ interface SpiderInterface
 
     public function getName(): string;
 
+    public function getPriority(BaseTorrent $torrent): int;
+
     public function getSource(BaseTorrent $torrent): string;
 }

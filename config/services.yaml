@@ -57,5 +57,6 @@ services:
         tags:
             - { name: request.param_converter, converter: locale_params }
     App\Service\SpiderSelector:
+        public: true
         arguments:
             - !tagged_iterator 'tracker.spider'

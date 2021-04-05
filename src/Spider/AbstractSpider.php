@@ -41,6 +41,11 @@ abstract class AbstractSpider implements SpiderInterface
         return (new ReflectionClass($this))->getShortName();
     }
 
+    public function getPriority(BaseTorrent $torrent): int
+    {
+        return 0;
+    }
+
     public function getSource(BaseTorrent $torrent): string
     {
         return '';

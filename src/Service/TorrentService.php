@@ -18,6 +18,7 @@ use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TorrentService
 {
@@ -42,6 +43,9 @@ class TorrentService
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var ContainerInterface */
+    private $container;
+
     /**
      * TorrentService constructor.
      *
@@ -54,6 +58,7 @@ class TorrentService
      * @param LoggerInterface        $logger
      */
     public function __construct(
+        ContainerInterface $container,
         MediaService $mediaInfo,
         EntityManagerInterface $em,
         ProducerInterface $producer,
@@ -69,6 +74,7 @@ class TorrentService
         $this->producer = $producer;
         $this->em = $em;
         $this->logger = $logger;
+        $this->container = $container;
     }
 
     public function searchMovieByTitleAndYear(string $title, int $year)
@@ -222,6 +228,14 @@ class TorrentService
 
     protected function needReplaceTorrent(BaseTorrent $current, BaseTorrent $new): bool
     {
+        /** @var SpiderSelector $selector */
+        $selector = $this->container->get(SpiderSelector::class);
+        $priorityCurrent = $selector->get($current->getProvider())->getPriority($current);
+        $priorityNew = $selector->get($new->getProvider())->getPriority($new);
+
+        if ($priorityCurrent !== $priorityNew) {
+            return $priorityCurrent < $priorityNew;
+        }
         return $current->getPeer() < $new->getPeer();
     }
 }

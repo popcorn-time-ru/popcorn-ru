@@ -3,6 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\Movie;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
@@ -26,6 +27,14 @@ class Yts extends AbstractSpider
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
         ]);
+    }
+
+    public function getPriority(BaseTorrent $torrent): int
+    {
+        if ($torrent->getLanguage() === 'en') {
+            return 10;
+        }
+        return parent::getPriority($torrent);
     }
 
     public function getForumKeys(): array
