@@ -75,6 +75,7 @@ class TorrentGalaxy extends AbstractSpider
             $this->logger->info('empty torrent details', $this->context);
             return;
         }
+        /** @var Crawler $post */
         preg_match('#Torrent details for "(.*?)"#', $post->text(), $m);
         $title = $m[1];
 
@@ -86,6 +87,14 @@ class TorrentGalaxy extends AbstractSpider
             if (!$imdb) {
                 return;
             }
+        }
+
+        // remove "Similar torrents" block - incorrect quality calculate
+        $simular = $post->filterXPath('//h3[contains(text(), "Similar torrents")]');
+        if ($simular->count()) {
+            $simularPanel = $simular->closest('div.panel');
+            $simularNode = $simularPanel->getNode(0);
+            $simularNode->parentNode->removeChild($simularNode);
         }
 
         $quality = $this->getQuality($post);
