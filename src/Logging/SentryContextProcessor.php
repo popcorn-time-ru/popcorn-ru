@@ -16,7 +16,7 @@ class SentryContextProcessor implements ProcessorInterface
             if ($key === 'extra') {
                 continue;
             }
-            $record['context']['extra'][$key] = is_scalar($val) ? $val : json_encode($val);
+            $record['context']['extra'][$key] = $val;
         }
         return $record;
     }
