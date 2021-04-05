@@ -112,6 +112,11 @@ class Rutor extends AbstractSpider
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
+        if (strpos($crawler->html(), '<h1>Раздача не существует!</h1>')) {
+            $this->torrentService->deleteTorrent($this->getName(), $topic->id);
+            return;
+        }
+
         preg_match('#\'/descriptions/(\d+).files\'#', $crawler->html(), $m);
         if (empty($m)) {
             $this->logger->error('No File List', $this->context + ['html' => $crawler->html()]);

@@ -137,6 +137,21 @@ class TorrentService
         $this->producer->sendEvent($topic, $torrentMessage);
     }
 
+    public function deleteTorrent(string $provider, string $externalId)
+    {
+        $torrent = $this->torrentRepo->findByProviderAndExternalId(
+            $provider,
+            $externalId
+        );
+
+        if (!$torrent) {
+            return;
+        }
+
+        $this->torrentRepo->delete($torrent);
+        $this->em->flush();
+    }
+
     public function updateActive(UuidInterface $torrentId)
     {
         $torrent = $this->torrentRepo->find($torrentId);
