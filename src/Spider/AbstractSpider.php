@@ -135,6 +135,8 @@ abstract class AbstractSpider implements SpiderInterface
         static $languagesMap = [
             'Spanish' => 'es',
             'Greek' => 'el',
+            'Japanese' => 'ja',
+            'Other / Multiple' => '',
         ];
         static $languages = [
             'aa' => 'Afar',
