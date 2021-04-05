@@ -130,6 +130,9 @@ abstract class AbstractSpider implements SpiderInterface
 
     protected function langName2IsoCode(string $lang): string
     {
+        static $languagesMap = [
+            'Spanish' => 'es',
+        ];
         static $languages = [
             'aa' => 'Afar',
             'ab' => 'Abkhaz',
@@ -317,7 +320,19 @@ abstract class AbstractSpider implements SpiderInterface
             'zu' => 'Zulu',
         ];
 
-        return array_search($lang, $languages) ?: 'en';
+        if (isset($languagesMap[$lang])) {
+            return $languagesMap[$lang];
+        }
+
+        $search = array_search($lang, $languages);
+
+        if ($search) {
+            return $search;
+        }
+
+        $this->logger->warning('Unknown Language', ['lang' => $lang]);
+
+        return '';
     }
 
     public function approximateSize(string $size): int
