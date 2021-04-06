@@ -12,6 +12,7 @@ parameters:
         - fr
         - it
         - hi
+        - de
 
 services:
     # default configuration for services in *this* file
@@ -42,10 +43,6 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    Tmdb\Client: '@tmdb.client'
-    Tmdb\Repository\MovieRepository: '@tmdb.movie_repository'
-    Tmdb\Repository\TvRepository: '@tmdb.tv_repository'
-    Tmdb\Repository\GenreRepository: '@tmdb.genre_repository'
     Traktor\Client:
         calls:
             - [setApiKey, ['%env(resolve:TRAKT_KEY)%']]
@@ -56,6 +53,7 @@ services:
     App\Request\LocaleParamConverter:
         tags:
             - { name: request.param_converter, converter: locale_params }
+
     App\Service\SpiderSelector:
         public: true
         arguments:

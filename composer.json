@@ -1,16 +1,21 @@
 {
+    "name": "popcorn/popcorn",
+    "description": "Popcorn Time API",
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": "^7.3",
+        "php": "^7.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "alanly/traktor": "dev-master",
         "enqueue/dbal": "^0.10",
         "enqueue/enqueue-bundle": "^0.10",
         "long-running/long-running": "^0.5",
+        "nyholm/psr7": "^1.4",
+        "php-http/cache-plugin": "^1.7",
+        "php-tmdb/symfony": "4.0.x-dev",
         "ramsey/uuid-doctrine": "^1.5",
-        "php-tmdb/symfony": "dev-master",
         "sensio/framework-extra-bundle": "^5.5",
         "sentry/sentry-symfony": "^3.2",
         "symfony/console": "^5.1",
@@ -23,8 +28,7 @@
         "symfony/orm-pack": "^2.0",
         "symfony/serializer-pack": "^1.0",
         "symfony/twig-bundle": "^5.1",
-        "symfony/yaml": "^5.1",
-        "alanly/traktor": "dev-master"
+        "symfony/yaml": "^5.1"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
@@ -33,7 +37,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.3"
+            "php": "7.4"
         },
         "preferred-install": {
             "*": "dist"

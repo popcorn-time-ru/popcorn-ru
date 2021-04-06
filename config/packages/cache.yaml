@@ -1,5 +1,10 @@
 framework:
     cache:
+        pools:
+            cache.tmdb:
+                adapter: cache.adapter.filesystem
+                default_lifetime: 86400
+
         # Unique name of your app: used to compute stable namespaces for cache keys.
         #prefix_seed: your_vendor_name/app_name
 

@@ -1,5 +1,41 @@
 {
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
+    },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.3"
+    },
+    "laminas/laminas-code": {
+        "version": "4.1.0"
+    },
+    "laminas/laminas-eventmanager": {
+        "version": "3.3.1"
+    },
+    "laminas/laminas-zendframework-bridge": {
+        "version": "1.2.0"
+    },
+    "nyholm/psr7": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "0cd4d2d0e7f646fda75f9944f747a56e6ed13d4c"
+        },
+        "files": [
+            "config/packages/nyholm_psr7.yaml"
+        ]
+    },
     "php": {
         "version": "7.3"
+    },
+    "php-http/cache-plugin": {
+        "version": "1.7.1"
+    },
+    "psr/simple-cache": {
+        "version": "1.0.1"
+    },
+    "symfony/proxy-manager-bridge": {
+        "version": "v5.2.4"
     }
 }

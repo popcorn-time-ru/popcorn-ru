@@ -1,4 +1,28 @@
 tmdb_symfony:
   api_key: '%env(TMDB_API_KEY)%'
+  cache:
+    enabled: true
+    adapter: cache.tmdb
+  options:
+    event_dispatcher:
+      adapter: Symfony\Component\EventDispatcher\EventDispatcher
+    secure: false
+    http:
+      client: Symfony\Component\HttpClient\Psr18Client
+      request_factory: Nyholm\Psr7\Factory\Psr17Factory
+      response_factory: Nyholm\Psr7\Factory\Psr17Factory
+      stream_factory: Nyholm\Psr7\Factory\Psr17Factory
+      uri_factory: Nyholm\Psr7\Factory\Psr17Factory
   twig_extension:
     enabled: false
+
+services:
+  Symfony\Component\HttpClient\Psr18Client:
+    class: Symfony\Component\HttpClient\Psr18Client
+
+  Nyholm\Psr7\Factory\Psr17Factory:
+    class: Nyholm\Psr7\Factory\Psr17Factory
+
+  Symfony\Component\EventDispatcher\EventDispatcher:
+    tags:
+      - { name: tmdb_symfony.psr17.event_dispatchers }
