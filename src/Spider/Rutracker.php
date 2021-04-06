@@ -27,12 +27,17 @@ class Rutracker extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
+    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
     {
+        $torProxy = '';
         parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
+            RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
+            RequestOptions::PROXY => $torProxy,
+            'curl' => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
             'cookies' => new FileCookieJar(sys_get_temp_dir() . '/rutracker.cookie.json', true)
         ]);
     }
@@ -164,6 +169,12 @@ class Rutracker extends AbstractSpider
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
+        // тему удалили
+        if (strpos($crawler->html(), '<div class="mrg_16">Тема не найдена</div>')) {
+            $this->torrentService->deleteTorrent($this->getName(), $topic->id);
+            return;
+        }
+
         $post = $crawler->filter('#topic_main tbody.row1')->first();
         $title = $crawler->filter('h1.maintitle a#topic-title')->first()->text();
 
@@ -186,6 +197,7 @@ class Rutracker extends AbstractSpider
 
         preg_match('#"(magnet[^"]+)"#', $torrentBlock->html(), $m);
         if (empty($m[1])) {
+            $this->torrentService->deleteTorrent($this->getName(), $topic->id);
             $this->logger->warning('Not Magnet torrent', $this->context);
             return;
         }
