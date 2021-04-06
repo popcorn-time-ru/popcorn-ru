@@ -34,6 +34,11 @@ class T1337x extends AbstractSpider
         ]);
     }
 
+    public function getPriority(BaseTorrent $torrent): int
+    {
+        return -10;
+    }
+
     public function getSource(BaseTorrent $torrent): string
     {
         return self::BASE_URL . ltrim($torrent->getProviderExternalId(), '/');
