@@ -153,13 +153,13 @@ class MediaService
             ->setImdb($showInfo->getExternalIds()->getImdbId())
             ->setTvdb($showInfo->getExternalIds()->getTvdbId() ?? $showInfo->getExternalIds()->getImdbId())
             ->setTitle($showInfo->getOriginalName())
-            ->setYear($showInfo->getFirstAirDate()->format('Y'))
+            ->setYear($showInfo->getFirstAirDate() ? $showInfo->getFirstAirDate()->format('Y') : '')
             ->setSynopsis($showInfo->getOverview())
             ->setAirDay('') // TODO: инфы нет
             ->setAirTime('') // TODO: инфы нет
             ->setStatus($showInfo->getStatus())
             ->setNumSeasons($showInfo->getNumberOfSeasons())
-            ->setLastUpdated($showInfo->getLastAirDate()->getTimestamp())
+            ->setLastUpdated($showInfo->getLastAirDate() ? $showInfo->getLastAirDate()->getTimestamp() : 0)
         ;
         /** @var Country $country */
         $country = current($showInfo->getOriginCountry()->toArray());
