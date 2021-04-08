@@ -54,6 +54,9 @@ class MediaService
     public function getSeasonEpisodes(Show $show, int $season): array
     {
         $search = $this->client->getFindApi()->findBy($show->getImdb(), ['external_source' => 'imdb_id']);
+        if (empty($search['tv_results'])) {
+            return [];
+        }
         $id = $search['tv_results'][0]['id'];
 
         try {
