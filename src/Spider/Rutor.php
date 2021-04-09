@@ -221,6 +221,7 @@ class Rutor extends AbstractSpider
             return null;
         }
         $names = array_map('trim', explode('/', $match[1]));
+        $names = array_filter($names);
 
         foreach ($names as $name) {
             $imdb = $isSerial

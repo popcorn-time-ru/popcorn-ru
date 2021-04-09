@@ -304,6 +304,9 @@ class Rutracker extends AbstractSpider
                 $isSerial = true;
                 continue;
             }
+            if (empty($title)) {
+                continue;
+            }
             $names[] = $title;
         }
 

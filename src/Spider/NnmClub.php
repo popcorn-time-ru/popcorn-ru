@@ -299,6 +299,7 @@ class NnmClub extends AbstractSpider
         }
         $titleStr = preg_replace('#\(.*?\)#', '', $match[1]);
         $names = array_map('trim', explode('/', $titleStr));
+        $names = array_filter($names);
 
         foreach ($names as $name) {
             $imdb = $isSerial
