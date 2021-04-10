@@ -35,10 +35,15 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         }
         $data = [
             'url' => $object->getUrl(),
-            'seeds' => $object->getSeed(),
-            'peers' => $object->getPeer(),
             'provider' => $object->getProvider(),
         ];
+        if ($object instanceof MovieTorrent) {
+            $data['seed'] = $object->getSeed();
+            $data['peer'] = $object->getPeer();
+        } else {
+            $data['seeds'] = $object->getSeed();
+            $data['peers'] = $object->getPeer();
+        }
         if ($context['mode'] === 'torrents') {
             $data['title'] = $object->getProviderTitle();
             $provider = $this->spiderSelector->get($object->getProvider());
