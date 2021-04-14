@@ -22,6 +22,7 @@ git clone
 composer install
 bin/console doctrine:database:create
 bin/console doctrine:schema:create
+bin/console enqueue:setup-broker
 ```
 
 configure cron from `deploy/roles/project/templates/crontab.j2`
