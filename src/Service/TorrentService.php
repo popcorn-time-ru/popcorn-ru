@@ -161,6 +161,9 @@ class TorrentService
     public function updateActive(UuidInterface $torrentId)
     {
         $torrent = $this->torrentRepo->find($torrentId);
+        if (!$torrent) {
+            return;
+        }
         if ($torrent instanceof MovieTorrent) {
             $this->selectActiveForMovie($torrent->getMedia(), $torrent->getLanguage());
         } else {
