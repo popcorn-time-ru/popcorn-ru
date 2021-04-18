@@ -2,8 +2,29 @@
     "doctrine/deprecations": {
         "version": "v0.5.3"
     },
+    "elasticsearch/elasticsearch": {
+        "version": "v6.7.2"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"
+    },
+    "friendsofsymfony/elastica-bundle": {
+        "version": "5.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "5.0",
+            "ref": "46c9cd2c1e07f0fcfd97e96f12b03b2e0845c4cd"
+        },
+        "files": [
+            "config/packages/fos_elastica.yaml"
+        ]
+    },
+    "guzzlehttp/ringphp": {
+        "version": "1.1.1"
+    },
+    "guzzlehttp/streams": {
+        "version": "3.0.0"
     },
     "laminas/laminas-code": {
         "version": "4.1.0"
@@ -26,6 +47,9 @@
             "config/packages/nyholm_psr7.yaml"
         ]
     },
+    "pagerfanta/pagerfanta": {
+        "version": "v2.7.1"
+    },
     "php": {
         "version": "7.3"
     },
@@ -34,6 +58,12 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "react/promise": {
+        "version": "v2.8.0"
+    },
+    "ruflin/elastica": {
+        "version": "6.1.5"
     },
     "symfony/proxy-manager-bridge": {
         "version": "v5.2.4"

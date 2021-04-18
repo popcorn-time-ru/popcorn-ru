@@ -1,0 +1,47 @@
+# Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
+fos_elastica:
+    clients:
+        default: { url: '%env(ELASTICSEARCH_URL)%' }
+    indexes:
+        movies:
+            types:
+                movie:
+                    properties:
+                        imdb: ~
+                        title: ~
+                        #synopsis: ~
+                        existTranslations: ~
+                        locales:
+                            type: "nested"
+                            properties:
+                                locale: ~
+                                title: ~
+                                #synopsis: ~
+                    persistence:
+                        driver: orm
+                        model: App\Entity\Movie
+                        provider: ~
+                        finder: ~
+                        elastica_to_model_transformer:
+                            ignore_missing: true
+        shows:
+            types:
+                show:
+                    properties:
+                        imdb: ~
+                        title: ~
+                        #synopsis: ~
+                        existTranslations: ~
+                        locales:
+                            type: "nested"
+                            properties:
+                                locale: ~
+                                title: ~
+                                #synopsis: ~
+                    persistence:
+                        driver: orm
+                        model: App\Entity\Show
+                        provider: ~
+                        finder: ~
+                        elastica_to_model_transformer:
+                            ignore_missing: true
