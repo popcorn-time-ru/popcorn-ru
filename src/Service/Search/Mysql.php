@@ -21,7 +21,7 @@ class Mysql implements SearchInterface
     public function search($qb, ClassMetadata $class, PageRequest $pageRequest, string $locale)
     {
         if ($pageRequest->keywords) {
-            $localeClass = $class === Show::class ? ShowLocale::class : MovieLocale::class;
+            $localeClass = $class->getName() === Show::class ? ShowLocale::class : MovieLocale::class;
             $mediaIds = $this->localeRepository->findMediaIdsByTitle($pageRequest->keywords, $localeClass);
             $qb
                 ->andWhere('m.title LIKE :title OR m.imdb = :imdb OR m.id IN (:ids)')
