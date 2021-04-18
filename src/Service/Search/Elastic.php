@@ -6,6 +6,7 @@ use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
 use App\Request\PageRequest;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use FOS\ElasticaBundle\Finder\TransformedFinder;
 
 class Elastic implements SearchInterface
@@ -35,7 +36,7 @@ class Elastic implements SearchInterface
         return $show->getEpisodes()->count() > 0;
     }
 
-    public function search($qb, $class, PageRequest $pageRequest, string $locale)
+    public function search($qb, ClassMetadata $class, PageRequest $pageRequest, string $locale)
     {
         $boolQuery = new \Elastica\Query\BoolQuery();
 
@@ -68,7 +69,7 @@ class Elastic implements SearchInterface
 
         $boolQuery->setMinimumShouldMatch(1);
 
-        $finder = $class === Show::class ? $this->showFiner : $this->moviesFiner;
+        $finder = $class->getName() === Show::class ? $this->showFiner : $this->moviesFiner;
         /** @var BaseMedia[] $result */
         $result = $finder->find($boolQuery, 200);
         $ids= [];

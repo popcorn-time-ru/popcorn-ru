@@ -7,6 +7,7 @@ use App\Entity\Locale\ShowLocale;
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Request\PageRequest;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 class Mysql implements SearchInterface
 {
@@ -17,7 +18,7 @@ class Mysql implements SearchInterface
         $this->localeRepository = $localeRepository;
     }
 
-    public function search($qb, $class, PageRequest $pageRequest, string $locale)
+    public function search($qb, ClassMetadata $class, PageRequest $pageRequest, string $locale)
     {
         if ($pageRequest->keywords) {
             $localeClass = $class === Show::class ? ShowLocale::class : MovieLocale::class;
@@ -35,7 +36,7 @@ class Mysql implements SearchInterface
         }
         $qb->andWhere('m.existTranslations LIKE :locale')
             ->setParameter('locale', '%'.$locale.'%');
-        if ($class === Show::class) {
+        if ($class->getName() === Show::class) {
             $qb->andWhere('m.episodes IS NOT EMPTY');
         }
         return $qb;
