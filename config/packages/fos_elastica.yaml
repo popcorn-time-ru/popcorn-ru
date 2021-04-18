@@ -6,9 +6,11 @@ fos_elastica:
         movies:
             types:
                 movie:
+                    indexable_callback: ['App\Service\Search\Elastic', 'isIndexMovie']
                     properties:
                         imdb: ~
                         title: ~
+                        genres: ~
                         #synopsis: ~
                         existTranslations: ~
                         locales:
@@ -24,12 +26,15 @@ fos_elastica:
                         finder: ~
                         elastica_to_model_transformer:
                             ignore_missing: true
+                        listener: ~
         shows:
             types:
                 show:
+                    indexable_callback: ['App\Service\Search\Elastic', 'isIndexShow']
                     properties:
                         imdb: ~
                         title: ~
+                        genres: ~
                         #synopsis: ~
                         existTranslations: ~
                         locales:
@@ -45,3 +50,4 @@ fos_elastica:
                         finder: ~
                         elastica_to_model_transformer:
                             ignore_missing: true
+                        listener: ~

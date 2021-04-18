@@ -34,6 +34,8 @@ TRAKT_KEY=
 SENTRY_DSN=
 ```
 
+Configure search in `config/services.yaml`
+
 if you have issues with some spiders setup tor node and configure tor proxy
 
 ``` bin/conole spider:run --all ``` for init filling database

@@ -9,6 +9,8 @@ use App\Entity\Movie;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
+use App\Service\Search\Mysql;
+use App\Service\Search\SearchInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
@@ -24,6 +26,8 @@ abstract class MediaRepository extends ServiceEntityRepository
     /** @var BaseLocaleRepository */
     private $localeRepository;
 
+    public SearchInterface $search;
+
     /**
      * MediaRepository constructor.
      *
@@ -31,10 +35,10 @@ abstract class MediaRepository extends ServiceEntityRepository
      * @param ManagerRegistry      $registry
      * @param                      $entityClass
      */
-    public function __construct(BaseLocaleRepository $localeRepository, ManagerRegistry $registry, $entityClass)
+    public function __construct(SearchInterface $search, ManagerRegistry $registry, $entityClass)
     {
         parent::__construct($registry, $entityClass);
-        $this->localeRepository = $localeRepository;
+        $this->search = $search;
     }
 
     public function flush(): void
@@ -72,15 +76,7 @@ abstract class MediaRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('m');
         if ($pageRequest->keywords) {
-            $class = $this instanceof ShowRepository ? ShowLocale::class : MovieLocale::class;
-            $mediaIds = $this->localeRepository->findMediaIdsByTitle($pageRequest->keywords, $class);
-            $qb
-                ->andWhere('m.title LIKE :title OR m.imdb = :imdb OR m.id IN (:ids)')
-                ->setParameters([
-                    'ids' => $mediaIds,
-                    'imdb' => $pageRequest->keywords,
-                    'title' => '%'.str_replace('%', '%%', $pageRequest->keywords).'%',
-                ]);
+            $qb = $this->search->search($qb, $this->_class, $pageRequest, $localeParams->contentLocale);
         }
         if ($pageRequest->genre) {
             $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
@@ -88,7 +84,7 @@ abstract class MediaRepository extends ServiceEntityRepository
         $qb->andWhere('m.existTranslations LIKE :locale')
             ->setParameter('locale', '%'.$localeParams->contentLocale.'%');
         if ($this instanceof ShowRepository) {
-            $qb->andWhere('m.episodes iS NOT EMPTY');
+            $qb->andWhere('m.episodes IS NOT EMPTY');
         }
         switch ($pageRequest->sort) {
             case 'title':

@@ -58,3 +58,10 @@ services:
         public: true
         arguments:
             - !tagged_iterator 'tracker.spider'
+
+    App\Service\Search\SearchInterface: '@App\Service\Search\Elastic'
+
+    App\Service\Search\Elastic:
+        arguments:
+            - '@fos_elastica.finder.movies.movie'
+            - '@fos_elastica.finder.shows.show'

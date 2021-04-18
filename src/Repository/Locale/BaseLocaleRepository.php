@@ -70,7 +70,6 @@ class BaseLocaleRepository extends ServiceEntityRepository
     /**
      * @param string $title
      * @param string $class
-     * @param string $field
      * @return string[]
      */
     public function findMediaIdsByTitle(string $title, string $class): array
