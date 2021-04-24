@@ -75,17 +75,7 @@ abstract class MediaRepository extends ServiceEntityRepository
     public function getPage(PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
     {
         $qb = $this->createQueryBuilder('m');
-        if ($pageRequest->keywords) {
-            $qb = $this->search->search($qb, $this->_class, $pageRequest, $localeParams->contentLocale);
-        }
-        if ($pageRequest->genre) {
-            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
-        }
-        $qb->andWhere('m.existTranslations LIKE :locale')
-            ->setParameter('locale', '%'.$localeParams->contentLocale.'%');
-        if ($this instanceof ShowRepository) {
-            $qb->andWhere('m.episodes IS NOT EMPTY');
-        }
+        $qb = $this->search->search($qb, $this->_class, $pageRequest, $localeParams->contentLocale, $offset, $limit);
         switch ($pageRequest->sort) {
             case 'title':
             case 'name':
@@ -120,7 +110,6 @@ abstract class MediaRepository extends ServiceEntityRepository
                 $qb->addOrderBy('m.rating.watchers', 'DESC');
                 break;
         }
-        $qb->setFirstResult($offset)->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
     }

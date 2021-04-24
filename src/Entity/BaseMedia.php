@@ -40,6 +40,7 @@ abstract class BaseMedia
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
+    public function getCreatedAt(): DateTime { return $this->createdAt; }
 
     /**
      * @var DateTime

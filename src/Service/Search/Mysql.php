@@ -8,6 +8,7 @@ use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Request\PageRequest;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\QueryBuilder;
 
 class Mysql implements SearchInterface
 {
@@ -18,7 +19,7 @@ class Mysql implements SearchInterface
         $this->localeRepository = $localeRepository;
     }
 
-    public function search($qb, ClassMetadata $class, PageRequest $pageRequest, string $locale)
+    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, string $locale, int $offset, int $limit): QueryBuilder
     {
         if ($pageRequest->keywords) {
             $localeClass = $class->getName() === Show::class ? ShowLocale::class : MovieLocale::class;
@@ -39,6 +40,7 @@ class Mysql implements SearchInterface
         if ($class->getName() === Show::class) {
             $qb->andWhere('m.episodes IS NOT EMPTY');
         }
+        $qb->setFirstResult($offset)->setMaxResults($limit);
         return $qb;
     }
 }

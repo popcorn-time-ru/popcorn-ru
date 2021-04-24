@@ -9,16 +9,39 @@ fos_elastica:
                     indexable_callback: ['App\Service\Search\Elastic', 'isIndexMovie']
                     properties:
                         imdb: ~
-                        title: ~
+                        title:
+                            type: "text"
+                            fielddata: true
                         genres: ~
+                        year:
+                            fielddata: true
+                        created:
+                            type: "date"
+                            property_path: createdAt
+                        released:
+                            type: "date"
+                            property_path: released
                         #synopsis: ~
                         existTranslations: ~
                         locales:
                             type: "nested"
                             properties:
                                 locale: ~
-                                title: ~
+                                title:
+                                    type: "text"
+                                    fielddata: true
                                 #synopsis: ~
+                        rating:
+                            type: "nested"
+                            properties:
+                                votes:
+                                    fielddata: true
+                                percentage:
+                                    fielddata: true
+                                watching:
+                                    fielddata: true
+                                watchers:
+                                    fielddata: true
                     persistence:
                         driver: orm
                         model: App\Entity\Movie
@@ -33,7 +56,17 @@ fos_elastica:
                     indexable_callback: ['App\Service\Search\Elastic', 'isIndexShow']
                     properties:
                         imdb: ~
-                        title: ~
+                        title:
+                            type: "text"
+                            fielddata: true
+                        year:
+                            fielddata: true
+                        created:
+                            type: "date"
+                            property_path: createdAt
+                        released:
+                            type: "date"
+                            property_path: lastUpdated
                         genres: ~
                         #synopsis: ~
                         existTranslations: ~
@@ -41,8 +74,21 @@ fos_elastica:
                             type: "nested"
                             properties:
                                 locale: ~
-                                title: ~
+                                title:
+                                    type: "text"
+                                    fielddata: true
                                 #synopsis: ~
+                        rating:
+                            type: "nested"
+                            properties:
+                                votes:
+                                    fielddata: true
+                                percentage:
+                                    fielddata: true
+                                watching:
+                                    fielddata: true
+                                watchers:
+                                    fielddata: true
                     persistence:
                         driver: orm
                         model: App\Entity\Show
