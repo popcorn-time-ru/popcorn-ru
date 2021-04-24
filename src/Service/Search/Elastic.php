@@ -38,7 +38,7 @@ class Elastic implements SearchInterface
         return $show->getEpisodes()->count() > 0;
     }
 
-    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, string $locale, int $offset, int $limit): QueryBuilder
+    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, string $locale, int $offset, int $limit): array
     {
         $boolQuery = new \Elastica\Query\BoolQuery();
 
@@ -79,16 +79,7 @@ class Elastic implements SearchInterface
 
         $finder = $class->getName() === Show::class ? $this->showFiner : $this->moviesFiner;
         /** @var BaseMedia[] $result */
-        $result = $finder->find($query);
-        $ids= [];
-        foreach($result as $item) {
-            $ids[] = $item->getId();
-        }
-        $qb
-            ->andWhere('m.id IN (:ids)')
-            ->setParameters(['ids' => $ids]);
-
-        return $qb;
+        return $finder->find($query);
     }
 
     private function buildSort(string $sort, string $order)

@@ -74,44 +74,14 @@ abstract class MediaRepository extends ServiceEntityRepository
      */
     public function getPage(PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
     {
-        $qb = $this->createQueryBuilder('m');
-        $qb = $this->search->search($qb, $this->_class, $pageRequest, $localeParams->contentLocale, $offset, $limit);
-        switch ($pageRequest->sort) {
-            case 'title':
-            case 'name':
-                $qb->addOrderBy('m.title', $pageRequest->order);
-                break;
-            case 'rating':
-                $qb->addOrderBy('m.rating.votes', $pageRequest->order);
-                $qb->addOrderBy('m.rating.percentage', $pageRequest->order);
-                break;
-            case 'released':
-            case 'updated':
-                if ($this instanceof MovieRepository) {
-                    $qb->addOrderBy('m.released', $pageRequest->order);
-                } else {
-                    $qb->addOrderBy('m.lastUpdated', $pageRequest->order);
-                }
-                break;
-            case 'last added':
-                $qb->addOrderBy('m.createdAt', $pageRequest->order);
-                break;
-            case 'trending':
-                $qb->addOrderBy('m.rating.watching', $pageRequest->order);
-                $qb->addOrderBy('m.rating.watchers', $pageRequest->order);
-                break;
-            case 'year':
-                $qb->addOrderBy('m.year', $pageRequest->order);
-                break;
-            default:
-                $qb->addOrderBy('m.rating.votes', 'DESC');
-                $qb->addOrderBy('m.rating.percentage', 'DESC');
-                $qb->addOrderBy('m.rating.watching', 'DESC');
-                $qb->addOrderBy('m.rating.watchers', 'DESC');
-                break;
-        }
-
-        return $qb->getQuery()->getResult();
+        return $this->search->search(
+            $this->createQueryBuilder('m'),
+            $this->_class,
+            $pageRequest,
+            $localeParams->contentLocale,
+            $offset,
+            $limit
+        );
     }
 
     public function getRandom(): BaseMedia
