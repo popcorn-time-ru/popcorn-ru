@@ -58,19 +58,18 @@ class Elastic implements SearchInterface
             $imdb = new \Elastica\Query\Term();
             $imdb->setTerm('imdb', $pageRequest->keywords);
             $boolQuery->addShould($imdb);
+
+            $boolQuery->setMinimumShouldMatch(1);
         }
         if ($pageRequest->genre) {
             $genre = new \Elastica\Query\Term();
             $genre->setTerm('genres', $pageRequest->genre);
+            $boolQuery->addMust($genre);
         }
 
         $lang = new \Elastica\Query\Term();
         $lang->setTerm('existTranslations', $locale);
         $boolQuery->addMust($lang);
-
-        if ($pageRequest->keywords || $pageRequest->genre) {
-            $boolQuery->setMinimumShouldMatch(1);
-        }
 
         $query = Query::create($boolQuery);
         $query->setFrom($offset)->setSize($limit);
