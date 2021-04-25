@@ -75,7 +75,7 @@ class ShowsController extends AbstractController
     public function page($page, PageRequest $pageParams, LocaleRequest $localeParams)
     {
         $shows = $this->repo->getPage($pageParams, $localeParams,
-            self::PAGE_SIZE * ($page - 1), self::PAGE_SIZE
+            self::PAGE_SIZE * max(0, $page - 1), self::PAGE_SIZE
         );
 
         $context = [
