@@ -107,17 +107,19 @@ class EpisodeService
         $found = false;
         foreach ($this->showCache[$key] as $episodeInfo) {
             if ($episodeInfo['episode_number'] == $e) {
-                if (!$item->getTvdb()) {
+                // Hack for unknown tvdbID in track
+                // tvdbID now is primary key on client
+                if ($item->getTvdb() <= 0) {
                     try {
                         $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
-                        $item->setTvdb($trakt->ids->tvdb ?? 0);
+                        $item->setTvdb($trakt->ids->tvdb ?? -$trakt->ids->trakt ?? 0);
                     } catch (\Exception $exception) {
                         $this->logger->error($exception->getMessage());
                     }
                 }
-                if (!$item->getTvdb()) {
-                    continue;
-                }
+                // if (!$item->getTvdb()) {
+                //     continue;
+                // }
 
                 $item
                     ->setTitle($episodeInfo['name'] ?: '')
