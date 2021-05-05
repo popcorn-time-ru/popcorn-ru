@@ -194,12 +194,12 @@ class EpisodeService
         // аналогично сезон 1 1 серия
         // аналогично сезон 1 серия 1
         $patterns = [
-            '#S(\d+).*(\d+)'.$th.' '.$episode.'#iu',
-            '#(\d+)'.$th.' '.$season.'.*(\d+)'.$th.' '.$episode.'#iu',
-            '#(\d+)'.$th.' '.$season.'.*'.$episode.' (\d+)'.$th.'#iu',
-            '#'.$season.' (\d+)'.$th.'.*E(\d+)#iu',
-            '#'.$season.' (\d+)'.$th.'.*(\d+)'.$th.' '.$episode.'#iu',
-            '#'.$season.' (\d+)'.$th.'.*'.$episode.' (\d+)'.$th.'#iu',
+            '#S(\d+).*?(\d+)'.$th.' '.$episode.'#iu',
+            '#(\d+)'.$th.' '.$season.'.*?(\d+)'.$th.' '.$episode.'#iu',
+            '#(\d+)'.$th.' '.$season.'.*?'.$episode.' (\d+)'.$th.'#iu',
+            '#'.$season.' (\d+)'.$th.'.*?E(\d+)#iu',
+            '#'.$season.' (\d+)'.$th.'.*?(\d+)'.$th.' '.$episode.'#iu',
+            '#'.$season.' (\d+)'.$th.'.*?'.$episode.' (\d+)'.$th.'#iu',
         ];
         foreach($patterns as $pattern) {
             if (preg_match($pattern, $dir . '/' . $file, $m)) {
