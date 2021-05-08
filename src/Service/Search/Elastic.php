@@ -13,6 +13,8 @@ use FOS\ElasticaBundle\Finder\TransformedFinder;
 
 class Elastic implements SearchInterface
 {
+    const MAX_LIMIT = 10000;
+
     protected TransformedFinder $moviesFiner;
     protected TransformedFinder $showFiner;
 
@@ -40,6 +42,10 @@ class Elastic implements SearchInterface
 
     public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, string $locale, int $offset, int $limit): array
     {
+        if (($offset + $limit) > self::MAX_LIMIT) {
+            return [];
+        }
+
         $boolQuery = new \Elastica\Query\BoolQuery();
 
         if ($pageRequest->keywords) {
