@@ -52,6 +52,7 @@ class Mysql implements SearchInterface
                 break;
             case 'rating':
                 $qb->addOrderBy('m.rating.percentage', $pageRequest->order);
+                $qb->addOrderBy('m.rating.votes', $pageRequest->order);
                 break;
             case 'released':
             case 'updated':

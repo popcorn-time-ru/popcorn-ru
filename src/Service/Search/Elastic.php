@@ -30,12 +30,12 @@ class Elastic implements SearchInterface
         $this->showFiner = $showFiner;
     }
 
-    public function isIndexMovie(Movie $movie)
+    public static function isIndexMovie(Movie $movie)
     {
         return true;
     }
 
-    public function isIndexShow(Show $show)
+    public static function isIndexShow(Show $show)
     {
         return $show->getEpisodes()->count() > 0;
     }
@@ -100,6 +100,7 @@ class Elastic implements SearchInterface
             case 'rating':
                 return [
                     'rating.percentage' => [ 'nested_path' => 'rating', 'order' => $order],
+                    'rating.votes' => [ 'nested_path' => 'rating', 'order' => $order],
                 ];
             case 'released':
             case 'updated':

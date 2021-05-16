@@ -2,6 +2,7 @@
 
 namespace App\Entity\VO;
 
+use App\Service\MediaService;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -40,6 +41,22 @@ class Rating
     protected $votes = 0;
     public function getVotes() { return $this->votes; }
     public function setVotes($votes) { $this->votes = $votes; return $this;}
+
+    /**
+     * @var float
+     * @ORM\Column(type="float")
+     */
+    protected $popularity = 0;
+    public function getPopularity() { return $this->popularity; }
+    public function setPopularity($popularity) { $this->popularity = $popularity; return $this;}
+
+    /**
+     * @var float
+     * @ORM\Column(type="float")
+     */
+    protected $weightRating = MediaService::IMDB_RATING;
+    public function getWeightRating() { return $this->weightRating; }
+    public function setWeightRating($weightRating) { $this->weightRating = $weightRating; return $this;}
 
     /**
      * @var integer

@@ -20,6 +20,8 @@ class MediaService
     private const US = 'US';
     private const TYPE_TRAILER = 'Trailer';
     public const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
+    public const IMDB_RATING = 7.0;
+    public const IMDB_COUNT = 3000;
 
     /** @var LocaleService */
     protected $localeService;
@@ -260,11 +262,16 @@ class MediaService
             $watching = [];
         }
 
+        $weightRating = ($info->getVoteCount() * $info->getVoteAverage() + self::IMDB_RATING * self::IMDB_COUNT)
+            / ($info->getVoteCount() + self::IMDB_COUNT);
+
         $media->getRating()
             ->setVotes($trakt->votes)
             ->setWatching(count($watching))
             ->setWatchers($trakt->watchers)
             ->setPercentage($info->getVoteAverage() * 10)
+            ->setPopularity($info->getPopularity())
+            ->setWeightRating($weightRating)
         ;
     }
 

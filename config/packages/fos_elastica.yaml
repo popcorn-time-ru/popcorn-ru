@@ -42,6 +42,10 @@ fos_elastica:
                                     fielddata: true
                                 watchers:
                                     fielddata: true
+                                popularity:
+                                    fielddata: true
+                                weightRating:
+                                    fielddata: true
                     persistence:
                         driver: orm
                         model: App\Entity\Movie
@@ -88,6 +92,10 @@ fos_elastica:
                                 watching:
                                     fielddata: true
                                 watchers:
+                                    fielddata: true
+                                popularity:
+                                    fielddata: true
+                                weightRating:
                                     fielddata: true
                     persistence:
                         driver: orm
