@@ -47,8 +47,10 @@ class Mysql implements SearchInterface
             case 'name':
                 $qb->addOrderBy('m.title', $pageRequest->order);
                 break;
-            case 'rating':
+            case 'popularity':
                 $qb->addOrderBy('m.rating.votes', $pageRequest->order);
+                break;
+            case 'rating':
                 $qb->addOrderBy('m.rating.percentage', $pageRequest->order);
                 break;
             case 'released':

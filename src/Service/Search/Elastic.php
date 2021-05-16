@@ -93,9 +93,12 @@ class Elastic implements SearchInterface
             case 'title':
             case 'name':
                 return [ 'locales.title' => $order, 'title' => $order ];
-            case 'rating':
+            case 'popularity':
                 return [
                     'rating.votes' => [ 'nested_path' => 'rating', 'order' => $order],
+                ];
+            case 'rating':
+                return [
                     'rating.percentage' => [ 'nested_path' => 'rating', 'order' => $order],
                 ];
             case 'released':
