@@ -110,6 +110,29 @@ class ShowsController extends AbstractController
     }
 
     /**
+     * @Route("/show/{id}/suggest", name="show_suggest")
+     * @ParamConverter(name="localeParams", converter="locale_params")
+     */
+    public function suggest($id, LocaleRequest $localeParams)
+    {
+        $show = $this->repo->findByImdb($id);
+        if (!$show) {
+            throw new NotFoundHttpException();
+        }
+
+        $shows = $this->repo->findManyByImdb($show->getSuggest());
+
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+            'localeParams' => $localeParams,
+        ];
+        $data = $this->serializer->serialize($shows, 'json', $context);
+
+        return new CacheJsonResponse($data, true);
+    }
+
+    /**
      * @Route("/show/{id}/torrents", name="show_torrents")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */

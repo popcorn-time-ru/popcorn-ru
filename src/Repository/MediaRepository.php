@@ -51,6 +51,11 @@ abstract class MediaRepository extends ServiceEntityRepository
         return $this->findOneBy(['imdb' => $imdbId]);
     }
 
+    public function findManyByImdb(array $imdbIds): array
+    {
+        return $this->findBy(['imdb' => $imdbIds]);
+    }
+
     /**
      * @param \DateTime $before
      * @param int       $limit

@@ -110,6 +110,29 @@ class MoviesController extends AbstractController
     }
 
     /**
+     * @Route("/movie/{id}/suggest", name="movie_suggest")
+     * @ParamConverter(name="localeParams", converter="locale_params")
+     */
+    public function suggest($id, LocaleRequest $localeParams)
+    {
+        $movie = $this->repo->findByImdb($id);
+        if (!$movie) {
+            throw new NotFoundHttpException();
+        }
+
+        $movies = $this->repo->findManyByImdb($movie->getSuggest());
+
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'list',
+            'localeParams' => $localeParams,
+        ];
+        $data = $this->serializer->serialize($movies, 'json', $context);
+
+        return new CacheJsonResponse($data, true);
+    }
+
+    /**
      * @Route("/movie/{id}/torrents", name="movie_torrents")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
