@@ -181,6 +181,7 @@ class MediaService
         $slug = strtolower($slug);
         $show->setSlug($slug);
 
+        $this->fillSuggest($show, $showInfo);
         $this->fillRating($show, $showInfo);
         $this->fillImagesGenres($show, $showInfo);
         $this->localeService->fillMedia($show, $showInfo);
@@ -217,6 +218,7 @@ class MediaService
             ->setTrailer($trailer)
         ;
 
+        $this->fillSuggest($movie, $movieInfo);
         $this->fillRating($movie, $movieInfo);
         $this->fillImagesGenres($movie, $movieInfo);
         $this->localeService->fillMedia($movie, $movieInfo);
@@ -314,5 +316,23 @@ class MediaService
         }
         $genres = $genres ?: ['unknown'];
         $media->setGenres($genres);
+    }
+
+    /**
+     * @param BaseMedia $media
+     * @param TmdbShow|TmdbMovie $info
+     */
+    private function fillSuggest(BaseMedia $media, $info)
+    {
+        $iterator = new \AppendIterator();
+        $iterator->append($info->getRecommendations()->getIterator());
+        $iterator->append($info->getSimilar()->getIterator());
+        $api = $info instanceof TmdbMovie ? $this->client->getMoviesApi() : $this->client->getTvApi();
+        $imdbIds = [];
+        foreach ($iterator as $r) {
+            $ids = $api->getExternalIds($r->getId());
+            $imdbIds[] = $ids['imdb_id'];
+        }
+        $media->setSuggest(array_filter($imdbIds));
     }
 }

@@ -136,12 +136,20 @@ abstract class BaseMedia
     public function setRuntime($runtime) { $this->runtime = $runtime; return $this;}
 
     /**
-     * @var array
-     * @ORM\Column(type="simple_array")
+     * @var string[]
+     * @ORM\Column(type="simple_array", nullable=true)
      */
     protected $genres;
     public function getGenres() { return $this->genres; }
     public function setGenres($genres) { $this->genres = $genres; sort($this->genres); return $this;}
+
+    /**
+     * @var string[]
+     * @ORM\Column(type="simple_array", nullable=true)
+     */
+    protected $suggest;
+    public function getSuggest() { return $this->suggest; }
+    public function setSuggest($suggest) { $this->suggest = [];array_unique($suggest); sort($this->suggest); return $this;}
 
     /**
      * @var Images
