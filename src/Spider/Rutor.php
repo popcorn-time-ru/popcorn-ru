@@ -174,7 +174,8 @@ class Rutor extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage('ru');
+            ->setLanguage('ru')
+        ;
 
         $torrent->setFiles($files);
 

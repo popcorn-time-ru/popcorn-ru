@@ -107,7 +107,7 @@ class TorrentService
         return $media;
     }
 
-    public function findExistOrCreateTorrent(string $provider, string $externalId, BaseTorrent $new)
+    public function findExistOrCreateTorrent(string $provider, string $externalId, BaseTorrent $new): BaseTorrent
     {
         $torrent = $this->torrentRepo->findByProviderAndExternalId(
             $provider,

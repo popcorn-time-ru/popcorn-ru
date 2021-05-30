@@ -97,7 +97,7 @@ abstract class AbstractSpider implements SpiderInterface
         return count($ids) == 1 ? current($ids) : null;
     }
 
-    protected function getTorrentByImdb(string $topicId, string $imdb)
+    protected function getTorrentByImdb(string $topicId, string $imdb): ?BaseTorrent
     {
         $media = $this->torrentService->getMediaByImdb($imdb);
         if (!$media) {
