@@ -65,6 +65,12 @@
     "ruflin/elastica": {
         "version": "6.1.5"
     },
+    "symfony/password-hasher": {
+        "version": "v5.3.0"
+    },
+    "symfony/polyfill-php81": {
+        "version": "v1.23.0"
+    },
     "symfony/proxy-manager-bridge": {
         "version": "v5.2.4"
     }
