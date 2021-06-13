@@ -23,18 +23,8 @@ use Ramsey\Uuid\Uuid;
  */
 abstract class MediaRepository extends ServiceEntityRepository
 {
-    /** @var BaseLocaleRepository */
-    private $localeRepository;
-
     public SearchInterface $search;
 
-    /**
-     * MediaRepository constructor.
-     *
-     * @param BaseLocaleRepository $localeRepository
-     * @param ManagerRegistry      $registry
-     * @param                      $entityClass
-     */
     public function __construct(SearchInterface $search, ManagerRegistry $registry, $entityClass)
     {
         parent::__construct($registry, $entityClass);

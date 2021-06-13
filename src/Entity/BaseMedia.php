@@ -19,35 +19,32 @@ use Ramsey\Uuid\UuidInterface;
 abstract class BaseMedia
 {
     /**
-     * @var UuidInterface
-     *
      * @ORM\Id()
      * @ORM\Column(type="uuid")
      */
-    protected $id;
+    protected UuidInterface $id;
     public function getId(): UuidInterface { return $this->id; }
 
     public function __construct()
     {
         $this->id = Uuid::uuid4();
         $this->createdAt = new DateTime();
+        $this->syncAt = new DateTime();
         $this->images = new Images();
         $this->rating = new Rating();
     }
 
     /**
-     * @var DateTime
      * @ORM\Column(type="datetime")
      */
-    protected $createdAt;
+    protected DateTime $createdAt;
     public function getCreatedAt(): DateTime { return $this->createdAt; }
 
     /**
-     * @var DateTime
      * @ORM\Column(type="datetime")
      */
-    protected $syncAt;
-    public function synced(int $delta):bool
+    protected DateTime $syncAt;
+    public function synced(int $delta): bool
     {
         return $this->syncAt &&
             $this->syncAt->getTimestamp() + $delta > (new \DateTime())->getTimestamp();
@@ -91,7 +88,7 @@ abstract class BaseMedia
 
     /**
      * @param string $locale
-     * @return BaseTorrent[]&Generator
+     * @return BaseTorrent[]&\Generator
      */
     public function getLocaleTorrents(string $locale)
     {
