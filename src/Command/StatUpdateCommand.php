@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StatUpdateCommand extends Command
 {
-    protected static $defaultName = 'stat:update';
+    protected static $defaultName = 'update:stat';
 
     /** @var StatService */
     protected $stat;

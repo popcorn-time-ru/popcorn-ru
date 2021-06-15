@@ -97,4 +97,11 @@ abstract class MediaRepository extends ServiceEntityRepository
             ->groupBy('m.existTranslations, m.genres')
             ->getQuery()->getResult();
     }
+
+    public function findWatching(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.rating.watching > 0')
+            ->getQuery()->getResult();
+    }
 }

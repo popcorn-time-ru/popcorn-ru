@@ -31,5 +31,4 @@ class MovieRepository extends MediaRepository
 
         return $movie;
     }
-
 }

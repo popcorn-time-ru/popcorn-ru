@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SyncCommand extends Command
 {
-    protected static $defaultName = 'sync:old';
+    protected static $defaultName = 'update:syncOld';
 
     /** @var ProducerInterface */
     private $producer;
