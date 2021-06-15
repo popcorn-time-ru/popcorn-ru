@@ -34,8 +34,6 @@ fos_elastica:
                         rating:
                             type: "nested"
                             properties:
-                                votes:
-                                    fielddata: true
                                 percentage:
                                     fielddata: true
                                 watching:
@@ -85,8 +83,6 @@ fos_elastica:
                         rating:
                             type: "nested"
                             properties:
-                                votes:
-                                    fielddata: true
                                 percentage:
                                     fielddata: true
                                 watching:

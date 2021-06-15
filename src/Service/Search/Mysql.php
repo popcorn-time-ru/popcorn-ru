@@ -48,11 +48,11 @@ class Mysql implements SearchInterface
                 $qb->addOrderBy('m.title', $pageRequest->order);
                 break;
             case 'popularity':
-                $qb->addOrderBy('m.rating.votes', $pageRequest->order);
+                $qb->addOrderBy('m.rating.popularity', $pageRequest->order);
+                $qb->addOrderBy('m.rating.watchers', $pageRequest->order);
                 break;
             case 'rating':
-                $qb->addOrderBy('m.rating.percentage', $pageRequest->order);
-                $qb->addOrderBy('m.rating.votes', $pageRequest->order);
+                $qb->addOrderBy('m.rating.weightRating', $pageRequest->order);
                 break;
             case 'released':
             case 'updated':
@@ -73,7 +73,6 @@ class Mysql implements SearchInterface
                 $qb->addOrderBy('m.year', $pageRequest->order);
                 break;
             default:
-                $qb->addOrderBy('m.rating.votes', 'DESC');
                 $qb->addOrderBy('m.rating.percentage', 'DESC');
                 $qb->addOrderBy('m.rating.watching', 'DESC');
                 $qb->addOrderBy('m.rating.watchers', 'DESC');

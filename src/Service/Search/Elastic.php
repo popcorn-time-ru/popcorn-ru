@@ -92,15 +92,15 @@ class Elastic implements SearchInterface
         switch ($sort) {
             case 'title':
             case 'name':
-                return [ 'locales.title' => $order, 'title' => $order ];
+                return [ 'title' => $order, 'locales.title' => $order ];
             case 'popularity':
                 return [
-                    'rating.votes' => [ 'nested_path' => 'rating', 'order' => $order],
+                    'rating.popularity' => [ 'nested_path' => 'rating', 'order' => $order],
+                    'rating.watchers' => [ 'nested_path' => 'rating', 'order' => $order],
                 ];
             case 'rating':
                 return [
-                    'rating.percentage' => [ 'nested_path' => 'rating', 'order' => $order],
-                    'rating.votes' => [ 'nested_path' => 'rating', 'order' => $order],
+                    'rating.weightRating' => [ 'nested_path' => 'rating', 'order' => $order],
                 ];
             case 'released':
             case 'updated':
@@ -110,13 +110,12 @@ class Elastic implements SearchInterface
             case 'trending':
                 return [
                     'rating.watching' => [ 'nested_path' => 'rating', 'order' => $order],
-                    'rating.watchers' => [ 'nested_path' => 'rating', 'order' => $order]
+                    'rating.watchers' => [ 'nested_path' => 'rating', 'order' => $order],
                 ];
             case 'year':
                 return [ 'year' => $order ];
         }
         return [
-            'rating.votes' => [ 'nested_path' => 'rating', 'order' => 'desc'],
             'rating.percentage' => [ 'nested_path' => 'rating', 'order' => 'desc'],
             'rating.watching' => [ 'nested_path' => 'rating', 'order' => 'desc'],
             'rating.watchers' => [ 'nested_path' => 'rating', 'order' => 'desc'],
