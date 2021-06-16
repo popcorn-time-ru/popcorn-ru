@@ -14,6 +14,7 @@ fos_elastica:
                             fielddata: true
                         genres: ~
                         year:
+                            type: "integer"
                             fielddata: true
                         created:
                             type: "date"
@@ -35,14 +36,19 @@ fos_elastica:
                             type: "nested"
                             properties:
                                 percentage:
+                                    type: "short"
                                     fielddata: true
                                 watching:
+                                    type: "short"
                                     fielddata: true
                                 watchers:
+                                    type: "integer"
                                     fielddata: true
                                 popularity:
+                                    type: "float"
                                     fielddata: true
                                 weightRating:
+                                    type: "float"
                                     fielddata: true
                     persistence:
                         driver: orm
@@ -62,6 +68,7 @@ fos_elastica:
                             type: "text"
                             fielddata: true
                         year:
+                            type: "integer"
                             fielddata: true
                         created:
                             type: "date"
@@ -84,14 +91,19 @@ fos_elastica:
                             type: "nested"
                             properties:
                                 percentage:
+                                    type: "short"
                                     fielddata: true
                                 watching:
+                                    type: "short"
                                     fielddata: true
                                 watchers:
+                                    type: "integer"
                                     fielddata: true
                                 popularity:
+                                    type: "float"
                                     fielddata: true
                                 weightRating:
+                                    type: "float"
                                     fielddata: true
                     persistence:
                         driver: orm
