@@ -5,9 +5,13 @@ namespace App\Command;
 use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
+use App\Processors\TorrentActiveProcessor;
+use App\Processors\WatcherProcessor;
 use App\Repository\MediaRepository;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
+use Enqueue\Client\ProducerInterface;
+use Enqueue\Util\JSON;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,25 +20,25 @@ class UpdateTrendingCommand extends Command
 {
     protected static $defaultName = 'update:trending';
 
-    /** @var MovieRepository */
-    private $movieRepository;
+    private MovieRepository $movieRepository;
 
-    /** @var ShowRepository */
-    private $showRepository;
+    private ShowRepository $showRepository;
 
-    /** @var \Traktor\Client */
-    private $trakt;
+    private \Traktor\Client $trakt;
+
+    private ProducerInterface $producer;
 
     /**
      * @param MovieRepository $movieRepository
      * @param ShowRepository  $showRepository
      * @param \Traktor\Client $trakt
      */
-    public function __construct(MovieRepository $movieRepository, ShowRepository $showRepository, \Traktor\Client $trakt)
+    public function __construct(ProducerInterface $producer, MovieRepository $movieRepository, ShowRepository $showRepository, \Traktor\Client $trakt)
     {
         parent::__construct();
         $this->movieRepository = $movieRepository;
         $this->showRepository = $showRepository;
+        $this->producer = $producer;
         $this->trakt = $trakt;
     }
 
@@ -59,7 +63,7 @@ class UpdateTrendingCommand extends Command
         foreach ($current as $info) {
             $currentMap[$info->movie->ids->imdb] = $info->watchers;
         }
-        $this->update($this->movieRepository, $currentMap);
+        $this->update('movie', $this->movieRepository, $currentMap);
     }
 
     protected function updateShows()
@@ -69,27 +73,34 @@ class UpdateTrendingCommand extends Command
         foreach ($current as $info) {
             $currentMap[$info->show->ids->imdb] = $info->watchers;
         }
-        $this->update($this->showRepository, $currentMap);
+        $this->update('show', $this->showRepository, $currentMap);
     }
 
-    protected function update(MediaRepository $repository, $currentMap)
+    protected function update($type, MediaRepository $repository, $currentMap)
     {
         /** @var BaseMedia[] $old */
         $old = $repository->findWatching();
         foreach ($old as $media) {
             if (isset($currentMap[$media->getImdb()])) {
-                $media->getRating()->setWatching($currentMap[$media->getImdb()]);
+                $this->sendToUpdate($type, $media->getImdb(), $currentMap[$media->getImdb()]);
                 unset ($currentMap[$media->getImdb()]);
             } else {
-                $media->getRating()->setWatching(0);
+                $this->sendToUpdate($type, $media->getImdb(), 0);
             }
         }
         foreach ($currentMap as $imdb => $watchers) {
-            $media = $repository->findByImdb($imdb);
-            if ($media) {
-                $media->getRating()->setWatching($watchers);
-            }
+            $this->sendToUpdate($type, $imdb, $watchers);
         }
-        $repository->flush();
+    }
+
+    protected function sendToUpdate($type, $imdb, $watching)
+    {
+        $topicMessage = new \Enqueue\Client\Message(JSON::encode([
+            'type' => $type,
+            'imdb' => $imdb,
+            'watching' => $watching,
+        ]));
+        $topicMessage->setDelay(random_int(120, 600));
+        $this->producer->sendEvent(WatcherProcessor::TOPIC, $topicMessage);
     }
 }
