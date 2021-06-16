@@ -73,8 +73,7 @@ class Mysql implements SearchInterface
                 $qb->addOrderBy('m.year', $pageRequest->order);
                 break;
             default:
-                $qb->addOrderBy('m.rating.percentage', 'DESC');
-                $qb->addOrderBy('m.rating.watching', 'DESC');
+                $qb->addOrderBy('m.rating.popularity', 'DESC');
                 $qb->addOrderBy('m.rating.watchers', 'DESC');
                 break;
         }

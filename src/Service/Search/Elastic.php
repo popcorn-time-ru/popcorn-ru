@@ -116,8 +116,7 @@ class Elastic implements SearchInterface
                 return [ 'year' => $order ];
         }
         return [
-            'rating.percentage' => [ 'nested_path' => 'rating', 'order' => 'desc'],
-            'rating.watching' => [ 'nested_path' => 'rating', 'order' => 'desc'],
+            'rating.popularity' => [ 'nested_path' => 'rating', 'order' => 'desc'],
             'rating.watchers' => [ 'nested_path' => 'rating', 'order' => 'desc'],
         ];
     }
