@@ -15,7 +15,6 @@ fos_elastica:
                         genres: ~
                         year:
                             type: "integer"
-                            fielddata: true
                         created:
                             type: "date"
                             property_path: createdAt
@@ -37,19 +36,14 @@ fos_elastica:
                             properties:
                                 percentage:
                                     type: "short"
-                                    fielddata: true
                                 watching:
                                     type: "short"
-                                    fielddata: true
                                 watchers:
                                     type: "integer"
-                                    fielddata: true
                                 popularity:
                                     type: "float"
-                                    fielddata: true
                                 weightRating:
                                     type: "float"
-                                    fielddata: true
                     persistence:
                         driver: orm
                         model: App\Entity\Movie
@@ -69,7 +63,6 @@ fos_elastica:
                             fielddata: true
                         year:
                             type: "integer"
-                            fielddata: true
                         created:
                             type: "date"
                             property_path: createdAt
@@ -92,19 +85,14 @@ fos_elastica:
                             properties:
                                 percentage:
                                     type: "short"
-                                    fielddata: true
                                 watching:
                                     type: "short"
-                                    fielddata: true
                                 watchers:
                                     type: "integer"
-                                    fielddata: true
                                 popularity:
                                     type: "float"
-                                    fielddata: true
                                 weightRating:
                                     type: "float"
-                                    fielddata: true
                     persistence:
                         driver: orm
                         model: App\Entity\Show
