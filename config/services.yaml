@@ -13,6 +13,11 @@ parameters:
         - it
         - hi
         - de
+        - pt
+        - nl
+        - ro
+        - tr
+        - nb
 
 services:
     # default configuration for services in *this* file
