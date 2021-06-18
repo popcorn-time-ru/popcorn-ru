@@ -3,11 +3,8 @@
 namespace App\Spider;
 
 use App\Entity\Episode;
-use App\Entity\File;
 use App\Entity\Torrent\EpisodeTorrent;
-use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
-use App\Entity\Torrent\ShowTorrent;
 use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
@@ -58,41 +55,7 @@ class Eztv extends AbstractSpider
                 return ;
             }
 
-            $title = $torrentData['title'];
-            if (!preg_match('#S\d+E\d+#i', $title)) {
-                continue;
-            }
-            $quality = '480p';
-            if (preg_match('#[^0-9a-z](\d+p)[^0-9a-z]#', $title, $m)) {
-                $quality = $m[1];
-            }
-
-            $media = $this->torrentService->getMediaByImdb('tt'.$torrentData['imdb_id']);
-            if (!($media instanceof Show)) {
-                continue;
-            }
-            $episode = $this->episodeService->getEpisode($media, (int)$torrentData['season'], (int)$torrentData['episode']);
-            if (!($episode instanceof Episode)) {
-                continue;
-            }
-            $newTorrent = new EpisodeTorrent();
-            $newTorrent->setEpisode($episode);
-            $torrent = $this->torrentService->findExistOrCreateTorrent(
-                $this->getName(),
-                $torrentData['id'],
-                $newTorrent
-            );
-            $torrent
-                ->setProviderTitle($torrentData['title'])
-                ->setUrl($torrentData['magnet_url'])
-                ->setSeed($torrentData['seeds'])
-                ->setPeer($torrentData['peers'])
-                ->setQuality($quality)
-                ->setLanguage('en');
-
-            $torrent->setSize($torrentData['size_bytes']);
-
-            $this->torrentService->updateTorrent($torrent);
+            $this->buildFromTorrentData($torrentData);
         }
 
         yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
@@ -100,5 +63,62 @@ class Eztv extends AbstractSpider
 
     public function getTopic(TopicDto $topic)
     {
+        [$showId, ] = explode(':', $topic->id);
+        $res = $this->client->get('/api/get-torrents', [
+            'query' => [
+                'imdb_id' => $showId,
+            ]
+        ]);
+        $json = $res->getBody()->getContents();
+        $data = json_decode($json, true);
+        if (empty($data['torrents'])) {
+            return ;
+        }
+
+        foreach ($data['torrents'] as $torrentData) {
+            $this->buildFromTorrentData($torrentData);
+        }
+    }
+
+    /**
+     * @param array $torrentData
+     */
+    private function buildFromTorrentData($torrentData): void
+    {
+        $title = $torrentData['title'];
+        if (!preg_match('#S\d+E\d+#i', $title)) {
+            return;
+        }
+        $quality = '480p';
+        if (preg_match('#[^0-9a-z](\d+p)[^0-9a-z]#', $title, $m)) {
+            $quality = $m[1];
+        }
+
+        $media = $this->torrentService->getMediaByImdb('tt'.$torrentData['imdb_id']);
+        if (!($media instanceof Show)) {
+            return;
+        }
+        $episode = $this->episodeService->getEpisode($media, (int)$torrentData['season'], (int)$torrentData['episode']);
+        if (!($episode instanceof Episode)) {
+            return;
+        }
+        $newTorrent = new EpisodeTorrent();
+        $newTorrent->setEpisode($episode);
+        $torrent = $this->torrentService->findExistOrCreateTorrent(
+            $this->getName(),
+            $torrentData['imdb_id'] . ':' . $torrentData['id'],
+            $newTorrent
+        );
+        $torrent
+            ->setProviderTitle($torrentData['title'])
+            ->setUrl($torrentData['magnet_url'])
+            ->setSeed($torrentData['seeds'])
+            ->setPeer($torrentData['peers'])
+            ->setQuality($quality)
+            ->setLanguage('en');
+
+        $torrent->setSize($torrentData['size_bytes']);
+
+        $this->torrentService->updateTorrent($torrent);
     }
 }
