@@ -262,6 +262,10 @@ class TorrentGalaxy extends AbstractSpider
         $name = trim($match[1]);
         $year = $match[2];
 
+        if (!$name) {
+            return null;
+        }
+
         return $this->torrentService->searchMovieByTitleAndYear($name, $year);
     }
 }

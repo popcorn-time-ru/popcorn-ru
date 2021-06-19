@@ -304,11 +304,9 @@ class Rutracker extends AbstractSpider
                 $isSerial = true;
                 continue;
             }
-            if (empty($title)) {
-                continue;
-            }
             $names[] = $title;
         }
+        $names = array_filter(array_map('trim', $names));
 
         foreach ($names as $name) {
             $imdb = $isSerial
