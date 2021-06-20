@@ -78,6 +78,7 @@ class UpdateTrendingCommand extends Command
 
     protected function update($type, MediaRepository $repository, $currentMap)
     {
+        unset($currentMap['']);
         /** @var BaseMedia[] $old */
         $old = $repository->findWatching();
         foreach ($old as $media) {
