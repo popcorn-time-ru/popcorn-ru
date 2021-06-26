@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Show;
-use App\Repository\Locale\BaseLocaleRepository;
 use App\Service\Search\SearchInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,17 +17,5 @@ class ShowRepository extends MediaRepository
     public function __construct(SearchInterface $search, ManagerRegistry $registry)
     {
         parent::__construct($search, $registry, Show::class);
-    }
-
-    public function findOrCreateShowByImdb(string $imdbId): Show
-    {
-        $movie = $this->findByImdb($imdbId);
-        if (!$movie) {
-            $movie = new Show();
-            $movie->setImdb($imdbId);
-            $this->_em->persist($movie);
-        }
-
-        return $movie;
     }
 }

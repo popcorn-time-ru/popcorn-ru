@@ -19,16 +19,4 @@ class MovieRepository extends MediaRepository
     {
         parent::__construct($search, $registry, Movie::class);
     }
-
-    public function findOrCreateMovieByImdb(string $imdbId): Movie
-    {
-        $movie = $this->findByImdb($imdbId);
-        if (!$movie) {
-            $movie = new Movie();
-            $movie->setImdb($imdbId);
-            $this->_em->persist($movie);
-        }
-
-        return $movie;
-    }
 }
