@@ -12,6 +12,7 @@ use App\Processors\ShowTorrentProcessor;
 use App\Processors\TorrentActiveProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
+use App\Repository\AnimeRepository;
 use App\Repository\TorrentRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +31,7 @@ class TorrentService
     #[Required] public TorrentRepository $torrentRepo;
     #[Required] public MovieRepository $movieRepo;
     #[Required] public ShowRepository $showRepo;
+    #[Required] public AnimeRepository $animeRepo;
     #[Required] public ProducerInterface $producer;
     #[Required] public LoggerInterface $logger;
     #[Required] public ContainerInterface $container;
@@ -42,6 +44,10 @@ class TorrentService
     public function searchShowByTitle(string $title)
     {
         return $this->mediaInfo->searchShowByTitle($title);
+    }
+    public function searchAnimeByTitle(string $title, ?string $year = null)
+    {
+        return $this->mediaInfo->searchAnimeByTitle($title, $year);
     }
 
     public function getMediaByImdb(string $imdbId): ?BaseMedia
@@ -63,6 +69,36 @@ class TorrentService
         }
 
         return $media;
+    }
+
+    public function getMediaByKitsu(string $kitsuId): ?BaseMedia
+    {
+        $anime = $this->animeRepo->findByKitsu($kitsuId);
+
+        if (!$anime) {
+            $anime = $this->mediaInfo->fetchByKitsu($kitsuId);
+            if (!$anime) {
+                $this->logger->warning('Not found anime', ['kitsu' => $kitsuId]);
+                return null;
+            }
+
+            // IMDB ID is a unique key, so don't try to insert it twice
+            $imdbId = $anime->getImdb();
+            if ($imdbId) {
+                $animeImdb = $this->animeRepo->findByImdb($imdbId);
+                if ($animeImdb) {
+                    return $animeImdb;
+                }
+            } else {
+                $anime->setImdb("kitsu-" . $kitsuId);
+            }
+
+            $anime->sync();
+            $this->em->persist($anime);
+            $this->em->flush();
+        }
+
+        return $anime;
     }
 
     public function findExistOrCreateTorrent(string $provider, string $externalId, BaseTorrent $new): BaseTorrent
@@ -90,6 +126,7 @@ class TorrentService
      */
     public function updateTorrent(BaseTorrent $torrent)
     {
+        $this->logger->debug("Indexing torrent", ['title' => $torrent->getProviderTitle(), 'provider', $torrent->getProvider()]);
         $torrent->sync();
         $torrent->setActive(true);
         $this->em->flush();
@@ -185,6 +222,7 @@ class TorrentService
                 }
             }
             foreach ($this->torrentRepo->getMediaTorrents($show, [$language], $onlyActive) as $torrent) {
+                /** @var ShowTorrent $torrent */
                 $torrent->setActive(false);
                 $file = null;
                 foreach ($torrent->getFiles() as $torrentFile) {

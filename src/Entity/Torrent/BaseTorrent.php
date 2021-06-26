@@ -31,6 +31,8 @@ abstract class BaseTorrent
     protected $id;
     public function getId(): UuidInterface { return $this->id; }
 
+    protected $files;
+
     public function __construct()
     {
         $this->id = Uuid::uuid4();
