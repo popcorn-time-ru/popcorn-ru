@@ -87,6 +87,15 @@ class SyncCommand extends Command
             );
         }
 
+        $animes = $this->animeRepository->getOld($dateCheck, $limit);
+
+        $this->logger->info('Update old animes', ['count' => count($animes)]);
+        foreach ($animes as $anime) {
+            $this->sendDelayed(
+                new Message(json_encode(['type' => 'anime', 'id' => $anime->getId()->toString()]))
+            );
+        }
+
         return 0;
     }
 
