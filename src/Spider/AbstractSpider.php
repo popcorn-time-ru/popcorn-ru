@@ -2,8 +2,10 @@
 
 namespace App\Spider;
 
+use App\Entity\Anime;
 use App\Entity\Episode;
 use App\Entity\Movie;
+use App\Entity\Torrent\AnimeTorrent;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Torrent\MovieTorrent;
@@ -110,6 +112,35 @@ abstract class AbstractSpider implements SpiderInterface
                 $torrent->setLanguage('it');
             }
         }
+    }
+
+    protected function getTorrentByKitsu(string $topicId, string $kitsu): ?BaseTorrent
+    {
+        $anime = $this->torrentService->getMediaByKitsu($kitsu);
+        if (!($anime instanceof Anime)) {
+            return null;
+        }
+        $newTorrent = new AnimeTorrent();
+        $newTorrent->setAnime($anime);
+
+        return $this->torrentService->findExistOrCreateTorrent($this->getName(), $topicId, $newTorrent);
+    }
+
+    protected function getEpisodeTorrentByKitsu(string $topicId, string $kitsu, int $s, int $e)
+    {
+        $anime = $this->torrentService->getMediaByKitsu($kitsu);
+        var_dump($anime->getImdb());die();
+        $episode = $this->episodeService->getEpisode($anime, $s, $e);
+        if (!($episode instanceof Episode)) {
+            return null;
+        }
+        $newTorrent = new EpisodeTorrent();
+        $newTorrent->setEpisode($episode);
+        return $this->torrentService->findExistOrCreateTorrent(
+            $this->getName(),
+            $topicId,
+            $newTorrent
+        );
     }
 
     protected function langName2IsoCode(string $lang): string

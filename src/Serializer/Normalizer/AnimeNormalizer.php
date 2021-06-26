@@ -58,7 +58,7 @@ class AnimeNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             case 'list':
                 return $base;
             case 'item':
-                if ($object->getType() == "movie") {
+                if ($object->getType() === 'movie') {
                     $torrents = [];
                     /** @var LocaleRequest $localeParams */
                     $localeParams = $context['localeParams'];
@@ -66,23 +66,21 @@ class AnimeNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
                         $torrents[$localeParams->contentLocale][$torrent->getQuality()] =
                             $this->normalizer->normalize($torrent, $format, $context);
                     }
-                    $locale = [];
-                    if ($localeParams->needLocale) {
-                        $l = $object->getLocale($localeParams->locale);
-                        if ($l) {
-                            $locale['locale'] = $this->normalizer->normalize($l, $format, $context);
-                        }
-                    }
-                    $base["torrents"] = $torrents;
+                    $base['torrents'] = $torrents;
                 } else { // "show"
                     $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context);
                     $episodes = array_values(array_filter($episodes, static function ($episode) {
                         return !empty($episode['torrents']);
                     }));
-                    $base["episodes"] = $episodes;
-                    $base["num_seasons"] = $object->getNumSeasons();
-                    $base["air_day"] = $object->getAirDay();
-                    $base["air_time"] = $object->getAirTime();
+                    $base = array_merge(
+                        $base,
+                        [
+                            'episodes' => $episodes,
+                            'num_seasons' => $object->getNumSeasons(),
+                            'air_day' => $object->getAirDay(),
+                            'air_time' => $object->getAirTime(),
+                        ]
+                    );
                 }
                 return array_merge(
                     $base,
