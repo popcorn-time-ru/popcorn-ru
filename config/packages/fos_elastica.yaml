@@ -99,3 +99,50 @@ fos_elastica:
                 elastica_to_model_transformer:
                     ignore_missing: true
                 listener: ~
+        animes:
+            indexable_callback: ['App\Service\Search\Elastic', 'isIndexAnime']
+            properties:
+                imdb: ~
+                title:
+                    type: "text"
+                    fielddata: true
+                year:
+                    type: "integer"
+                created:
+                    type: "date"
+                    property_path: createdForElastic
+                released:
+                    type: "date"
+                    property_path: lastUpdated
+                genres: ~
+                #synopsis: ~
+                existTranslations: ~
+                locales:
+                    type: "nested"
+                    properties:
+                        locale: ~
+                        title:
+                            type: "text"
+                            fielddata: true
+                        #synopsis: ~
+                rating:
+                    type: "nested"
+                    properties:
+                        percentage:
+                            type: "short"
+                        watching:
+                            type: "short"
+                        watchers:
+                            type: "integer"
+                        popularity:
+                            type: "float"
+                        weightRating:
+                            type: "float"
+            persistence:
+                driver: orm
+                model: App\Entity\Anime
+                provider: ~
+                finder: ~
+                elastica_to_model_transformer:
+                    ignore_missing: true
+                listener: ~

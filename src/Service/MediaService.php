@@ -6,7 +6,6 @@ use DateTime;
 use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
-use DateTime;
 use App\Entity\Anime;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;

@@ -70,4 +70,5 @@ services:
         arguments:
             - '@fos_elastica.finder.movies'
             - '@fos_elastica.finder.shows'
+            - '@fos_elastica.finder.animes'
 
