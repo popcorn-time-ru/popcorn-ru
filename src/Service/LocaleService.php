@@ -51,11 +51,7 @@ class LocaleService
     {
         foreach ($this->extractLocales as $locale)
         {
-            if ($media instanceof Movie) {
-                $mediaLocale = $this->localeRepo->findOrCreateByMovieAndLocale($media, $locale);
-            } else if ($media instanceof Show) {
-                $mediaLocale = $this->localeRepo->findOrCreateByShowAndLocale($media, $locale);
-            }
+            $mediaLocale = $this->localeRepo->findOrCreateByMediaAndLocale($media, $locale);
 
             foreach ($info->getTranslations() as $translation) {
                 if ($translation->getIso6391() !== $locale)

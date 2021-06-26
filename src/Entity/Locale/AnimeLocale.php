@@ -3,17 +3,17 @@
 namespace App\Entity\Locale;
 
 use App\Entity\BaseMedia;
+use App\Entity\Anime;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Movie;
 
 /**
  * @ORM\Entity()
  */
-class MovieLocale extends BaseLocale
+class AnimeLocale extends BaseLocale
 {
     /**
-     * @var Movie
-     * @ORM\ManyToOne(targetEntity="App\Entity\Movie", inversedBy="locales")
+     * @var Anime
+     * @ORM\ManyToOne(targetEntity="App\Entity\Anime", inversedBy="locales")
      * @ORM\JoinColumn(name="media_id")
      */
     protected $media;

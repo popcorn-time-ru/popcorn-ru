@@ -2,15 +2,15 @@
 
 namespace App\Entity\Torrent;
 
+use App\Entity\Anime;
 use App\Entity\BaseMedia;
-use App\Entity\Show;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TorrentRepository")
  */
-class ShowTorrent extends BaseTorrent
+class AnimeTorrent extends BaseTorrent
 {
     use FilesTrait;
 
@@ -21,13 +21,13 @@ class ShowTorrent extends BaseTorrent
     }
 
     /**
-     * @var Show
-     * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="torrents")
+     * @var Anime
+     * @ORM\ManyToOne(targetEntity="App\Entity\Anime", inversedBy="torrents")
      * @ORM\JoinColumn(name="media_id")
      */
-    protected $show;
-    public function getShow(): Show { return $this->show; }
-    public function setShow(Show $show): self { $this->show = $show; return $this; }
+    protected $anime;
+    public function getAnime(): Anime { return $this->anime; }
+    public function setAnime(Anime $anime): self { $this->anime = $anime; return $this; }
 
-    public function getMedia(): BaseMedia { return $this->show;}
+    public function getMedia(): BaseMedia { return $this->anime;}
 }

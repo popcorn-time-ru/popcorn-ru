@@ -3,7 +3,6 @@
 namespace App\Entity\Locale;
 
 use App\Entity\BaseMedia;
-use App\Entity\MySqlString;
 use App\Entity\VO\Images;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -16,7 +15,7 @@ use Ramsey\Uuid\UuidInterface;
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
- * @ORM\DiscriminatorMap({"movie" = "MovieLocale", "show" = "ShowLocale"})
+ * @ORM\DiscriminatorMap({"movie" = "MovieLocale", "show" = "ShowLocale", "anime" = "AnimeLocale"})
  */
 abstract class BaseLocale
 {
@@ -72,8 +71,6 @@ abstract class BaseLocale
             && $this->images->isEmpty();
     }
 
-    /**
-     * @return BaseMedia
-     */
-    abstract public function getMedia();
+    abstract public function getMedia(): BaseMedia;
+    abstract public function setMedia(BaseMedia $media);
 }

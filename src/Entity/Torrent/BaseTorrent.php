@@ -18,7 +18,7 @@ use Ramsey\Uuid\UuidInterface;
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
- * @ORM\DiscriminatorMap({"movie" = "MovieTorrent", "show" = "ShowTorrent", "episode"="EpisodeTorrent"})
+ * @ORM\DiscriminatorMap({"movie" = "MovieTorrent", "show" = "ShowTorrent", "episode"="EpisodeTorrent", "anime"="AnimeTorrent"})
  */
 abstract class BaseTorrent
 {
