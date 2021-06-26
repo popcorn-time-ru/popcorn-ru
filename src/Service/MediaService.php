@@ -32,7 +32,7 @@ class MediaService
     /** @var TvRepository */
     protected $showRepo;
 
-    /** @var \Traktor\Client */
+    /** @var \App\Traktor\Client */
     private $trakt;
 
     /** @var Client */
@@ -43,7 +43,7 @@ class MediaService
         MovieRepository $movieRepo,
         TvRepository $showRepo,
         LocaleService $localeService,
-        \Traktor\Client $trakt
+        \App\Traktor\Client $trakt
     )
     {
         $this->movieRepo = $movieRepo;

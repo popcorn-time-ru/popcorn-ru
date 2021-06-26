@@ -24,7 +24,7 @@ class EpisodeService
     /** @var LocaleService */
     protected $localeService;
 
-    /** @var \Traktor\Client */
+    /** @var \App\Traktor\Client */
     private $trakt;
 
     /** @var LoggerInterface */
@@ -38,7 +38,7 @@ class EpisodeService
      * @param EntityManagerInterface $em
      * @param LocaleService          $localeService
      * @param LoggerInterface        $logger
-     * @param \Traktor\Client        $trakt
+     * @param \App\Traktor\Client    $trakt
      */
     public function __construct(
         TorrentRepository $torrentRepo,
@@ -46,7 +46,7 @@ class EpisodeService
         EntityManagerInterface $em,
         LocaleService $localeService,
         LoggerInterface $logger,
-        \Traktor\Client $trakt
+        \App\Traktor\Client $trakt
     )
     {
         $this->torrentRepo = $torrentRepo;

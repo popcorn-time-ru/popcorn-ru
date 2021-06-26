@@ -8,7 +8,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "alanly/traktor": "dev-master",
         "enqueue/dbal": "^0.10",
         "enqueue/enqueue-bundle": "^0.10",
         "friendsofsymfony/elastica-bundle": "^5.2",
@@ -32,8 +31,8 @@
         "symfony/yaml": "^5.1"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master",
         "doctrine/doctrine-fixtures-bundle": "^3.3",
+        "roave/security-advisories": "dev-master",
         "symfony/maker-bundle": "^1.15"
     },
     "config": {
@@ -64,10 +63,6 @@
         "symfony/polyfill-php56": "*"
     },
     "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/bbaronSVK/traktor"
-        },
         {
             "type": "git",
             "url": "https://github.com/php-tmdb/symfony"

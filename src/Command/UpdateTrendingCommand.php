@@ -24,16 +24,16 @@ class UpdateTrendingCommand extends Command
 
     private ShowRepository $showRepository;
 
-    private \Traktor\Client $trakt;
+    private \App\Traktor\Client $trakt;
 
     private ProducerInterface $producer;
 
     /**
      * @param MovieRepository $movieRepository
      * @param ShowRepository  $showRepository
-     * @param \Traktor\Client $trakt
+     * @param \App\Traktor\Client $trakt
      */
-    public function __construct(ProducerInterface $producer, MovieRepository $movieRepository, ShowRepository $showRepository, \Traktor\Client $trakt)
+    public function __construct(ProducerInterface $producer, MovieRepository $movieRepository, ShowRepository $showRepository, \App\Traktor\Client $trakt)
     {
         parent::__construct();
         $this->movieRepository = $movieRepository;
