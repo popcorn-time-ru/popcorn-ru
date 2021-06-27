@@ -34,7 +34,6 @@ abstract class BaseTorrent
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->files = new ArrayCollection();
     }
 
     /**

@@ -13,6 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ShowTorrent extends BaseTorrent
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->files = new ArrayCollection();
+    }
+
     /**
      * @var Show
      * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="torrents")
