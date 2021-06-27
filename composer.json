@@ -10,7 +10,7 @@
         "ext-json": "*",
         "enqueue/dbal": "^0.10",
         "enqueue/enqueue-bundle": "^0.10",
-        "friendsofsymfony/elastica-bundle": "^5.2",
+        "friendsofsymfony/elastica-bundle": "dev-master",
         "long-running/long-running": "^0.5",
         "nyholm/psr7": "^1.4",
         "php-http/cache-plugin": "^1.7",

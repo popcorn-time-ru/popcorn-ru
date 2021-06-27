@@ -5,6 +5,12 @@
     "elasticsearch/elasticsearch": {
         "version": "v6.7.2"
     },
+    "ezimuel/guzzlestreams": {
+        "version": "3.0.1"
+    },
+    "ezimuel/ringphp": {
+        "version": "1.1.2"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"
     },
@@ -20,12 +26,6 @@
             "config/packages/fos_elastica.yaml"
         ]
     },
-    "guzzlehttp/ringphp": {
-        "version": "1.1.1"
-    },
-    "guzzlehttp/streams": {
-        "version": "3.0.0"
-    },
     "laminas/laminas-code": {
         "version": "4.1.0"
     },
@@ -34,6 +34,9 @@
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.2.0"
+    },
+    "nyholm/dsn": {
+        "version": "2.0.0"
     },
     "nyholm/psr7": {
         "version": "1.0",

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Locale\MovieLocale;
 use App\Entity\Locale\ShowLocale;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\ShowTorrent;

@@ -68,5 +68,6 @@ services:
 
     App\Service\Search\Elastic:
         arguments:
-            - '@fos_elastica.finder.movies.movie'
-            - '@fos_elastica.finder.shows.show'
+            - '@fos_elastica.finder.movies'
+            - '@fos_elastica.finder.shows'
+

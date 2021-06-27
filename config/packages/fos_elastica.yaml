@@ -4,100 +4,96 @@ fos_elastica:
         default: { url: '%env(ELASTICSEARCH_URL)%' }
     indexes:
         movies:
-            types:
-                movie:
-                    indexable_callback: ['App\Service\Search\Elastic', 'isIndexMovie']
+            indexable_callback: ['App\Service\Search\Elastic', 'isIndexMovie']
+            properties:
+                imdb: ~
+                title:
+                    type: "text"
+                    fielddata: true
+                genres: ~
+                year:
+                    type: "integer"
+                created:
+                    type: "date"
+                    property_path: createdForElastic
+                released:
+                    type: "date"
+                    property_path: released
+                #synopsis: ~
+                existTranslations: ~
+                locales:
+                    type: "nested"
                     properties:
-                        imdb: ~
+                        locale: ~
                         title:
                             type: "text"
                             fielddata: true
-                        genres: ~
-                        year:
-                            type: "integer"
-                        created:
-                            type: "date"
-                            property_path: createdAt
-                        released:
-                            type: "date"
-                            property_path: released
                         #synopsis: ~
-                        existTranslations: ~
-                        locales:
-                            type: "nested"
-                            properties:
-                                locale: ~
-                                title:
-                                    type: "text"
-                                    fielddata: true
-                                #synopsis: ~
-                        rating:
-                            type: "nested"
-                            properties:
-                                percentage:
-                                    type: "short"
-                                watching:
-                                    type: "short"
-                                watchers:
-                                    type: "integer"
-                                popularity:
-                                    type: "float"
-                                weightRating:
-                                    type: "float"
-                    persistence:
-                        driver: orm
-                        model: App\Entity\Movie
-                        provider: ~
-                        finder: ~
-                        elastica_to_model_transformer:
-                            ignore_missing: true
-                        listener: ~
+                rating:
+                    type: "nested"
+                    properties:
+                        percentage:
+                            type: "short"
+                        watching:
+                            type: "short"
+                        watchers:
+                            type: "integer"
+                        popularity:
+                            type: "float"
+                        weightRating:
+                            type: "float"
+            persistence:
+                driver: orm
+                model: App\Entity\Movie
+                provider: ~
+                finder: ~
+                elastica_to_model_transformer:
+                    ignore_missing: true
+                listener: ~
         shows:
-            types:
-                show:
-                    indexable_callback: ['App\Service\Search\Elastic', 'isIndexShow']
+            indexable_callback: ['App\Service\Search\Elastic', 'isIndexShow']
+            properties:
+                imdb: ~
+                title:
+                    type: "text"
+                    fielddata: true
+                year:
+                    type: "integer"
+                created:
+                    type: "date"
+                    property_path: createdForElastic
+                released:
+                    type: "date"
+                    property_path: lastUpdated
+                genres: ~
+                #synopsis: ~
+                existTranslations: ~
+                locales:
+                    type: "nested"
                     properties:
-                        imdb: ~
+                        locale: ~
                         title:
                             type: "text"
                             fielddata: true
-                        year:
-                            type: "integer"
-                        created:
-                            type: "date"
-                            property_path: createdAt
-                        released:
-                            type: "date"
-                            property_path: lastUpdated
-                        genres: ~
                         #synopsis: ~
-                        existTranslations: ~
-                        locales:
-                            type: "nested"
-                            properties:
-                                locale: ~
-                                title:
-                                    type: "text"
-                                    fielddata: true
-                                #synopsis: ~
-                        rating:
-                            type: "nested"
-                            properties:
-                                percentage:
-                                    type: "short"
-                                watching:
-                                    type: "short"
-                                watchers:
-                                    type: "integer"
-                                popularity:
-                                    type: "float"
-                                weightRating:
-                                    type: "float"
-                    persistence:
-                        driver: orm
-                        model: App\Entity\Show
-                        provider: ~
-                        finder: ~
-                        elastica_to_model_transformer:
-                            ignore_missing: true
-                        listener: ~
+                rating:
+                    type: "nested"
+                    properties:
+                        percentage:
+                            type: "short"
+                        watching:
+                            type: "short"
+                        watchers:
+                            type: "integer"
+                        popularity:
+                            type: "float"
+                        weightRating:
+                            type: "float"
+            persistence:
+                driver: orm
+                model: App\Entity\Show
+                provider: ~
+                finder: ~
+                elastica_to_model_transformer:
+                    ignore_missing: true
+                listener: ~

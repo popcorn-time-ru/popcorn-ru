@@ -39,6 +39,9 @@ abstract class BaseMedia
      */
     protected DateTime $createdAt;
     public function getCreatedAt(): DateTime { return $this->createdAt; }
+    public function getCreatedForElastic(): ?DateTime {
+        return $this->createdAt->getTimestamp() > 0 ? $this->createdAt : null;
+    }
 
     /**
      * @ORM\Column(type="datetime")

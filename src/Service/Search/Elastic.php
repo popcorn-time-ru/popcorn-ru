@@ -82,9 +82,17 @@ class Elastic implements SearchInterface
 
         $query->setSort($this->buildSort($pageRequest->sort, $pageRequest->order));
 
-        $finder = $class->getName() === Show::class ? $this->showFiner : $this->moviesFiner;
+        $finder = null;
+        switch ($class->getName()) {
+            case Movie::class:
+                $finder = $this->moviesFiner;
+                break;
+            case Show::class:
+                $finder = $this->showFiner;
+                break;
+        }
         /** @var BaseMedia[] $result */
-        return $finder->find($query);
+        return $finder ? $finder->find($query) : [];
     }
 
     private function buildSort(string $sort, string $order)
