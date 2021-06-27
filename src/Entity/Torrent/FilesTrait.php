@@ -17,6 +17,7 @@ trait FilesTrait
     public function getFiles() { return $this->files ?: new ArrayCollection(); }
 
     public function setFiles(array $files) {
+        /** @var BaseTorrent $this */
         if (!$this->files) {
             $this->files = new ArrayCollection();
         }

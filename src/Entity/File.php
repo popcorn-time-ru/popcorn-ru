@@ -32,7 +32,7 @@ class File
 
     /**
      * @var BaseTorrent
-     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent\ShowTorrent", inversedBy="files")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent\BaseTorrent", inversedBy="files")
      */
     protected $torrent;
     public function getTorrent(): BaseTorrent { return $this->torrent; }
