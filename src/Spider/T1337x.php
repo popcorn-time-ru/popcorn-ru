@@ -2,7 +2,7 @@
 
 namespace App\Spider;
 
-use App\Entity\Episode;
+use App\Entity\Episode\Episode;
 use App\Entity\File;
 use App\Entity\Show;
 use App\Entity\Torrent\BaseTorrent;

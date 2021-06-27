@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Episode\Episode;
+use App\Entity\Episode\ShowEpisode;
 use App\Entity\Locale\ShowLocale;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\ShowTorrent;
@@ -58,8 +60,8 @@ class Show extends BaseMedia
     public function getLocales() { return $this->locales; }
 
     /**
-     * @var Episode[]&Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Episode", mappedBy="show")
+     * @var ShowEpisode[]&Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Episode\ShowEpisode", mappedBy="show")
      */
     protected $episodes;
     public function getEpisodes() { return $this->episodes; }

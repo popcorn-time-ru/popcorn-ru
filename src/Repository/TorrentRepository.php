@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\BaseMedia;
-use App\Entity\Episode;
+use App\Entity\Episode\Episode;
 use App\Entity\Torrent\BaseTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

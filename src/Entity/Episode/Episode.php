@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Episode;
 
+use App\Entity\File;
 use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Locale\BaseLocale;
 use App\Entity\Torrent\BaseTorrent;
@@ -14,8 +15,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
+ * @ORM\DiscriminatorMap({"show" = "ShowEpisode", "anime"="AnimeEpisode"})
  */
-class Episode
+abstract class Episode
 {
     /**
      * @var UuidInterface
@@ -59,15 +63,6 @@ class Episode
      */
     protected $locales;
     public function getLocales() { return $this->locales; }
-
-    /**
-     * @var Show
-     * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="episodes")
-     * @ORM\JoinColumn(name="media_id")
-     */
-    protected $show;
-    public function getShow(): Show { return $this->show; }
-    public function setShow(Show $show): self { $this->show = $show; return $this; }
 
     /**
      * @var integer
@@ -119,7 +114,7 @@ class Episode
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="File", mappedBy="episodes", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\File", mappedBy="episodes", cascade={"persist"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")}

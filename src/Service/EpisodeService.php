@@ -3,8 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Anime;
-use App\Entity\Episode;
 use App\Entity\Show;
+use App\Entity\Episode\ShowEpisode;
 use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,7 +85,7 @@ class EpisodeService
     }
 
     protected $showCache = [];
-    public function getEpisode(Show $show, int $s, int $e): ?Episode
+    public function getEpisode(Show $show, int $s, int $e): ?ShowEpisode
     {
         $item = null;
         foreach ($show->getEpisodes() as $episode) {
@@ -95,7 +95,7 @@ class EpisodeService
             }
         }
         if (!$item) {
-            $item = new Episode();
+            $item = new ShowEpisode();
             $item
                 ->setShow($show)
                 ->setSeason($s)
@@ -149,37 +149,6 @@ class EpisodeService
         $this->em->flush();
 
         return $item;
-    }
-
-    protected function getSEFromAnimeName($filePathAndName, Anime $show)
-    {
-        $components = pathinfo($filePathAndName);
-        $dir = $components['dirname'];
-        $file = $components['filename'];
-        $ext = $components['extension'] ?? null;
-
-        if (!$ext || !in_array(strtolower($ext), ['avi', 'mkv', 'mp4'])) {
-            return [false, false];
-        }
-
-        if (preg_match('#(/SP[s]?\b|/CD[s]?\b|/Special[s]?\b|/Extra[s]?\b|/BK\b)#i', $dir)) {
-            return [false, false];
-        }
-
-        $filename = $file . "." . $ext;
-        $anitomy = anitomy_parse($filename);
-        $episode = @$anitomy["episode_number"];
-        if ($episode && preg_match("#(\d+)#", $episode, $n)) {
-            $season = 1;
-            if (preg_match('#\b[sS]eason[\s]+(\d+)\b#', $filename, $m)) {
-                $season = (int)$m[1];
-            } elseif (preg_match('#\b[sS](\d+)\b#', $filename, $m)) {
-                $season = (int)$m[1];
-            }
-            return [$season, (int) $n[1]];
-        }
-
-        return [false, false];
     }
 
     protected function getSEFromName($filePathAndName, Show $show)
@@ -277,6 +246,37 @@ class EpisodeService
         }
 
         $this->logger->debug("Failed to parse season/episode", ["filename" =>  $file]);
+
+        return [false, false];
+    }
+
+    protected function getSEFromAnimeName($filePathAndName, Anime $show)
+    {
+        $components = pathinfo($filePathAndName);
+        $dir = $components['dirname'];
+        $file = $components['filename'];
+        $ext = $components['extension'] ?? null;
+
+        if (!$ext || !in_array(strtolower($ext), ['avi', 'mkv', 'mp4'])) {
+            return [false, false];
+        }
+
+        if (preg_match('#(/SP[s]?\b|/CD[s]?\b|/Special[s]?\b|/Extra[s]?\b|/BK\b)#i', $dir)) {
+            return [false, false];
+        }
+
+        $filename = $file . "." . $ext;
+        $anitomy = anitomy_parse($filename);
+        $episode = @$anitomy["episode_number"];
+        if ($episode && preg_match("#(\d+)#", $episode, $n)) {
+            $season = 1;
+            if (preg_match('#\b[sS]eason[\s]+(\d+)\b#', $filename, $m)) {
+                $season = (int)$m[1];
+            } elseif (preg_match('#\b[sS](\d+)\b#', $filename, $m)) {
+                $season = (int)$m[1];
+            }
+            return [$season, (int) $n[1]];
+        }
 
         return [false, false];
     }

@@ -3,7 +3,7 @@
 namespace App\Spider;
 
 use App\Entity\Anime;
-use App\Entity\Episode;
+use App\Entity\Episode\Episode;
 use App\Entity\Movie;
 use App\Entity\Torrent\AnimeTorrent;
 use App\Entity\Torrent\BaseTorrent;

@@ -2,7 +2,7 @@
 
 namespace App\Entity\Locale;
 
-use App\Entity\Episode;
+use App\Entity\Episode\Episode;
 use App\Entity\MySqlString;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -32,7 +32,7 @@ class EpisodeLocale
 
     /**
      * @var Episode
-     * @ORM\ManyToOne(targetEntity="App\Entity\Episode", inversedBy="locales")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Episode\Episode", inversedBy="locales")
      */
     protected $episode;
     public function getEpisode(): Episode { return $this->episode; }

@@ -3,7 +3,7 @@
 namespace App\Entity\Torrent;
 
 use App\Entity\BaseMedia;
-use App\Entity\Episode;
+use App\Entity\Episode\Episode;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,7 +13,7 @@ class EpisodeTorrent extends BaseTorrent
 {
     /**
      * @var Episode
-     * @ORM\ManyToOne(targetEntity="App\Entity\Episode", inversedBy="torrents")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Episode\Episode", inversedBy="torrents")
      * @ORM\JoinColumn(name="media_id")
      */
     protected $episode;

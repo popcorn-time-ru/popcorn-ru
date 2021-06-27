@@ -2,15 +2,13 @@
 
 namespace App\Serializer\Normalizer;
 
-use App\Entity\Episode;
 use App\Entity\Locale\EpisodeLocale;
-use App\Entity\Show;
+use App\Entity\Episode\Episode;
 use App\Repository\TorrentRepository;
 use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, NormalizerAwareInterface
 {

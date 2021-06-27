@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Episode\Episode;
 use App\Entity\Torrent\BaseTorrent;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -60,7 +61,7 @@ class File
 
     /**
      * @var \Doctrine\Common\Collections\Collection|Episode[]
-     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Episode\Episode", inversedBy="files", cascade={"persist"})
      * @ORM\JoinTable(name="episodes_files",
      *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")}

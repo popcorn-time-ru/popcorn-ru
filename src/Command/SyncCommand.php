@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Processors\ForumProcessor;
 use App\Processors\SyncProcessor;
+use App\Repository\AnimeRepository;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;

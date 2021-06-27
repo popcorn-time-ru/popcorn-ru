@@ -111,6 +111,7 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
                 $this->extractor->updateMedia($show);
                 $show->sync();
             }
+            //TODO: Anime
 
             $this->em->flush();
             return self::ACK;

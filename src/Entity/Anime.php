@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Episode\AnimeEpisode;
+use App\Entity\Episode\Episode;
 use App\Entity\Locale\AnimeLocale;
 use App\Entity\Torrent\AnimeTorrent;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -37,8 +39,8 @@ class Anime extends BaseMedia
     public function getLocales() { return $this->locales; }
 
     /**
-     * @var Episode[]&Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Episode", mappedBy="show")
+     * @var AnimeEpisode[]&Collection
+     * @ORM\OneToMany(targetEntity="App\Entity\Episode\AnimeEpisode", mappedBy="show")
      */
     protected $episodes;
     public function getEpisodes() { return $this->episodes; }

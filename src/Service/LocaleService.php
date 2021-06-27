@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\BaseMedia;
-use App\Entity\Episode;
+use App\Entity\Episode\Episode;
 use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Movie;
 use App\Entity\Show;

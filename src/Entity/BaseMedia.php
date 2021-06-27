@@ -3,13 +3,11 @@
 namespace App\Entity;
 
 use App\Entity\Locale\BaseLocale;
-use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\VO\Images;
 use App\Entity\VO\Rating;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Generator;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
