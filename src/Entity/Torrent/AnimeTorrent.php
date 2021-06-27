@@ -14,12 +14,6 @@ class AnimeTorrent extends BaseTorrent
 {
     use FilesTrait;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->files = new ArrayCollection();
-    }
-
     /**
      * @var Anime
      * @ORM\ManyToOne(targetEntity="App\Entity\Anime", inversedBy="torrents")

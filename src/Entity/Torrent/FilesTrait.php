@@ -14,9 +14,12 @@ trait FilesTrait
      *     cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $files;
-    public function getFiles() { return $this->files; }
+    public function getFiles() { return $this->files ?: new ArrayCollection(); }
 
     public function setFiles(array $files) {
+        if (!$this->files) {
+            $this->files = new ArrayCollection();
+        }
         /** @var File[] $files */
         $existFiles = [];
         foreach ($files as $n => $file) {
@@ -44,4 +47,5 @@ trait FilesTrait
         $this->setSize($size);
 
         return $this;
-    }}
+    }
+}
