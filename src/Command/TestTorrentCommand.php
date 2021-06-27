@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Processors\ShowTorrentProcessor;
+use App\Processors\TorrentFilesLinkProcessor;
 use App\Processors\TopicProcessor;
 use App\Service\MediaService;
 use Enqueue\Null\NullContext;
@@ -12,13 +12,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class TestTorrentCommand extends Command
 {
     protected static $defaultName = 'test:torrent';
 
-    /** @required */
-    public ShowTorrentProcessor $processor;
+    #[Required] private TorrentFilesLinkProcessor $processor;
 
     protected function configure()
     {

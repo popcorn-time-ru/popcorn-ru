@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Processors\ForumProcessor;
-use App\Processors\ShowTorrentProcessor;
+use App\Processors\TorrentFilesLinkProcessor;
 use App\Processors\SyncProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
@@ -52,7 +52,7 @@ class LinkEpisodesCommand extends Command
     {
         //$message->setDelay(random_int(120, 3600));
         $this->producer->sendEvent(
-            ShowTorrentProcessor::TOPIC,
+            TorrentFilesLinkProcessor::TOPIC,
             $message
         );
     }

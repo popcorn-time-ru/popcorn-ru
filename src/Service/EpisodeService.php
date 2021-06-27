@@ -3,8 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Anime;
+use App\Entity\Episode\AnimeEpisode;
 use App\Entity\Show;
 use App\Entity\Episode\ShowEpisode;
+use App\Entity\Torrent\AnimeTorrent;
 use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,30 +63,48 @@ class EpisodeService
     public function link(UuidInterface $torrentId): void
     {
         $torrent = $this->torrentRepo->find($torrentId);
-        if (!$torrent instanceof ShowTorrent) {
-            return;
+        if ($torrent instanceof ShowTorrent) {
+            foreach ($torrent->getFiles() as $file) {
+                [$s, $e] = $this->getSEFromName($file->getName(), $torrent->getShow());
+                if ($s === false) {
+                    continue;
+                }
+
+                $this->logger->debug("Parsed season/episode", ["filepath" => $file->getName(), "season" => $s, "episode" => $e]);
+
+                $item = $this->getEpisode($torrent->getShow(), $s, $e);
+                if (!$item) {
+                    $this->logger->debug("Episode not found in season.", ["showId" => $torrent->getShow()->getId(), "season" => $s, "episode" => $e]);
+                    continue;
+                }
+
+                $item->addFile($file);
+                $this->em->flush();
+            }
         }
+        if ($torrent instanceof AnimeTorrent) {
+            foreach ($torrent->getFiles() as $file) {
+                [$s, $e] = $this->getSEFromAnimeName($file->getName(), $torrent->getAnime());
+                if ($s === false) {
+                    continue;
+                }
 
-        foreach ($torrent->getFiles() as $file) {
-            [$s, $e] = $this->getSEFromName($file->getName(), $torrent->getShow());
-            if ($s === false) {
-                continue;
+                $this->logger->debug("Parsed season/episode", ["filepath" => $file->getName(), "season" => $s, "episode" => $e]);
+
+                $item = $this->getAnimeEpisode($torrent->getAnime(), $s, $e);
+                if (!$item) {
+                    $this->logger->debug("Episode not found in season.", ["showId" => $torrent->getAnime()->getId(), "season" => $s, "episode" => $e]);
+                    continue;
+                }
+
+                $item->addFile($file);
+                $this->em->flush();
             }
-
-            $this->logger->debug("Parsed season/episode", ["filepath" => $file->getName(), "season" => $s, "episode" => $e]);
-
-            $item = $this->getEpisode($torrent->getShow(), $s, $e);
-            if (!$item) {
-                $this->logger->debug("Episode not found in season.", ["showId" => $torrent->getShow()->getId(), "season" => $s, "episode" => $e]);
-                continue;
-            }
-
-            $item->addFile($file);
-            $this->em->flush();
         }
     }
 
     protected $showCache = [];
+    protected $animeCache = [];
     public function getEpisode(Show $show, int $s, int $e): ?ShowEpisode
     {
         $item = null;
@@ -145,6 +165,72 @@ class EpisodeService
             $translations = $this->mediaInfo->getEpisodeTranslations($show, $s, $e);
             $this->localeService->fillEpisode($item, $translations);
         }
+
+        $this->em->flush();
+
+        return $item;
+    }
+
+    public function getAnimeEpisode(Anime $anime, int $s, int $e): ?AnimeEpisode
+    {
+        $item = null;
+        foreach ($anime->getEpisodes() as $episode) {
+            if ($episode->getSeason() === $s && $episode->getEpisode() === $e) {
+                $item = $episode;
+                break;
+            }
+        }
+        if (!$item) {
+            $item = new AnimeEpisode();
+            $item
+                ->setAnime($anime)
+                ->setSeason($s)
+                ->setEpisode($e)
+            ;
+        }
+
+        $key = $anime->getKitsu().':'.$s;
+        if (empty($this->animeCache[$key])) {
+            $this->animeCache[$key] = $this->mediaInfo
+                ->getSeasonEpisodes($anime, $s); // TODO
+        }
+        $found = false;
+        foreach ($this->animeCache[$key] as $episodeInfo) {
+            if ($episodeInfo['episode_number'] == $e) {
+                // // Hack for unknown tvdbID in track
+                // // tvdbID now is primary key on client
+                // if ($item->getTvdb() <= 0) {
+                //     try {
+                //         $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
+                //         $item->setTvdb($trakt->ids->tvdb ?? -$trakt->ids->trakt ?? 0);
+                //     } catch (\Exception $exception) {
+                //         $this->logger->error($exception->getMessage());
+                //     }
+                // }
+                // // if (!$item->getTvdb()) {
+                // //     continue;
+                // // }
+
+                $item
+                    ->setTitle($episodeInfo['name'] ?: '')
+                    ->setOverview($episodeInfo['overview'] ?: '')
+                    ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
+                ;
+                $found = true;
+            }
+        }
+        if (!$found) {
+            return null;
+        }
+
+        $this->em->persist($item);
+        $anime->addEpisode($item);
+        $this->em->flush();
+
+        // if ($this->localeService->needFillEpisode($item)) {
+        //     $translations = $this->mediaInfo->getEpisodeTranslations($show, $s, $e);
+        //     $this->localeService->fillEpisode($item, $translations);
+        // }
 
         $this->em->flush();
 

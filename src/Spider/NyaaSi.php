@@ -167,13 +167,9 @@ class NyaaSi extends AbstractSpider
             $torrent = $this->getTorrentByKitsu($topic->id, $kitsu);
         } else {
             $episode = @$anitomy["episode_number"];
-            $season = 1;
-            if (preg_match('#\bS(\d+)\b#', $title, $m)) {
-                $season = (int)$m[1];
-            }
-            $torrent = $this->getEpisodeTorrentByKitsu($topic->id, $kitsu, $season, (int)$episode);
+            $season = $anitomy["anime_season"] ?? 1;
+            $torrent = $this->getEpisodeTorrentByKitsu($topic->id, $kitsu, (int)$season, (int)$episode);
         }
-
 
         if (!$torrent) {
             return;

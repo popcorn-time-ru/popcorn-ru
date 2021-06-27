@@ -5,10 +5,11 @@ namespace App\Service;
 use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
+use App\Entity\Torrent\AnimeTorrent;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Torrent\ShowTorrent;
-use App\Processors\ShowTorrentProcessor;
+use App\Processors\TorrentFilesLinkProcessor;
 use App\Processors\TorrentActiveProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
@@ -141,7 +142,11 @@ class TorrentService
             'torrentId' => $torrent->getId()->toString(),
         ]));
         $torrentMessage->setDelay(3600);
-        $topic = $torrent instanceof ShowTorrent ? ShowTorrentProcessor::TOPIC : TorrentActiveProcessor::TOPIC;
+
+        $topic = TorrentActiveProcessor::TOPIC;
+        if ($torrent instanceof ShowTorrent || $torrent instanceof AnimeTorrent) {
+            $topic = TorrentFilesLinkProcessor::TOPIC;
+        }
         $this->producer->sendEvent($topic, $torrentMessage);
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Processors\ShowTorrentProcessor;
+use App\Processors\TorrentFilesLinkProcessor;
 use App\Processors\TopicProcessor;
 use App\Processors\TorrentActiveProcessor;
 use App\Service\MediaService;

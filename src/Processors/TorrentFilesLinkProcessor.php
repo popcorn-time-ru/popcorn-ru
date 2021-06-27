@@ -15,9 +15,9 @@ use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberInterface
+class TorrentFilesLinkProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
-    public const TOPIC = 'linkShowTorrent';
+    public const TOPIC = 'linkTorrentFiles';
 
     /** @var EpisodeService */
     protected $episodes;
