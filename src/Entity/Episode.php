@@ -58,6 +58,7 @@ class Episode
     /**
      * @var Show
      * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="episodes")
+     * @ORM\JoinColumn(name="media_id")
      */
     protected $show;
     public function getShow(): Show { return $this->show; }

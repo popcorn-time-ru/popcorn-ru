@@ -13,7 +13,7 @@ use Ramsey\Uuid\UuidInterface;
  * @ORM\Entity(repositoryClass="App\Repository\Locale\BaseLocaleRepository")
  * @ORM\Table(name="locale")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
  * @ORM\DiscriminatorMap({"movie" = "MovieLocale", "show" = "ShowLocale"})
  */
 abstract class BaseLocale
