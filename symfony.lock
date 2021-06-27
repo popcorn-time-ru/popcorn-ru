@@ -26,6 +26,9 @@
             "config/packages/fos_elastica.yaml"
         ]
     },
+    "guzzlehttp/guzzle": {
+        "version": "7.3.0"
+    },
     "laminas/laminas-code": {
         "version": "4.1.0"
     },
