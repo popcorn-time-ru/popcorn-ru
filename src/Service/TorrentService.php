@@ -154,7 +154,10 @@ class TorrentService
             return;
         }
 
+        $media = $torrent->getMedia();
         $this->torrentRepo->delete($torrent);
+
+        $media->syncTranslations();
         $this->em->flush();
     }
 

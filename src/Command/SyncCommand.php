@@ -79,13 +79,9 @@ class SyncCommand extends Command
 
         $torrentsDelete = $this->torrentRepository->getNotSyncAndInactive($dateDelete, $limit);
         foreach ($torrentsDelete as $torrent) {
-            if ($torrent->isChecked($dateCheck)) {
-                $this->torrentRepository->delete($torrent);
-            } else {
-                $this->sendDelayed(
-                    new Message(json_encode(['type' => 'torrent', 'id' => $torrent->getId()->toString()]))
-                );
-            }
+            $this->sendDelayed(
+                new Message(json_encode(['type' => 'torrent', 'id' => $torrent->getId()->toString(), 'delete' => $torrent->isChecked($dateCheck)]))
+            );
         }
 
         $torrents = $this->torrentRepository->getOld($dateCheck, $limit);

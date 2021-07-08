@@ -9,6 +9,7 @@ use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
 use App\Service\MediaService;
+use App\Service\TorrentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
@@ -23,31 +24,27 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
 {
     public const TOPIC = 'sync';
 
-    /** @var MediaService */
-    private $extractor;
+    private MediaService $extractor;
 
-    /** @var ProducerInterface */
-    private $producer;
+    private ProducerInterface $producer;
 
-    /** @var TorrentRepository */
-    private $torrentRepository;
+    private TorrentService $torrentService;
 
-    /** @var MovieRepository */
-    private $movieRepository;
+    private TorrentRepository $torrentRepository;
 
-    /** @var ShowRepository */
-    private $showRepository;
+    private MovieRepository $movieRepository;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private ShowRepository $showRepository;
 
-    /** @var EntityManagerInterface */
-    private $em;
+    private LoggerInterface $logger;
+
+    private EntityManagerInterface $em;
 
     public function __construct(
         EntityManagerInterface $em,
         MediaService $extractor,
         TorrentRepository $torrentRepository,
+        TorrentService $torrentService,
         MovieRepository $movieRepository,
         ShowRepository $showRepository,
         ProducerInterface $producer,
@@ -55,6 +52,7 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
     {
         $this->producer = $producer;
         $this->logger = $logger;
+        $this->torrentService = $torrentService;
         $this->torrentRepository = $torrentRepository;
         $this->movieRepository = $movieRepository;
         $this->showRepository = $showRepository;
@@ -74,7 +72,14 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
             if ($data['type'] === 'torrent') {
                 /** @var BaseTorrent $torrent */
                 $torrent = $this->torrentRepository->find($data['id']);
-                if (!$torrent || $torrent->isChecked()) {
+                if (!$torrent) {
+                    return self::ACK;
+                }
+                if (!empty($data['delete'])) {
+                    $this->torrentService->deleteTorrent($torrent->getProvider(), $torrent->getProviderExternalId());
+                    return self::ACK;
+                }
+                if ($torrent->isChecked()) {
                     return self::ACK;
                 }
                 $topicMessage = new \Enqueue\Client\Message(JSON::encode([

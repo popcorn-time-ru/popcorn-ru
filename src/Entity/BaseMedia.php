@@ -61,8 +61,7 @@ abstract class BaseMedia
      */
     protected $existTranslations;
     public function getExistTranslations(): array { return $this->existTranslations ?? []; }
-    public function setExistTranslations(array $existTranslations) { $this->existTranslations = $existTranslations; return $this;}
-    public function addExistTranslation(string $translations) {
+    public function addExistTranslation(string $translations): self {
         if (!is_array($this->existTranslations)) {
             $this->existTranslations = [];
         }
@@ -70,6 +69,15 @@ abstract class BaseMedia
             $this->existTranslations[] = $translations;
         }
         $this->existTranslations = array_filter($this->existTranslations);
+        sort($this->existTranslations);
+        return $this;
+    }
+    public function syncTranslations(): self {
+        $translations = [];
+        foreach ($this->getTorrents() as $tor) {
+            $translations[] = $tor->getLanguage();
+        }
+        $this->existTranslations = array_filter(array_unique($translations));
         sort($this->existTranslations);
         return $this;
     }

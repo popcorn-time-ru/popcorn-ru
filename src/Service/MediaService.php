@@ -239,6 +239,7 @@ class MediaService
             $info = $this->showRepo->load($id);
             $media = $this->fillShow($info, $media);
         }
+        $media->syncTranslations();
     }
 
     /**
