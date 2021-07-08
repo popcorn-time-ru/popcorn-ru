@@ -7,6 +7,7 @@ use App\Entity\Locale\ShowLocale;
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Repository\MovieRepository;
+use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
@@ -20,7 +21,7 @@ class Mysql implements SearchInterface
         $this->localeRepository = $localeRepository;
     }
 
-    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, string $locale, int $offset, int $limit): array
+    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
     {
         if ($pageRequest->keywords) {
             $localeClass = $class->getName() === Show::class ? ShowLocale::class : MovieLocale::class;
@@ -37,7 +38,7 @@ class Mysql implements SearchInterface
             $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
         }
         $qb->andWhere('m.existTranslations LIKE :locale')
-            ->setParameter('locale', '%'.$locale.'%');
+            ->setParameter('locale', '%'.$localeParams->bestContentLocale.'%');
         if ($class->getName() === Show::class) {
             $qb->andWhere('m.episodes IS NOT EMPTY');
         }

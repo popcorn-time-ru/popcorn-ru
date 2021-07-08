@@ -35,8 +35,8 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         $torrents = [];
         /** @var LocaleRequest $localeParams */
         $localeParams = $context['localeParams'];
-        foreach ($this->torrents->getMediaTorrents($object, $localeParams->contentLocale) as $torrent) {
-            $torrents[$localeParams->contentLocale][$torrent->getQuality()] =
+        foreach ($this->torrents->getMediaTorrents($object, $localeParams->contentLocales) as $torrent) {
+            $torrents[$torrent->getLanguage()][$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
         $locale = [];

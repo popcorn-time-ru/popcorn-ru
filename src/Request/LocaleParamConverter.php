@@ -26,7 +26,15 @@ class LocaleParamConverter implements ParamConverterInterface
 
         $localeRequest->needLocale = $request->query->has('locale');
         $localeRequest->locale = $request->query->get('locale', $this->defaultLocale);
-        $localeRequest->contentLocale = $request->query->get('contentLocale', $localeRequest->locale);
+        $contextLocales = $request->query->get('contentLocale', $localeRequest->locale);
+        $localeRequest->contentLocales = explode(',', $contextLocales);
+        $localeRequest->bestContentLocale = current($localeRequest->contentLocales);
+        if (!in_array($this->defaultLocale, $localeRequest->contentLocales)) {
+            // For Ru not mix english
+            if (!in_array('ru', $localeRequest->contentLocales)) {
+                $localeRequest->contentLocales[] = $this->defaultLocale;
+            }
+        }
         // if (!in_array($localeRequest->locale, $this->extractLocales)) {
         //     $localeRequest->locale = $this->defaultLocale;
         // }

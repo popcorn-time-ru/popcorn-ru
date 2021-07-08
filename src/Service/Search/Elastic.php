@@ -5,6 +5,7 @@ namespace App\Service\Search;
 use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
+use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
@@ -40,7 +41,7 @@ class Elastic implements SearchInterface
         return $show->getEpisodes()->count() > 0;
     }
 
-    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, string $locale, int $offset, int $limit): array
+    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
     {
         if (($offset + $limit) > self::MAX_LIMIT) {
             return [];
@@ -73,9 +74,14 @@ class Elastic implements SearchInterface
             $boolQuery->addMust($genre);
         }
 
-        $lang = new \Elastica\Query\Term();
-        $lang->setTerm('existTranslations', $locale);
-        $boolQuery->addMust($lang);
+        $langs = new \Elastica\Query\BoolQuery();
+        foreach ($localeParams->contentLocales as $locale) {
+            $lang = new \Elastica\Query\Term();
+            $lang->setTerm('existTranslations', $locale);
+            $langs->addShould($lang);
+        }
+        $langs->setMinimumShouldMatch(1);
+        $boolQuery->addMust($langs);
 
         $query = Query::create($boolQuery);
         $query->setFrom($offset)->setSize($limit);

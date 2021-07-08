@@ -8,7 +8,10 @@ class LocaleRequest
     public $locale;
 
     /** @var string */
-    public $contentLocale;
+    public $bestContentLocale;
+
+    /** @var array */
+    public $contentLocales;
 
     /** @var bool */
     public $needLocale = false;

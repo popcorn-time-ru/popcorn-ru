@@ -48,12 +48,20 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 $base['locale'] = $this->normalizer->normalize($l, $format, $context);
             }
         }
+        $bestLocale = null;
+        foreach ($localeParams->contentLocales as $contentLocale) {
+            if (in_array($contentLocale, $object->getExistTranslations())) {
+                $bestLocale = $contentLocale;
+                $base['contextLocale'] = $bestLocale;
+                break;
+            }
+        }
 
         switch ($context['mode']) {
             case 'list':
                 return $base;
             case 'item':
-                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context);
+                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context + ['locale' => $bestLocale]);
                 $episodes = array_values(array_filter($episodes, static function ($episode) {
                     return !empty($episode['torrents']);
                 }));

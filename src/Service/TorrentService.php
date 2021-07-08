@@ -179,7 +179,7 @@ class TorrentService
     {
         /** @var BaseTorrent[] $active */
         $active = [];
-        foreach ($this->torrentRepo->getMediaTorrents($movie, $language) as $torrent) {
+        foreach ($this->torrentRepo->getMediaTorrents($movie, [$language]) as $torrent) {
             $torrent->setActive(false);
             if (empty($active[$torrent->getQuality()])
                 || $this->needReplaceTorrent($active[$torrent->getQuality()], $torrent)) {
@@ -205,7 +205,7 @@ class TorrentService
                     $active[$key][$torrent->getQuality()] = $torrent;
                 }
             }
-            foreach ($this->torrentRepo->getMediaTorrents($show, $language) as $torrent) {
+            foreach ($this->torrentRepo->getMediaTorrents($show, [$language]) as $torrent) {
                 $torrent->setActive(false);
                 $file = null;
                 foreach ($torrent->getFiles() as $torrentFile) {

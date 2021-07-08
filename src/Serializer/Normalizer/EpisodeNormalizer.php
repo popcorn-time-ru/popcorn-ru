@@ -37,11 +37,12 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         $torrents = [];
         /** @var LocaleRequest $localeParams */
         $localeParams = $context['localeParams'];
-        foreach ($this->torrents->getEpisodeTorrents($object, $localeParams->contentLocale) as $torrent) {
+        $locale = $context['locale'];
+        foreach ($this->torrents->getEpisodeTorrents($object, [$locale]) as $torrent) {
             $torrents[$torrent->getQuality()] =
                 $this->normalizer->normalize($torrent, $format, $context);
         }
-        foreach ($this->torrents->getMediaTorrents($object->getShow(), $localeParams->contentLocale) as $torrent) {
+        foreach ($this->torrents->getMediaTorrents($object->getShow(), [$locale]) as $torrent) {
             $file = null;
             foreach ($torrent->getFiles() as $torrentFile) {
                 if ($torrentFile->isEpisode($object)) {

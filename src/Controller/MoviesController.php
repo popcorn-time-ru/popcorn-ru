@@ -55,7 +55,7 @@ class MoviesController extends AbstractController
      */
     public function stat(LocaleRequest $localeParams)
     {
-        $stat = $this->statRepo->getByTypeAndLang('movie', $localeParams->contentLocale);
+        $stat = $this->statRepo->getByTypeAndLang('movie', $localeParams->bestContentLocale);
         $data = [];
         foreach ($stat as $s) {
             $data[$s->getGenre()] = [
@@ -125,7 +125,7 @@ class MoviesController extends AbstractController
             'mode' => 'torrents',
             'localeParams' => $localeParams,
         ];
-        $data = $this->serializer->serialize($movie->getLocaleTorrents($localeParams->contentLocale), 'json', $context);
+        $data = $this->serializer->serialize($movie->getLocaleTorrents($localeParams->bestContentLocale), 'json', $context);
 
         return new CacheJsonResponse($data, true);
     }

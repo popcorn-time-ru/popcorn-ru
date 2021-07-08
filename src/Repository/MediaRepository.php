@@ -68,7 +68,7 @@ abstract class MediaRepository extends ServiceEntityRepository
             $this->createQueryBuilder('m'),
             $this->_class,
             $pageRequest,
-            $localeParams->contentLocale,
+            $localeParams,
             $offset,
             $limit
         );
