@@ -209,7 +209,7 @@ class MediaService
 
         $movie
             ->setImdb($movieInfo->getImdbId())
-            ->setTitle($movieInfo->getTitle())
+            ->setTitle($movieInfo->getOriginalTitle())
             ->setSynopsis($movieInfo->getOverview())
             ->setReleased($movieInfo->getReleaseDate())
             ->setCertification($certification)
