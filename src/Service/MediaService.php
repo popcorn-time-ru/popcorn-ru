@@ -163,6 +163,7 @@ class MediaService
             ->setAirDay('') // TODO: инфы нет
             ->setAirTime('') // TODO: инфы нет
             ->setStatus($showInfo->getStatus())
+            ->setOrigLang($showInfo->getOriginalLanguage())
             ->setNumSeasons($showInfo->getNumberOfSeasons())
             ->setLastUpdated($showInfo->getLastAirDate() ? $showInfo->getLastAirDate()->getTimestamp() : 0)
         ;
@@ -213,6 +214,7 @@ class MediaService
             ->setReleased($movieInfo->getReleaseDate())
             ->setCertification($certification)
             ->setYear($movieInfo->getReleaseDate()->format('Y'))
+            ->setOrigLang($movieInfo->getOriginalLanguage())
             ->setRuntime((string)$movieInfo->getRuntime())
             ->setTrailer($trailer)
         ;

@@ -129,6 +129,14 @@ abstract class BaseMedia
 
     /**
      * @var string
+     * @ORM\Column(type="string", length=2)
+     */
+    protected $origLang;
+    public function getOrigLang() { return $this->origLang; }
+    public function setOrigLang($origLang) { $this->origLang = $origLang; return $this;}
+
+    /**
+     * @var string
      * @ORM\Column(type="text")
      */
     protected $synopsis;

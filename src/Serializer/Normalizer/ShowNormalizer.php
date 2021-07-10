@@ -36,6 +36,8 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             'title' => $object->getTitle(),
             'year' => $object->getYear(),
             'slug' => $object->getSlug(),
+            'original_language' => $object->getOrigLang(),
+            'exist_translations' => $object->getExistTranslations(),
             'num_seasons' => $object->getNumSeasons(),
             'images' => $object->getImages()->getApiArray(),
             'rating' => $object->getRating()->getApiArray(),

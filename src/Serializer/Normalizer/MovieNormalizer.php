@@ -52,6 +52,8 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             'imdb_id' => $object->getImdb(),
             'title' => $object->getTitle(),
             'year' => $object->getYear(),
+            'original_language' => $object->getOrigLang(),
+            'exist_translations' => $object->getExistTranslations(),
             'synopsis' => $object->getSynopsis(),
             'runtime' => $object->getRuntime(),
             'released' => $object->getReleased()->getTimestamp(),
