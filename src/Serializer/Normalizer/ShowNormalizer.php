@@ -50,20 +50,13 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 $base['locale'] = $this->normalizer->normalize($l, $format, $context);
             }
         }
-        $bestLocale = null;
-        foreach ($localeParams->contentLocales as $contentLocale) {
-            if (in_array($contentLocale, $object->getExistTranslations())) {
-                $bestLocale = $contentLocale;
-                $base['contextLocale'] = $bestLocale;
-                break;
-            }
-        }
+        $base['contextLocale'] = $this->findBestLocale($localeParams, $object);
 
         switch ($context['mode']) {
             case 'list':
                 return $base;
             case 'item':
-                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context + ['locale' => $bestLocale]);
+                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context + ['locale' => $base['contextLocale']]);
                 $episodes = array_values(array_filter($episodes, static function ($episode) {
                     return !empty($episode['torrents']);
                 }));
@@ -96,5 +89,21 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
     public function hasCacheableSupportsMethod(): bool
     {
         return true;
+    }
+
+    private function findBestLocale(LocaleRequest $localeParams, Show $object)
+    {
+        $locales = $localeParams->contentLocales ?: $object->getExistTranslations();
+        $locales = array_intersect($locales, $object->getExistTranslations());
+        if (in_array($localeParams->bestContentLocale, $locales)) {
+            return $localeParams->bestContentLocale;
+        }
+        if (in_array($object->getOrigLang(), $locales)) {
+            return $object->getOrigLang();
+        }
+        if (in_array('en', $locales)) {
+            return 'en';
+        }
+        return current($locales);
     }
 }

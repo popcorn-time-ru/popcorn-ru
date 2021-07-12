@@ -54,6 +54,7 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             'year' => $object->getYear(),
             'original_language' => $object->getOrigLang(),
             'exist_translations' => $object->getExistTranslations(),
+            'contextLocale' => $this->findBestLocale($localeParams, $object),
             'synopsis' => $object->getSynopsis(),
             'runtime' => $object->getRuntime(),
             'released' => $object->getReleased()->getTimestamp(),
@@ -74,5 +75,21 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
     public function hasCacheableSupportsMethod(): bool
     {
         return true;
+    }
+
+    private function findBestLocale(LocaleRequest $localeParams, Movie $object)
+    {
+        $locales = $localeParams->contentLocales ?: $object->getExistTranslations();
+        $locales = array_intersect($locales, $object->getExistTranslations());
+        if (in_array($localeParams->bestContentLocale, $locales)) {
+            return $localeParams->bestContentLocale;
+        }
+        if (in_array($object->getOrigLang(), $locales)) {
+            return $object->getOrigLang();
+        }
+        if (in_array('en', $locales)) {
+            return 'en';
+        }
+        return current($locales);
     }
 }

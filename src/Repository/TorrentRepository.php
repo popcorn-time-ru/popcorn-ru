@@ -94,7 +94,9 @@ class TorrentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('t');
         $qb->where('t.mediaId = :media')->setParameter('media', $media->getId());
-        $qb->andWhere('t.language IN (:lang)')->setParameter('lang', $languages);
+        if ($languages) {
+            $qb->andWhere('t.language IN (:lang)')->setParameter('lang', $languages);
+        }
         if ($onlyActive) {
             $qb->andWhere('t.active = true');
         }
@@ -112,7 +114,9 @@ class TorrentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('t');
         $qb->where('t.mediaId = :media')->setParameter('media', $episode->getId());
-        $qb->andWhere('t.language IN (:lang)')->setParameter('lang', $languages);
+        if ($languages) {
+            $qb->andWhere('t.language IN (:lang)')->setParameter('lang', $languages);
+        }
         if ($onlyActive) {
             $qb->andWhere('t.active = true');
         }

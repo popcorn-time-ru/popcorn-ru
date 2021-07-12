@@ -74,14 +74,16 @@ class Elastic implements SearchInterface
             $boolQuery->addMust($genre);
         }
 
-        $langs = new \Elastica\Query\BoolQuery();
-        foreach ($localeParams->contentLocales as $locale) {
-            $lang = new \Elastica\Query\Term();
-            $lang->setTerm('existTranslations', $locale);
-            $langs->addShould($lang);
+        if ($localeParams->contentLocales) {
+            $langs = new \Elastica\Query\BoolQuery();
+            foreach ($localeParams->contentLocales as $locale) {
+                $lang = new \Elastica\Query\Term();
+                $lang->setTerm('existTranslations', $locale);
+                $langs->addShould($lang);
+            }
+            $langs->setMinimumShouldMatch(1);
+            $boolQuery->addMust($langs);
         }
-        $langs->setMinimumShouldMatch(1);
-        $boolQuery->addMust($langs);
 
         $query = Query::create($boolQuery);
         $query->setFrom($offset)->setSize($limit);
