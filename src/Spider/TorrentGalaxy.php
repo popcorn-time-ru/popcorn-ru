@@ -117,7 +117,11 @@ class TorrentGalaxy extends AbstractSpider
                 return strpos($c->html(), 'Language') !== false;
             }
         ));
-        $lang = $lang ? $lang->filter('img')->first()->attr('alt') : 'en';
+        $lang = $lang ? $lang->filter('img')->first()->attr('alt') : 'English';
+        $language = $this->langName2IsoCode($lang);
+        if (!$language) {
+            return;
+        }
 
         if (preg_match('#S(\d\d)E(\d\d)#', $title, $m)) {
             $torrent = $this->getEpisodeTorrentByImdb($topic->id, $imdb, (int)$m[1], (int)$m[2]);
@@ -134,7 +138,7 @@ class TorrentGalaxy extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage($this->langName2IsoCode($lang))
+            ->setLanguage($language)
         ;
 
         $torrent->setFiles($files);
