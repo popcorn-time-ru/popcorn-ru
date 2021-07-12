@@ -75,9 +75,11 @@ abstract class BaseMedia
     public function syncTranslations(): self {
         $translations = [];
         foreach ($this->getTorrents() as $tor) {
-            $translations[] = $tor->getLanguage();
+            if ($tor->getActive()) {
+                $translations[$tor->getLanguage()] = 1;
+            }
         }
-        $this->existTranslations = array_filter(array_unique($translations));
+        $this->existTranslations = array_keys($translations);
         sort($this->existTranslations);
         return $this;
     }

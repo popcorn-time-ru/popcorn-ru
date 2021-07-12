@@ -23,6 +23,25 @@ class Show extends BaseMedia
         $this->episodes = new ArrayCollection();
     }
 
+    public function syncTranslations(): self {
+        $translations = [];
+        foreach ($this->getTorrents() as $tor) {
+            if ($tor->getActive()) {
+                $translations[$tor->getLanguage()] = 1;
+            }
+        }
+        foreach ($this->getEpisodes() as $episode) {
+            foreach ($episode->getTorrents() as $tor) {
+                if ($tor->getActive()) {
+                    $translations[$tor->getLanguage()] = 1;
+                }
+            }
+        }
+        $this->existTranslations = array_keys($translations);
+        sort($this->existTranslations);
+        return $this;
+    }
+
     /**
      * @var ShowTorrent[]&Collection
      * @ORM\OneToMany(targetEntity="App\Entity\Torrent\ShowTorrent", fetch="EAGER", mappedBy="show")
