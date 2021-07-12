@@ -131,7 +131,7 @@ class TorrentRepository extends ServiceEntityRepository
             FROM torrent t
             JOIN file f ON t.id = f.torrent_id
             LEFT JOIN episodes_files ef ON f.id = ef.file_id
-            WHERE t.show_id IS NOT NULL AND ef.episode_id IS NULL
+            WHERE t.media_id IS NOT NULL AND ef.episode_id IS NULL
               AND (name LIKE \'%.avi\'
                     OR name LIKE \'%.mp4\'
                     OR name LIKE \'%.mkv\'
