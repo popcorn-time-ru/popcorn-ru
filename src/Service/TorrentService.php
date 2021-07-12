@@ -198,7 +198,7 @@ class TorrentService
         $active = [];
         foreach ($show->getEpisodes() as $episode) {
             $key = $episode->getSeason() . ':' . $episode->getEpisode();
-            foreach ($this->torrentRepo->getEpisodeTorrents($episode, $language) as $torrent) {
+            foreach ($this->torrentRepo->getEpisodeTorrents($episode, [$language]) as $torrent) {
                 $torrent->setActive(false);
                 if (empty($active[$key][$torrent->getQuality()])
                     || $this->needReplaceTorrent($active[$key][$torrent->getQuality()], $torrent)) {
