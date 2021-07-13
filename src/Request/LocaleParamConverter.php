@@ -27,12 +27,11 @@ class LocaleParamConverter implements ParamConverterInterface
         $localeRequest->needLocale = $request->query->has('locale');
         $localeRequest->locale = $request->query->get('locale', $this->defaultLocale);
         $contextLocales = $request->query->get('contentLocale', $localeRequest->locale);
-        if ($contextLocales === 'all') {
+        $showAll = $request->query->has('showAll');
+        $localeRequest->contentLocales = explode(',', $contextLocales);
+        $localeRequest->bestContentLocale = current($localeRequest->contentLocales);
+        if ($showAll) {
             $localeRequest->contentLocales = [];
-            $localeRequest->bestContentLocale = $localeRequest->locale;
-        } else {
-            $localeRequest->contentLocales = explode(',', $contextLocales);
-            $localeRequest->bestContentLocale = current($localeRequest->contentLocales);
         }
 
         $request->attributes->set($configuration->getName(), $localeRequest);
