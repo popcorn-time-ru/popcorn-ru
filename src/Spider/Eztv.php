@@ -64,19 +64,23 @@ class Eztv extends AbstractSpider
     public function getTopic(TopicDto $topic)
     {
         [$showId, ] = explode(':', $topic->id);
-        $res = $this->client->get('/api/get-torrents', [
-            'query' => [
-                'imdb_id' => $showId,
-            ]
-        ]);
-        $json = $res->getBody()->getContents();
-        $data = json_decode($json, true);
-        if (empty($data['torrents'])) {
-            return ;
-        }
+        $page = 1;
+        while (true) {
+            $res = $this->client->get('/api/get-torrents', [
+                'query' => [
+                    'imdb_id' => $showId,
+                    'page' => $page++,
+                ]
+            ]);
+            $json = $res->getBody()->getContents();
+            $data = json_decode($json, true);
+            if (empty($data['torrents'])) {
+                return ;
+            }
 
-        foreach ($data['torrents'] as $torrentData) {
-            $this->buildFromTorrentData($torrentData);
+            foreach ($data['torrents'] as $torrentData) {
+                $this->buildFromTorrentData($torrentData);
+            }
         }
     }
 
