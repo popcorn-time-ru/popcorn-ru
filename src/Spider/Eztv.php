@@ -50,15 +50,23 @@ class Eztv extends AbstractSpider
 
         $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
 
-        foreach ($data['torrents'] as $torrentData) {
-            if ($after && $after->getTimestamp() > $torrentData['date_released_unix']) {
-                return ;
-            }
-
-            $this->buildFromTorrentData($torrentData);
+        if (!$after || $this->hasNewTorrents($data, $after)) {
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
 
-        yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
+        foreach ($data['torrents'] as $torrentData) {
+            $this->buildFromTorrentData($torrentData);
+        }
+    }
+
+    private function hasNewTorrents($data, \DateTime $after): bool
+    {
+        foreach ($data['torrents'] as $torrentData) {
+            if ($after->getTimestamp() < $torrentData['date_released_unix']) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getTopic(TopicDto $topic)

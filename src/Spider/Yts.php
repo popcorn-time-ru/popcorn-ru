@@ -58,7 +58,9 @@ class Yts extends AbstractSpider
         }
 
         $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
-        $exist = false;
+        if (!$after || $this->hasNewTorrents($data, $after)) {
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
+        }
 
         foreach ($data['data']['movies'] as $movieData) {
             $media = $this->torrentService->getMediaByImdb($movieData['imdb_code']);
@@ -66,20 +68,21 @@ class Yts extends AbstractSpider
                 continue;
             }
             foreach($movieData['torrents'] as $torrentData) {
-                if ($after && $after->getTimestamp() > $torrentData['date_uploaded_unix']) {
-                    continue;
-                }
-
                 $this->buildTorrentFromData($media, $movieData, $torrentData);
-                $exist = true;
             }
         }
+    }
 
-        if (!$exist) {
-            return;
+    private function hasNewTorrents($data, \DateTime $after): bool
+    {
+        foreach ($data['data']['movies'] as $movieData) {
+            foreach($movieData['torrents'] as $torrentData) {
+                if ($after->getTimestamp() < $torrentData['date_uploaded_unix']) {
+                    return true;
+                }
+            }
         }
-
-        yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
+        return false;
     }
 
     public function getTopic(TopicDto $topic)
