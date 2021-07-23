@@ -33,9 +33,11 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         if (!$object instanceof BaseTorrent) {
             return [];
         }
+        $provider = $this->spiderSelector->get($object->getProvider());
         $data = [
             'url' => $object->getUrl(),
             'provider' => $object->getProvider(),
+            'source' => $provider ? $provider->getSource($object) : '',
         ];
         if ($object instanceof MovieTorrent) {
             $data['seed'] = $object->getSeed();
@@ -46,8 +48,6 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         }
         if ($context['mode'] === 'torrents') {
             $data['title'] = $object->getProviderTitle();
-            $provider = $this->spiderSelector->get($object->getProvider());
-            $data['source'] = $provider ? $provider->getSource($object) : '';
         }
 
         if ($object instanceof ShowTorrent) {
