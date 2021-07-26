@@ -22,7 +22,7 @@ class CacheErrorListener implements EventSubscriberInterface
     public function Mark404Cached(ExceptionEvent $event)
     {
         if ($event->getThrowable() instanceof NotFoundHttpException) {
-            $response = new JsonResponse(array('massage' => "Not Found", 'code' => 404), 404);
+            $response = new JsonResponse(array('message' => "Not Found", 'code' => 404), 404);
             $response->setSharedMaxAge(self::CACHE_TIME);
             $event->setResponse($response);
         }
