@@ -165,7 +165,7 @@ class MediaService
             ->setStatus($showInfo->getStatus())
             ->setOrigLang($showInfo->getOriginalLanguage())
             ->setNumSeasons($showInfo->getNumberOfSeasons())
-            ->setLastUpdated($showInfo->getLastAirDate() ? $showInfo->getLastAirDate()->getTimestamp() : 0)
+            ->setLastUpdated($showInfo->getLastAirDate())
         ;
         /** @var Country $country */
         $country = current($showInfo->getOriginCountry()->toArray());

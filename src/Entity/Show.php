@@ -160,7 +160,7 @@ class Show extends BaseMedia
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="datetime")
      */
     protected $lastUpdated;
     public function getLastUpdated() { return $this->lastUpdated; }
