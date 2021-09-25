@@ -10,7 +10,8 @@ fos_elastica:
                 title:
                     type: "text"
                     fielddata: true
-                genres: ~
+                genres:
+                    type: "keyword"
                 year:
                     type: "integer"
                 created:
@@ -65,7 +66,8 @@ fos_elastica:
                 released:
                     type: "date"
                     property_path: lastUpdated
-                genres: ~
+                genres:
+                    type: "keyword"
                 #synopsis: ~
                 existTranslations: ~
                 locales:
