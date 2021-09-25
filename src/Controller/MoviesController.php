@@ -58,8 +58,12 @@ class MoviesController extends AbstractController
         $stat = $this->statRepo->getByTypeAndLang('movie', $localeParams->bestContentLocale);
         $data = [];
         foreach ($stat as $s) {
+            $count = $localeParams->contentLocales ? $s->getCountLang() : $s->getCountAll();
+            if (!$count) {
+                continue;
+            }
             $data[$s->getGenre()] = [
-                'count' => $s->getCount(),
+                'count' => $count,
                 'title' => $s->getTitle(),
             ];
         }

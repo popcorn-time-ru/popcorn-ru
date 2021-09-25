@@ -31,8 +31,8 @@ class StatService
 
     public function calculateMediaStat()
     {
-        $movieStat = $this->groupGenreStat($this->movieRepo->getGenreStatistics());
-        $showStat = $this->groupGenreStat($this->showRepo->getGenreStatistics());
+        $movieStat = $this->groupGenreStat($this->movieRepo->getGenreStatistics(), $this->movieRepo->getGenreLangStatistics());
+        $showStat = $this->groupGenreStat($this->showRepo->getGenreStatistics(), $this->showRepo->getGenreLangStatistics());
 
         foreach ($movieStat as $lang => $langStat) {
             foreach ($langStat as $genre => $count) {
@@ -43,7 +43,8 @@ class StatService
                 if (empty($stat->getTitle())) {
                     $stat->setTitle($this->translatedTitle($genre, $lang));
                 }
-                $stat->setCount($count);
+                $stat->setCountLang($count);
+                $stat->setCountAll($movieStat['all'][$genre]);
             }
         }
 
@@ -56,16 +57,29 @@ class StatService
                 if (empty($stat->getTitle())) {
                     $stat->setTitle($this->translatedTitle($genre, $lang));
                 }
-                $stat->setCount($count);
+                $stat->setCountLang($count);
+                $stat->setCountAll($showStat['all'][$genre]);
             }
         }
         $this->statRepo->flush();
     }
 
-    private function groupGenreStat(array $allRows): array
+    private function groupGenreStat(array $allRows, array $langRows): array
     {
         $group = [];
         foreach ($allRows as $stat) {
+            foreach ($stat['genres'] as $genre) {
+                if (empty($group['all'][$genre])) {
+                    $group['all'][$genre] = 0;
+                }
+                $group['all'][$genre] += $stat['c'];
+            }
+            if (empty($group['all']['all'])) {
+                $group['all']['all'] = 0;
+            }
+            $group['all']['all'] += $stat['c'];
+        }
+        foreach ($langRows as $stat) {
             foreach ($stat['existTranslations'] as $lang) {
                 foreach ($stat['genres'] as $genre) {
                     if (empty($group[$lang][$genre])) {

@@ -51,10 +51,18 @@ class MediaStat
 
     /**
      * @var integer
-     * @ORM\Column(type="integer", name="`count`")
+     * @ORM\Column(type="integer")
      */
-    protected $count;
-    public function getCount() { return $this->count; }
-    public function setCount($count) { $this->count = $count; return $this;}
+    protected $countLang;
+    public function getCountLang() { return $this->countLang; }
+    public function setCountLang($countLang) { $this->countLang = $countLang; return $this;}
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer")
+     */
+    protected $countAll;
+    public function getCountAll() { return $this->countAll; }
+    public function setCountAll($countAll) { $this->countAll = $countAll; return $this;}
 
 }
