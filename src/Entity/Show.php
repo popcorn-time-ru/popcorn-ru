@@ -159,8 +159,8 @@ class Show extends BaseMedia
     public function setNumSeasons($numSeasons) { $this->numSeasons = $numSeasons; return $this;}
 
     /**
-     * @var integer
-     * @ORM\Column(type="datetime")
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $lastUpdated;
     public function getLastUpdated() { return $this->lastUpdated; }
