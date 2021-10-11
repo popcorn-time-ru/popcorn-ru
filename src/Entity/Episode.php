@@ -41,7 +41,7 @@ class Episode
 
     /**
      * @var EpisodeLocale[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Locale\EpisodeLocale", fetch="EAGER", mappedBy="episode")
+     * @ORM\OneToMany(targetEntity="App\Entity\Locale\EpisodeLocale", fetch="LAZY", mappedBy="episode")
      */
     protected $locales;
     public function getLocales() { return $this->locales; }
