@@ -18,36 +18,14 @@ class MoviesController extends AbstractController
 {
     const PAGE_SIZE = 50;
 
-    /** @var MovieRepository */
-    protected $repo;
+    /** @required */
+    public MovieRepository $repo;
 
-    /** @var MediaStatRepository */
-    protected $statRepo;
+    /** @required */
+    public MediaStatRepository $statRepo;
 
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(MovieRepository $repo, MediaStatRepository $statRepo, SerializerInterface $serializer)
-    {
-        $this->repo = $repo;
-        $this->statRepo = $statRepo;
-        $this->serializer = $serializer;
-    }
-
-    /**
-     * @Route("/movies", name="movies")
-     */
-    public function index()
-    {
-        $count = $this->repo->count([]);
-        $pages = ceil($count / self::PAGE_SIZE);
-        $links = [];
-        for($page = 1; $page <= $pages; $page++) {
-            $links[] = 'movies/'.$page;
-        }
-
-        return new CacheJsonResponse($links, false);
-    }
+    /** @required */
+    public SerializerInterface $serializer;
 
     /**
      * @Route("/movies/stat", name="movies_stat")

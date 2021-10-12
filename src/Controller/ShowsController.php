@@ -18,36 +18,14 @@ class ShowsController extends AbstractController
 {
     const PAGE_SIZE = 50;
 
-    /** @var ShowRepository */
-    protected $repo;
+    /** @required */
+    public ShowRepository $repo;
 
     /** @var MediaStatRepository */
-    private $statRepo;
+    public MediaStatRepository $statRepo;
 
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(ShowRepository $repo, MediaStatRepository $statRepo, SerializerInterface $serializer)
-    {
-        $this->repo = $repo;
-        $this->statRepo = $statRepo;
-        $this->serializer = $serializer;
-    }
-
-    /**
-     * @Route("/shows", name="shows")
-     */
-    public function index()
-    {
-        $count = $this->repo->count([]);
-        $pages = ceil($count / self::PAGE_SIZE);
-        $links = [];
-        for($page = 1; $page <= $pages; $page++) {
-            $links[] = 'shows/'.$page;
-        }
-
-        return new CacheJsonResponse($links, false);
-    }
+    /** @required */
+    public SerializerInterface $serializer;
 
     /**
      * @Route("/shows/stat", name="shows_stat")

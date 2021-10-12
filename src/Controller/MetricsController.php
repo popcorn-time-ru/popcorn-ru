@@ -12,37 +12,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MetricsController
 {
-    /** @var ShowRepository */
-    private $show;
+    /** @required */
+    public ShowRepository $show;
 
-    /** @var MovieRepository */
-    private $movie;
+    /** @required */
+    public MovieRepository $movie;
 
-    /** @var TorrentRepository */
-    private $torrent;
+    /** @required */
+    public TorrentRepository $torrent;
 
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /**
-     * DatabaseMetrics constructor.
-     *
-     * @param ShowRepository    $show
-     * @param MovieRepository   $movie
-     * @param TorrentRepository $torrent
-     */
-    public function __construct(
-        EntityManagerInterface $em,
-        ShowRepository $show,
-        MovieRepository $movie,
-        TorrentRepository $torrent
-    )
-    {
-        $this->show = $show;
-        $this->movie = $movie;
-        $this->torrent = $torrent;
-        $this->em = $em;
-    }
+    /** @required */
+    public EntityManagerInterface $em;
 
     /**
      * @Route(path="/metrics")

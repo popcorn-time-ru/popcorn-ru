@@ -14,21 +14,14 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class RandomController extends AbstractController
 {
-    /** @var MovieRepository */
-    private $movieRepo;
+    /** @required */
+    public MovieRepository $movieRepo;
 
-    /** @var ShowRepository */
-    private $showRepo;
+    /** @required */
+    public ShowRepository $showRepo;
 
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(MovieRepository $movieRepo, ShowRepository $showRepo, SerializerInterface $serializer)
-    {
-        $this->movieRepo = $movieRepo;
-        $this->showRepo = $showRepo;
-        $this->serializer = $serializer;
-    }
+    /** @required */
+    public SerializerInterface $serializer;
 
     /**
      * @Route("/random/movie", name="random_movie")
