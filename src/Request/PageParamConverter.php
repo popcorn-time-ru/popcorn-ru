@@ -14,12 +14,6 @@ class PageParamConverter implements ParamConverterInterface
 
         $genre = $request->query->get('genre', 'all');
         $genre = strtolower($genre);
-        if (preg_match('/science[-\s]fuction/i', $genre)
-            || preg_match('/science[-\s]fiction/i', $genre)
-            || preg_match('/sci[-\s]fi/i', $genre)
-        ) {
-            $genre = 'science fiction';
-        }
         $pageRequest->genre = $genre === 'all' ? '' : $genre;
         $pageRequest->keywords = trim($request->query->get('keywords', ''));
         $pageRequest->keywords = str_replace('%', '', $pageRequest->keywords);
