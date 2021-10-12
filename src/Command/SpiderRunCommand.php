@@ -17,18 +17,11 @@ class SpiderRunCommand extends Command
 {
     protected static $defaultName = 'spider:run';
 
-    /** @var SpiderSelector */
-    protected $selector;
+    /** @required */
+    public SpiderSelector $selector;
 
-    /** @var ProducerInterface */
-    private $producer;
-
-    public function __construct(SpiderSelector $selector, ProducerInterface $producer)
-    {
-        parent::__construct();
-        $this->selector = $selector;
-        $this->producer = $producer;
-    }
+    /** @required */
+    public ProducerInterface $producer;
 
     protected function configure()
     {

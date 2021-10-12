@@ -11,14 +11,8 @@ class StatUpdateCommand extends Command
 {
     protected static $defaultName = 'update:stat';
 
-    /** @var StatService */
-    protected $stat;
-
-    public function __construct(StatService $stat)
-    {
-        parent::__construct();
-        $this->stat = $stat;
-    }
+    /** @required */
+    public StatService $stat;
 
     protected function configure()
     {

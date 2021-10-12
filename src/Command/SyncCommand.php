@@ -21,44 +21,20 @@ class SyncCommand extends Command
 {
     protected static $defaultName = 'update:syncOld';
 
-    /** @var ProducerInterface */
-    private $producer;
+    /** @required */
+    public ProducerInterface $producer;
 
-    /**
-     * @var TorrentRepository
-     */
-    private $torrentRepository;
+    /** @required */
+    public TorrentRepository $torrentRepository;
 
-    /**
-     * @var MovieRepository
-     */
-    private $movieRepository;
+    /** @required */
+    public MovieRepository $movieRepository;
 
-    /**
-     * @var ShowRepository
-     */
-    private $showRepository;
+    /** @required */
+    public ShowRepository $showRepository;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(
-        TorrentRepository $torrentRepository,
-        MovieRepository $movieRepository,
-        ShowRepository $showRepository,
-        ProducerInterface $producer,
-        LoggerInterface $logger
-        )
-    {
-        parent::__construct();
-        $this->producer = $producer;
-        $this->torrentRepository = $torrentRepository;
-        $this->movieRepository = $movieRepository;
-        $this->showRepository = $showRepository;
-        $this->logger = $logger;
-    }
+    /** @required */
+    public LoggerInterface $logger;
 
     protected function configure()
     {

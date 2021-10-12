@@ -18,16 +18,8 @@ class TestActiveCommand extends Command
 {
     protected static $defaultName = 'test:active';
 
-    /**
-     * @var TorrentActiveProcessor
-     */
-    private $processor;
-
-    public function __construct(TorrentActiveProcessor $processor)
-    {
-        parent::__construct();
-        $this->processor = $processor;
-    }
+    /** @required */
+    public TorrentActiveProcessor $processor;
 
     protected function configure()
     {

@@ -18,16 +18,8 @@ class TestSyncCommand extends Command
 {
     protected static $defaultName = 'test:sync';
 
-    /**
-     * @var SyncProcessor
-     */
-    private $processor;
-
-    public function __construct(SyncProcessor $processor)
-    {
-        parent::__construct();
-        $this->processor = $processor;
-    }
+    /** @required */
+    public SyncProcessor $processor;
 
     protected function configure()
     {

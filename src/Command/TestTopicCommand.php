@@ -16,16 +16,8 @@ class TestTopicCommand extends Command
 {
     protected static $defaultName = 'test:topic';
 
-    /**
-     * @var TopicProcessor
-     */
-    private $processor;
-
-    public function __construct(TopicProcessor $processor)
-    {
-        parent::__construct();
-        $this->processor = $processor;
-    }
+    /** @required */
+    public TopicProcessor $processor;
 
     protected function configure()
     {

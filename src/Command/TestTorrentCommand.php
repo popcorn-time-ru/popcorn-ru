@@ -17,16 +17,8 @@ class TestTorrentCommand extends Command
 {
     protected static $defaultName = 'test:torrent';
 
-    /**
-     * @var ShowTorrentProcessor
-     */
-    private $processor;
-
-    public function __construct(ShowTorrentProcessor $processor)
-    {
-        parent::__construct();
-        $this->processor = $processor;
-    }
+    /** @required */
+    public ShowTorrentProcessor $processor;
 
     protected function configure()
     {

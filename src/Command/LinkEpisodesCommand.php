@@ -21,23 +21,11 @@ class LinkEpisodesCommand extends Command
 {
     protected static $defaultName = 'link:episodes';
 
-    /** @var ProducerInterface */
-    private $producer;
+    /** @required */
+    public ProducerInterface $producer;
 
-    /**
-     * @var TorrentRepository
-     */
-    private $torrentRepository;
-
-    public function __construct(
-        TorrentRepository $torrentRepository,
-        ProducerInterface $producer
-        )
-    {
-        parent::__construct();
-        $this->producer = $producer;
-        $this->torrentRepository = $torrentRepository;
-    }
+    /** @required */
+    public TorrentRepository $torrentRepository;
 
     protected function configure()
     {

@@ -17,16 +17,8 @@ class TestForumCommand extends Command
 {
     protected static $defaultName = 'test:forum';
 
-    /**
-     * @var ForumProcessor
-     */
-    private $processor;
-
-    public function __construct(ForumProcessor $processor)
-    {
-        parent::__construct();
-        $this->processor = $processor;
-    }
+    /** @required */
+    public ForumProcessor $processor;
 
     protected function configure()
     {

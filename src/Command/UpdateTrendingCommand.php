@@ -20,27 +20,17 @@ class UpdateTrendingCommand extends Command
 {
     protected static $defaultName = 'update:trending';
 
-    private MovieRepository $movieRepository;
+    /** @required */
+    public MovieRepository $movieRepository;
 
-    private ShowRepository $showRepository;
+    /** @required */
+    public ShowRepository $showRepository;
 
-    private \App\Traktor\Client $trakt;
+    /** @required */
+    public \App\Traktor\Client $trakt;
 
-    private ProducerInterface $producer;
-
-    /**
-     * @param MovieRepository $movieRepository
-     * @param ShowRepository  $showRepository
-     * @param \App\Traktor\Client $trakt
-     */
-    public function __construct(ProducerInterface $producer, MovieRepository $movieRepository, ShowRepository $showRepository, \App\Traktor\Client $trakt)
-    {
-        parent::__construct();
-        $this->movieRepository = $movieRepository;
-        $this->showRepository = $showRepository;
-        $this->producer = $producer;
-        $this->trakt = $trakt;
-    }
+    /** @required */
+    public ProducerInterface $producer;
 
     protected function configure()
     {
