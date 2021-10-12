@@ -27,6 +27,18 @@ class LocaleParamConverter implements ParamConverterInterface
         $localeRequest->needLocale = $request->query->has('locale');
         $localeRequest->locale = $request->query->get('locale', $this->defaultLocale);
         $contextLocales = $request->query->get('contentLocale', $localeRequest->locale);
+
+        $localeRequest->locale = str_replace(
+            ['pt-br', 'zh-cn', 'zh-tw', 'es-mx'],
+            ['pt', 'cn', 'cn', 'es'],
+            $localeRequest->locale
+        );
+        $localeRequest->contentLocales = str_replace(
+            ['pt-br', 'zh-cn', 'zh-tw', 'es-mx'],
+            ['pt', 'cn', 'cn', 'es'],
+            $localeRequest->contentLocales
+        );
+
         $showAll = $request->query->has('showAll');
         $localeRequest->contentLocales = explode(',', $contextLocales);
         $localeRequest->bestContentLocale = current($localeRequest->contentLocales);
