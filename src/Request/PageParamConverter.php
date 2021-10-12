@@ -8,9 +8,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PageParamConverter implements ParamConverterInterface
 {
+    private const PAGE_SIZE = 50;
+
     public function apply(Request $request, ParamConverter $configuration)
     {
         $pageRequest = new PageRequest();
+
+        $pageRequest->limit = $request->query->get('limit') ?: self::PAGE_SIZE;
+        $page = $request->attributes->get('page');
+        $page = max(0, $page - 1);
+        $pageRequest->offset = $page * $pageRequest->limit;
 
         $genre = $request->query->get('genre', 'all');
         $genre = strtolower($genre);

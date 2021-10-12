@@ -54,11 +54,9 @@ class ShowsController extends AbstractController
      * @ParamConverter(name="pageParams", converter="page_params")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function page($page, PageRequest $pageParams, LocaleRequest $localeParams)
+    public function page(PageRequest $pageParams, LocaleRequest $localeParams)
     {
-        $shows = $this->repo->getPage($pageParams, $localeParams,
-            self::PAGE_SIZE * max(0, $page - 1), self::PAGE_SIZE
-        );
+        $shows = $this->repo->getPage($pageParams, $localeParams);
 
         $context = [
             JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,

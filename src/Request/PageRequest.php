@@ -15,4 +15,7 @@ class PageRequest
 
     /** @var string */
     public $order;
+
+    public int $limit;
+    public int $offset;
 }
