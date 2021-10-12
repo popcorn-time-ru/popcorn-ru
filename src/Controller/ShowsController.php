@@ -21,7 +21,7 @@ class ShowsController extends AbstractController
     /** @required */
     public ShowRepository $repo;
 
-    /** @var MediaStatRepository */
+    /** @required */
     public MediaStatRepository $statRepo;
 
     /** @required */
