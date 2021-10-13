@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\HttpFoundation\CacheJsonResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,5 +16,26 @@ class IndexController extends AbstractController
     public function index()
     {
         return $this->render('index.html.twig');
+    }
+
+    /**
+     * @Route(path="/status")
+     */
+    public function status()
+    {
+        $data = [
+            'repo' => 'https://github.com/popcorn-time-ru/popcorn-ru',
+            'server' => 'serv01',
+            'status' => 'idle',
+            'totalAnimes' => 0,
+            'totalMovies' => 70000,
+            'totalShows' => 9000,
+            'updated' => time(),
+            'uptime' => 100000,
+            'version' => '0.0.1',
+            'commit' => 'ac462477',
+        ];
+
+        return new CacheJsonResponse($data, false);
     }
 }
