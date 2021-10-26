@@ -32,6 +32,7 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         $base = [
             '_id' => $object->getImdb(),
             'imdb_id' => $object->getImdb(),
+            'tmdb_id' => $object->getTmdb(),
             'tvdb_id' => $object->getTvdb(),
             'title' => $object->getTitle(),
             'year' => $object->getYear(),

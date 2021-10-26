@@ -50,6 +50,7 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         return [
             '_id' => $object->getImdb(),
             'imdb_id' => $object->getImdb(),
+            'tmdb_id' => $object->getTmdb(),
             'title' => $object->getTitle(),
             'year' => $object->getYear(),
             'original_language' => $object->getOrigLang(),
