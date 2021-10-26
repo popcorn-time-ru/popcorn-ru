@@ -156,7 +156,7 @@ class MediaService
     {
         $show
             ->setImdb($showInfo->getExternalIds()->getImdbId())
-            ->setTvdb($showInfo->getId())
+            ->setTmdb($showInfo->getId())
             ->setTvdb($showInfo->getExternalIds()->getTvdbId() ?? $showInfo->getExternalIds()->getImdbId())
             ->setTitle($showInfo->getOriginalName())
             ->setYear($showInfo->getFirstAirDate() ? $showInfo->getFirstAirDate()->format('Y') : '')
