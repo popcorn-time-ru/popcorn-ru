@@ -9,29 +9,39 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Images
 {
+    public const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
+
     /**
-     * @var string
      * @ORM\Column(type="string")
      */
-    protected $poster = '';
-    public function getPoster() { return $this->poster; }
+    protected string $poster = '';
+    public function getPoster() { return $this->get($this->poster); }
     public function setPoster($poster) { $this->poster = $poster; return $this;}
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      */
-    protected $fanart = '';
-    public function getFanart() { return $this->fanart; }
+    protected string $fanart = '';
+    public function getFanart() { return $this->get($this->fanart); }
     public function setFanart($fanart) { $this->fanart = $fanart; return $this;}
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      */
-    protected $banner = '';
-    public function getBanner() { return $this->banner; }
+    protected string $banner = '';
+    public function getBanner() { return $this->get($this->banner); }
     public function setBanner($banner) { $this->banner = $banner; return $this;}
+
+    protected function get($item) {
+        $cleaned = str_replace(self::IMAGE_BASE, '', $item);
+        return $cleaned ? (self::IMAGE_BASE . $cleaned) : '';
+    }
+
+    public function isEmpty() {
+        return $this->banner === ''
+            && $this->fanart === ''
+            && $this->poster === '';
+    }
 
     public function getApiArray(): array
     {

@@ -9,20 +9,20 @@ use App\Entity\Movie;
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
 use App\Repository\Locale\EpisodeLocaleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Tmdb\Model\Image;
 use Tmdb\Model\Movie as TmdbMovie;
 use Tmdb\Model\Tv as TmdbShow;
 
 class LocaleService
 {
-    /** @var BaseLocaleRepository */
-    protected $localeRepo;
+    private EntityManagerInterface $em;
 
-    /** @var EpisodeLocaleRepository */
-    protected $episodeLocaleRepo;
+    protected BaseLocaleRepository $localeRepo;
 
-    /** @var array */
-    private $extractLocales;
+    protected EpisodeLocaleRepository $episodeLocaleRepo;
+
+    private array $extractLocales;
 
     /**
      * LocaleService constructor.
@@ -32,6 +32,7 @@ class LocaleService
      * @param array $extractLocales
      */
     public function __construct(
+        EntityManagerInterface $em,
         BaseLocaleRepository $localeRepo,
         EpisodeLocaleRepository $episodeLocaleRepo,
         array $extractLocales
@@ -39,6 +40,7 @@ class LocaleService
         $this->localeRepo = $localeRepo;
         $this->episodeLocaleRepo = $episodeLocaleRepo;
         $this->extractLocales = $extractLocales;
+        $this->em = $em;
     }
 
     /**
@@ -70,14 +72,17 @@ class LocaleService
                     continue;
                 /** @var Image $image */
                 if ($image instanceof Image\PosterImage && $image->getVoteAverage() >= $posterRate) {
-                    $mediaLocale->getImages()->setPoster(MediaService::IMAGE_BASE . $image->getFilePath());
-                    $mediaLocale->getImages()->setBanner(MediaService::IMAGE_BASE . $image->getFilePath());
+                    $mediaLocale->getImages()->setPoster($image->getFilePath());
+                    $mediaLocale->getImages()->setBanner($image->getFilePath());
                     $posterRate = $image->getVoteAverage();
                 }
                 if ($image instanceof Image\BackdropImage && $image->getVoteAverage() >= $fanartRate) {
-                    $mediaLocale->getImages()->setFanart(MediaService::IMAGE_BASE . $image->getFilePath());
+                    $mediaLocale->getImages()->setFanart($image->getFilePath());
                     $fanartRate = $image->getVoteAverage();
                 }
+            }
+            if ($mediaLocale->isEmpty()) {
+                $this->em->remove($mediaLocale);
             }
         }
     }
@@ -103,7 +108,6 @@ class LocaleService
                 $object = new EpisodeLocale();
                 $object->setEpisode($episode);
                 $object->setLocale($locale);
-                $this->episodeLocaleRepo->persist($object);
             }
 
             foreach ($translations as $translation) {
@@ -111,6 +115,10 @@ class LocaleService
                     $object->setTitle($translation['data']['name'] ?? '');
                     $object->setOverview($translation['data']['overview'] ?? '');
                 }
+            }
+
+            if (!$object->isEmpty()) {
+                $this->episodeLocaleRepo->persist($object);
             }
         }
     }

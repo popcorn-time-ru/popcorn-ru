@@ -19,7 +19,6 @@ class MediaService
 {
     private const US = 'US';
     private const TYPE_TRAILER = 'Trailer';
-    public const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
     public const IMDB_RATING = 7.0;
     public const IMDB_COUNT = 3000;
 
@@ -283,9 +282,9 @@ class MediaService
     private function fillImagesGenres(BaseMedia $media, $info): void
     {
         $media->getImages()
-            ->setPoster(self::IMAGE_BASE . $info->getPosterPath())
-            ->setFanart(self::IMAGE_BASE . $info->getBackdropPath())
-            ->setBanner(self::IMAGE_BASE . $info->getPosterPath())
+            ->setPoster($info->getPosterPath())
+            ->setFanart($info->getBackdropPath())
+            ->setBanner($info->getPosterPath())
         ;
 
         // $poster = ''; $posterRate = 0;

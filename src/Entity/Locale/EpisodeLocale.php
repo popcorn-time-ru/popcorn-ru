@@ -58,4 +58,9 @@ class EpisodeLocale
     protected $overview = '';
     public function getOverview() { return $this->overview; }
     public function setOverview($overview) { $this->overview = $overview; return $this;}
+
+    public function isEmpty() {
+        return $this->title === ''
+            && $this->overview === '';
+    }
 }

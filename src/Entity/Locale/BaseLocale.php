@@ -64,6 +64,12 @@ abstract class BaseLocale
     protected $images;
     public function getImages() { return $this->images; }
 
+    public function isEmpty() {
+        return $this->title === ''
+            && $this->synopsis === ''
+            && $this->images->isEmpty();
+    }
+
     /**
      * @return BaseMedia
      */
