@@ -72,12 +72,12 @@ class LocaleService
                     continue;
                 /** @var Image $image */
                 if ($image instanceof Image\PosterImage && $image->getVoteAverage() >= $posterRate) {
-                    $mediaLocale->getImages()->setPoster($image->getFilePath());
-                    $mediaLocale->getImages()->setBanner($image->getFilePath());
+                    $mediaLocale->getImages()->setPoster($image->getFilePath() ?: '');
+                    $mediaLocale->getImages()->setBanner($image->getFilePath() ?: '');
                     $posterRate = $image->getVoteAverage();
                 }
                 if ($image instanceof Image\BackdropImage && $image->getVoteAverage() >= $fanartRate) {
-                    $mediaLocale->getImages()->setFanart($image->getFilePath());
+                    $mediaLocale->getImages()->setFanart($image->getFilePath() ?: '');
                     $fanartRate = $image->getVoteAverage();
                 }
             }

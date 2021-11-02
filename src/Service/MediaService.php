@@ -282,9 +282,9 @@ class MediaService
     private function fillImagesGenres(BaseMedia $media, $info): void
     {
         $media->getImages()
-            ->setPoster($info->getPosterPath())
-            ->setFanart($info->getBackdropPath())
-            ->setBanner($info->getPosterPath())
+            ->setPoster($info->getPosterPath() ?: '')
+            ->setFanart($info->getBackdropPath() ?: '')
+            ->setBanner($info->getPosterPath() ?: '')
         ;
 
         // $poster = ''; $posterRate = 0;

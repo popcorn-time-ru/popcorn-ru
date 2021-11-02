@@ -10,6 +10,9 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\Locale\EpisodeLocaleRepository")
+ * @ORM\Table(name="episode_locale", indexes={
+ *     @ORM\Index(name="episodeLocale", columns={"episode_id", "locale"})
+ * })
  */
 class EpisodeLocale
 {
