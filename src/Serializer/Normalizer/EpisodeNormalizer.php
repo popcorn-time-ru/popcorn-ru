@@ -3,6 +3,7 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Episode;
+use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Show;
 use App\Repository\TorrentRepository;
 use App\Request\LocaleRequest;
@@ -64,7 +65,12 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
         $locale = [];
         if ($localeParams->needLocale) {
-            $l = $object->getLocale($localeParams->locale);
+            foreach($context['episodesLocales'] as $el) {
+                /** @var EpisodeLocale $el */
+                if ($el->getEpisode() == $object) {
+                    $l = $el;
+                }
+            }
             if ($l) {
                 $locale['locale'] = [
                     'title' => $l->getTitle(),

@@ -29,12 +29,26 @@ class BaseLocaleRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
+    public function findByMediaAndLocale(BaseMedia $media, string $locale): ?BaseLocale
+    {
+        $info = $media instanceof Movie
+            ? [MovieLocale::class, 'movie']
+            : [ShowLocale::class, 'show'];
+
+        $qb = $this->_em->createQueryBuilder()
+            ->select('m')
+            ->from($info[0], 'm');
+        $qb->andWhere('m.locale = :locale')->setParameter('locale', $locale);
+        $qb->andWhere('m.'.$info[1].' = :id')->setParameter('id', $media->getId());
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
     public function findOrCreateByMovieAndLocale(Movie $media, string $locale): MovieLocale
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('m')
             ->from(MovieLocale::class, 'm');
-        $qb->where('m.locale = :locale')->setParameter('locale', $locale);
+        $qb->andWhere('m.locale = :locale')->setParameter('locale', $locale);
         $qb->andWhere('m.movie = :id')->setParameter('id', $media->getId());
         $localeObj = $qb->getQuery()->getOneOrNullResult();
 
@@ -53,7 +67,7 @@ class BaseLocaleRepository extends ServiceEntityRepository
         $qb = $this->_em->createQueryBuilder()
             ->select('m')
             ->from(ShowLocale::class, 'm');
-        $qb->where('m.locale = :locale')->setParameter('locale', $locale);
+        $qb->andWhere('m.locale = :locale')->setParameter('locale', $locale);
         $qb->andWhere('m.show = :id')->setParameter('id', $media->getId());
         $localeObj = $qb->getQuery()->getOneOrNullResult();
 

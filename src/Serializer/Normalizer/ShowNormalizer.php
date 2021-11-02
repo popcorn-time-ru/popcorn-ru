@@ -3,19 +3,24 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Show;
+use App\Repository\Locale\BaseLocaleRepository;
+use App\Repository\Locale\EpisodeLocaleRepository;
 use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, NormalizerAwareInterface
 {
     private $normalizer;
 
-    public function __construct(ObjectNormalizer $normalizer)
+    private BaseLocaleRepository $locale;
+    private EpisodeLocaleRepository $episodeLocale;
+
+    public function __construct(BaseLocaleRepository $locale, EpisodeLocaleRepository $episodeLocale)
     {
-        $this->normalizer = $normalizer;
+        $this->locale = $locale;
+        $this->episodeLocale = $episodeLocale;
     }
 
     public function setNormalizer(NormalizerInterface $normalizer)
@@ -46,7 +51,7 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         /** @var LocaleRequest $localeParams */
         $localeParams = $context['localeParams'];
         if ($localeParams->needLocale) {
-            $l = $object->getLocale($localeParams->locale);
+            $l = $this->locale->findByMediaAndLocale($object, $localeParams->locale);
             if ($l) {
                 $base['locale'] = $this->normalizer->normalize($l, $format, $context);
             }
@@ -57,7 +62,10 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             case 'list':
                 return $base;
             case 'item':
-                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context + ['locale' => $base['contextLocale']]);
+                $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context + [
+                    'episodesLocales' => $this->episodeLocale->findByShowAndLocale($object, $base['contextLocale']),
+                    'locale' => $base['contextLocale'],
+                ]);
                 $episodes = array_values(array_filter($episodes, static function ($episode) {
                     return !empty($episode['torrents']);
                 }));

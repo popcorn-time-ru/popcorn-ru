@@ -4,6 +4,7 @@ namespace App\Repository\Locale;
 
 use App\Entity\Episode;
 use App\Entity\Locale\EpisodeLocale;
+use App\Entity\Show;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -29,6 +30,17 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
     {
         $this->_em->persist($item);
     }
+
+    public function findByShowAndLocale(Show $show, string $locale): array
+    {
+        $qb = $this->createQueryBuilder('el');
+        $qb->join('el.episode', 'e');
+        $qb->andWhere('e.show = :show')->setParameter('show', $show);
+        $qb->andWhere('el.locale = :locale')->setParameter('locale', $locale);
+        /** @var EpisodeLocale[] $result */
+        return $qb->getQuery()->getResult();
+    }
+
 
     public function findByEpisodeAndLocale(Episode $episode, string $locale): ?EpisodeLocale
     {

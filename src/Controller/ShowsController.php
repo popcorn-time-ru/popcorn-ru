@@ -16,8 +16,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ShowsController extends AbstractController
 {
-    const PAGE_SIZE = 50;
-
     /** @required */
     public ShowRepository $repo;
 

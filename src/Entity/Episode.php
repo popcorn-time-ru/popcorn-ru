@@ -33,7 +33,7 @@ class Episode
 
     /**
      * @var EpisodeTorrent[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\EpisodeTorrent", fetch="EAGER", mappedBy="episode")
+     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\EpisodeTorrent", fetch="LAZY", mappedBy="episode")
      * @ORM\OrderBy({"peer" = "ASC"})
      */
     protected $torrents;

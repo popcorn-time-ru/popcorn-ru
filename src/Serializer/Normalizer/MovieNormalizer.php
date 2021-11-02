@@ -3,6 +3,7 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Movie;
+use App\Repository\Locale\BaseLocaleRepository;
 use App\Repository\TorrentRepository;
 use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -14,12 +15,13 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
 {
     private $normalizer;
 
-    /** @var TorrentRepository */
-    private $torrents;
+    private TorrentRepository $torrents;
+    private BaseLocaleRepository $locale;
 
-    public function __construct(TorrentRepository $torrents)
+    public function __construct(TorrentRepository $torrents, BaseLocaleRepository $locale)
     {
         $this->torrents = $torrents;
+        $this->locale = $locale;
     }
 
     public function setNormalizer(NormalizerInterface $normalizer)
@@ -41,7 +43,7 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         }
         $locale = [];
         if ($localeParams->needLocale) {
-            $l = $object->getLocale($localeParams->locale);
+            $l = $this->locale->findByMediaAndLocale($object, $localeParams->locale);
             if ($l) {
                 $locale['locale'] = $this->normalizer->normalize($l, $format, $context);
             }
