@@ -23,7 +23,7 @@ class Movie extends BaseMedia
 
     /**
      * @var MovieTorrent[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\MovieTorrent", fetch="EAGER", mappedBy="movie")
+     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\MovieTorrent", fetch="LAZY", mappedBy="movie")
      * @ORM\OrderBy({"peer" = "DESC"})
      */
     protected $torrents;

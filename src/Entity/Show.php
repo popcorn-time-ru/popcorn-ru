@@ -44,7 +44,7 @@ class Show extends BaseMedia
 
     /**
      * @var ShowTorrent[]&Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\ShowTorrent", fetch="EAGER", mappedBy="show")
+     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\ShowTorrent", fetch="LAZY", mappedBy="show")
      * @ORM\OrderBy({"peer" = "DESC"})
      */
     protected $torrents;
