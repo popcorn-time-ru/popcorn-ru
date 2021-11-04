@@ -11,14 +11,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class IndexController extends AbstractController
 {
     /**
-     * @Route(path="/")
-     */
-    public function index()
-    {
-        return $this->render('index.html.twig');
-    }
-
-    /**
      * @Route(path="/status")
      */
     public function status()
