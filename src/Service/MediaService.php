@@ -145,6 +145,9 @@ class MediaService
             if (!$showInfo->getExternalIds()->getTvdbId()) {
                 return null;
             }
+            if (!$showInfo->getExternalIds()->getImdbId()) {
+                return null;
+            }
             return $this->fillShow($showInfo, new Show());
         }
 
