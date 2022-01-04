@@ -58,30 +58,15 @@ class Rating
     public function getWeightRating() { return $this->weightRating; }
     public function setWeightRating($weightRating) { $this->weightRating = $weightRating; return $this;}
 
-    /**
-     * @var integer
-     * @ORM\Column(type="integer")
-     */
-    protected $loved = 0;
-    public function getLoved() { return $this->loved; }
-    public function setLoved($loved) { $this->loved = $loved; return $this;}
-
-    /**
-     * @var integer
-     * @ORM\Column(type="integer")
-     */
-    protected $hated = 0;
-    public function getHated() { return $this->hated; }
-    public function setHated($hated) { $this->hated = $hated; return $this;}
-
     public function getApiArray(): array
     {
         return [
             'percentage' => $this->getPercentage(),
             'watching' => $this->getWatching(),
             'votes' => $this->getVotes(),
-            'loved' => $this->getLoved(),
-            'hated' => $this->getHated(),
+            // TODO: remove after fix in android app
+            'loved' => 0,
+            'hated' => 0,
         ];
     }
 }

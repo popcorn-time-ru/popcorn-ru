@@ -290,27 +290,6 @@ class MediaService
             ->setBanner($info->getPosterPath() ?: '')
         ;
 
-        // $poster = ''; $posterRate = 0;
-        // $fanart = ''; $fanartRate = 0;
-        // foreach ($movieInfo->getImages()->getImages() as $img) {
-        //     /** @var Image $img */
-        //     if ($img->getIso6391() && $img->getIso6391() != self::LOCALE) {
-        //         continue;
-        //     }
-        //     if ($img instanceof Image\PosterImage) {
-        //         if ($img->getVoteAverage() > $posterRate) {
-        //             $posterRate = $img->getVoteAverage();
-        //             $poster = self::IMAGE_BASE . $img->getFilePath();
-        //         }
-        //     }
-        //     if ($img instanceof Image\BackdropImage) {
-        //         if ($img->getVoteAverage() > $fanartRate) {
-        //             $fanartRate = $img->getVoteAverage();
-        //             $fanart = self::IMAGE_BASE . $img->getFilePath();
-        //         }
-        //     }
-        // }
-
         $genres = [];
         foreach($info->getGenres()->getGenres() as $genre) {
             $genres[] = strtolower($genre->getName());
