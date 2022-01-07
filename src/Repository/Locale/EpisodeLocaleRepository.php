@@ -38,7 +38,7 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
         $qb->andWhere('e.show = :show')->setParameter('show', $show);
         $qb->andWhere('el.locale = :locale')->setParameter('locale', $locale);
         /** @var EpisodeLocale[] $result */
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()->enableResultCache()->getResult();
     }
 
 
@@ -48,6 +48,6 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
         $qb->where('el.locale = :locale')->setParameter('locale', $locale);
         $qb->andWhere('el.episode = :id')->setParameter('id', $episode->getId());
 
-        return $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->enableResultCache()->getOneOrNullResult();
     }
 }

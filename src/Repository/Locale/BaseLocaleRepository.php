@@ -40,7 +40,7 @@ class BaseLocaleRepository extends ServiceEntityRepository
             ->from($info[0], 'm');
         $qb->andWhere('m.locale = :locale')->setParameter('locale', $locale);
         $qb->andWhere('m.'.$info[1].' = :id')->setParameter('id', $media->getId());
-        return $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->enableResultCache()->getOneOrNullResult();
     }
 
     public function findOrCreateByMovieAndLocale(Movie $media, string $locale): MovieLocale

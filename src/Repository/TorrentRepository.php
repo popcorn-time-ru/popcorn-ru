@@ -101,7 +101,7 @@ class TorrentRepository extends ServiceEntityRepository
             $qb->andWhere('t.active = true');
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()->enableResultCache()->getResult();
     }
 
     /**
@@ -121,7 +121,7 @@ class TorrentRepository extends ServiceEntityRepository
             $qb->andWhere('t.active = true');
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()->enableResultCache()->getResult();
     }
 
     /**
