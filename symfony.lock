@@ -62,6 +62,9 @@
     "php-http/cache-plugin": {
         "version": "1.7.1"
     },
+    "phpstan/phpdoc-parser": {
+        "version": "1.2.0"
+    },
     "psr/simple-cache": {
         "version": "1.0.1"
     },
@@ -73,6 +76,9 @@
     },
     "symfony/password-hasher": {
         "version": "v5.3.0"
+    },
+    "symfony/polyfill-php72": {
+        "version": "v1.24.0"
     },
     "symfony/polyfill-php81": {
         "version": "v1.23.0"
