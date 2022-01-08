@@ -217,7 +217,7 @@ class MediaService
             ->setSynopsis($movieInfo->getOverview())
             ->setReleased($movieInfo->getReleaseDate())
             ->setCertification($certification)
-            ->setYear($movieInfo->getReleaseDate()->format('Y'))
+            ->setYear($movieInfo->getReleaseDate() ? $movieInfo->getReleaseDate()->format('Y') : '')
             ->setOrigLang($movieInfo->getOriginalLanguage())
             ->setRuntime((string)$movieInfo->getRuntime())
             ->setTrailer($trailer)
