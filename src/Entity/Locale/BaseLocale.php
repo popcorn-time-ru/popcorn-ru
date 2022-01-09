@@ -11,8 +11,8 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\Locale\BaseLocaleRepository")
- * @ORM\Table(name="locale", indexes={
- *     @ORM\Index(name="mediaLocale", columns={"media_id", "locale"})
+ * @ORM\Table(name="locale", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="mediaLocale", columns={"media_id", "locale"})
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
