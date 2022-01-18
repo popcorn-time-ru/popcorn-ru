@@ -24,9 +24,8 @@ class T1337x extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
+    public function __construct()
     {
-        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
@@ -63,7 +62,7 @@ class T1337x extends AbstractSpider
         $post = $crawler->filter('#description')->first();
         $title = $crawler->filter('.box-info-heading h1')->first()->text();
 
-        $imdb = $this->getImdb($post);
+        $imdb = $this->parseHelper->getImdb($post);
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
@@ -73,7 +72,7 @@ class T1337x extends AbstractSpider
             }
         }
 
-        $quality = $this->getQuality($post);
+        $quality = $this->parseHelper->getQuality($title, $post);
 
         $torrentTable = $crawler->filter('.torrent-detail-page')->first();
 

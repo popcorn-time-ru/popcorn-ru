@@ -10,6 +10,7 @@ use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
 use App\Service\EpisodeService;
+use App\Service\ParseHelperService;
 use App\Service\TorrentService;
 use DateTime;
 use Psr\Log\LoggerInterface;
@@ -18,23 +19,19 @@ use Symfony\Component\DomCrawler\Crawler;
 
 abstract class AbstractSpider implements SpiderInterface
 {
-    /** @var TorrentService */
-    protected $torrentService;
+    /** @required */
+    public TorrentService $torrentService;
 
-    /** @var EpisodeService */
-    protected $episodeService;
+    /** @required */
+    public EpisodeService $episodeService;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    /** @required */
+    public ParseHelperService $parseHelper;
+
+    /** @required */
+    public LoggerInterface $logger;
 
     protected $context;
-
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
-    {
-        $this->torrentService = $torrentService;
-        $this->episodeService = $episodeService;
-        $this->logger = $logger;
-    }
 
     public function getName(): string
     {
@@ -51,50 +48,12 @@ abstract class AbstractSpider implements SpiderInterface
         return '';
     }
 
-    protected function getQuality(Crawler $post): string
-    {
-        if (strpos($post->text(), '2160p')) {
-            return '2160p';
-        }
-        if (strpos($post->text(), '1080p')) {
-            return '1080p';
-        }
-        if (strpos($post->text(), '720p')) {
-            return '720p';
-        }
-        if (preg_match('#3840\s*[xхXХ*]\s*\d+#u', $post->html())) {
-            return '2160p';
-        }
-        if (preg_match('#1920\s*[xхXХ*]\s*\d+#u', $post->html())) {
-            return '1080p';
-        }
-        if (preg_match('#1280\s*[xхXХ*]\s*\d+#u', $post->html())) {
-            return '720p';
-        }
-
-        return '480p';
-    }
-
     protected function ruStrToTime(string $format, string $time): DateTime
     {
         $ru = ['Янв', 'Фев', 'Мар', 'Апр', 'Июн', 'Май', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
         $en = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct',' nov', 'dec'];
         $time = str_replace($ru, $en, $time);
         return DateTime::createFromFormat($format, $time);
-    }
-
-    protected function getImdb(Crawler $post): ?string
-    {
-
-        $links = $post->filter('a[href*="imdb.com"]')->each(function (Crawler $c) {
-            preg_match('#tt\d+#', $c->attr('href'), $m);
-            return $m[0] ?? false;
-        });
-
-        $ids = array_unique(array_filter($links));
-
-        // пропускаем сборники
-        return count($ids) == 1 ? current($ids) : null;
     }
 
     protected function getTorrentByImdb(string $topicId, string $imdb): ?BaseTorrent

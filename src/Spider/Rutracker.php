@@ -27,10 +27,9 @@ class Rutracker extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
+    public function __construct(string $torProxy)
     {
         $torProxy = '';
-        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
@@ -178,7 +177,7 @@ class Rutracker extends AbstractSpider
         $post = $crawler->filter('#topic_main tbody.row1')->first();
         $title = $crawler->filter('h1.maintitle a#topic-title')->first()->text();
 
-        $imdb = $this->getImdb($post);
+        $imdb = $this->parseHelper->getImdb($post);
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
@@ -188,7 +187,7 @@ class Rutracker extends AbstractSpider
             }
         }
 
-        $quality = $this->getQuality($post);
+        $quality = $this->parseHelper->getQuality($title, $post);
 
         $torrentBlock = $post->filter('fieldset.attach')->first();
         if ($torrentBlock->count() == 0) {

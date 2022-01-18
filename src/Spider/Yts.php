@@ -20,9 +20,8 @@ class Yts extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger)
+    public function __construct()
     {
-        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,

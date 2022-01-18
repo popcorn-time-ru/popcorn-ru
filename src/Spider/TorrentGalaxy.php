@@ -23,10 +23,9 @@ class TorrentGalaxy extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
+    public function __construct(string $torProxy)
     {
         //$torProxy = '';
-        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
             RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
@@ -82,7 +81,7 @@ class TorrentGalaxy extends AbstractSpider
         preg_match('#Torrent details for "(.*?)"#', $post->text(), $m);
         $title = $m[1];
 
-        $imdb = $this->getImdb($post);
+        $imdb = $this->parseHelper->getImdb($post);
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
@@ -100,7 +99,7 @@ class TorrentGalaxy extends AbstractSpider
             $simularNode->parentNode->removeChild($simularNode);
         }
 
-        $quality = $this->getQuality($post);
+        $quality = $this->parseHelper->getQuality($title, $post);
 
         preg_match('#"(magnet[^"]+)"#', $post->html(), $m);
         if (empty($m[1])) {

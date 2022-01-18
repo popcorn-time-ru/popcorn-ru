@@ -22,9 +22,8 @@ class Rutor extends AbstractSpider
     /** @var Client */
     private $client;
 
-    public function __construct(TorrentService $torrentService, EpisodeService $episodeService, LoggerInterface $logger, string $torProxy)
+    public function __construct(string $torProxy)
     {
-        parent::__construct($torrentService, $episodeService, $logger);
         $this->client = new Client([
             'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
             RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
@@ -129,7 +128,7 @@ class Rutor extends AbstractSpider
         $post = $crawler->filter('#details tr')->first();
         $title = $crawler->filter('#all h1')->first()->text();
 
-        $imdb = $this->getImdb($post);
+        $imdb = $this->parseHelper->getImdb($post);
 
         if (!$imdb) {
             $this->logger->info('No IMDB', $this->context);
@@ -139,7 +138,7 @@ class Rutor extends AbstractSpider
             }
         }
 
-        $quality = $this->getQuality($post);
+        $quality = $this->parseHelper->getQuality($title, $post);
 
         $torrentBlock = $crawler->filter('#download')->first();
 
