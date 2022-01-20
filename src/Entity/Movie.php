@@ -55,7 +55,7 @@ class Movie extends BaseMedia
 
     /**
      * @var \DateTime
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime")
      */
     protected $released;
     public function getReleased() { return $this->released; }

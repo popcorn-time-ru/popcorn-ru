@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
+use DateTime;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;
 use Tmdb\Model\Common\Country;
@@ -215,7 +216,7 @@ class MediaService
             ->setTmdb($movieInfo->getId())
             ->setTitle($movieInfo->getOriginalTitle())
             ->setSynopsis($movieInfo->getOverview())
-            ->setReleased($movieInfo->getReleaseDate() ?: null)
+            ->setReleased($movieInfo->getReleaseDate() ?: DateTime::createFromFormat('Y-m-d', '1970-01-01'))
             ->setCertification($certification)
             ->setYear($movieInfo->getReleaseDate() ? $movieInfo->getReleaseDate()->format('Y') : '')
             ->setOrigLang($movieInfo->getOriginalLanguage())
