@@ -215,7 +215,7 @@ class MediaService
             ->setTmdb($movieInfo->getId())
             ->setTitle($movieInfo->getOriginalTitle())
             ->setSynopsis($movieInfo->getOverview())
-            ->setReleased($movieInfo->getReleaseDate())
+            ->setReleased($movieInfo->getReleaseDate() ?: null)
             ->setCertification($certification)
             ->setYear($movieInfo->getReleaseDate() ? $movieInfo->getReleaseDate()->format('Y') : '')
             ->setOrigLang($movieInfo->getOriginalLanguage())

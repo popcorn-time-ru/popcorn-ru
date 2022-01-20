@@ -248,7 +248,7 @@ class T1337x extends AbstractSpider
         if (count($match) != 3) {
             preg_match('#^(.*?) (\d{4})#', $titleStr, $match);
         }
-       if (count($match) != 3) {
+        if (count($match) != 3) {
             return null;
         }
         $name = trim($match[1]);
