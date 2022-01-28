@@ -30,7 +30,7 @@ class Yts extends AbstractSpider
 
     public function getSource(BaseTorrent $torrent): string
     {
-        return self::BASE_URL . 'browse-movies/' . $torrent->getProviderTitle() . ' ' . $torrent->getMedia()->getYear() . '/all/all/0/latest/0/all';
+        return self::BASE_URL . 'browse-movies/' . $torrent->getProviderTitle() . '/all/all/0/latest/' . $torrent->getMedia()->getYear() . '/all';
     }
 
     public function getPriority(BaseTorrent $torrent): int
