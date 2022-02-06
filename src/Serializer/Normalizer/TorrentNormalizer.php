@@ -48,6 +48,7 @@ class TorrentNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         }
         if ($context['mode'] === 'torrents') {
             $data['title'] = $object->getProviderTitle();
+            $data['quality'] = $object->getQuality();
         }
 
         if ($object instanceof ShowTorrent) {
