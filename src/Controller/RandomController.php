@@ -31,12 +31,7 @@ class RandomController extends AbstractController
     {
         $movie = $this->movieRepo->getRandom();
 
-        $context = [
-            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'list',
-            'localeParams' => $localeParams,
-        ];
-        $data = $this->serializer->serialize($movie, 'json', $context);
+        $data = $this->serializer->serialize($movie, 'json', $localeParams->context('list'));
 
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
@@ -49,12 +44,7 @@ class RandomController extends AbstractController
     {
         $show = $this->showRepo->getRandom();
 
-        $context = [
-            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'list',
-            'localeParams' => $localeParams,
-        ];
-        $data = $this->serializer->serialize($show, 'json', $context);
+        $data = $this->serializer->serialize($show, 'json', $localeParams->context('list'));
 
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }

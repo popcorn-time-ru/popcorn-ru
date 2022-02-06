@@ -60,12 +60,7 @@ class ShowsController extends AbstractController
     {
         $shows = $this->repo->getPage($pageParams, $localeParams);
 
-        $context = [
-            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'list',
-            'localeParams' => $localeParams,
-        ];
-        $data = $this->serializer->serialize($shows, 'json', $context);
+        $data = $this->serializer->serialize($shows, 'json', $localeParams->context('list'));
 
         return new CacheJsonResponse($data, true);
     }
@@ -81,12 +76,7 @@ class ShowsController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $context = [
-            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'item',
-            'localeParams' => $localeParams,
-        ];
-        $data = $this->serializer->serialize($show, 'json', $context);
+        $data = $this->serializer->serialize($show, 'json', $localeParams->context('item'));
 
         return new CacheJsonResponse($data, true);
     }
@@ -102,12 +92,11 @@ class ShowsController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $context = [
-            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'torrents',
-            'localeParams' => $localeParams,
-        ];
-        $data = $this->serializer->serialize($show->getLocaleTorrents($localeParams->bestContentLocale), 'json', $context);
+        $data = $this->serializer->serialize(
+            $show->getLocaleTorrents($localeParams->bestContentLocale),
+            'json',
+            $localeParams->context('torrents')
+        );
 
         return new CacheJsonResponse($data, true);
     }
@@ -128,12 +117,11 @@ class ShowsController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $context = [
-            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
-            'mode' => 'torrents',
-            'localeParams' => $localeParams,
-        ];
-        $data = $this->serializer->serialize($episodeItem->getLocaleTorrents($localeParams->bestContentLocale), 'json', $context);
+        $data = $this->serializer->serialize(
+            $episodeItem->getLocaleTorrents($localeParams->bestContentLocale),
+            'json',
+            $localeParams->context('torrents')
+        );
 
         return new CacheJsonResponse($data, true);
     }
