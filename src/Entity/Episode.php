@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Locale\EpisodeLocale;
 use App\Entity\Locale\BaseLocale;
+use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\EpisodeTorrent;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,20 +41,24 @@ class Episode
     public function getTorrents() { return $this->torrents; }
 
     /**
+     * @param string $locale
+     * @return BaseTorrent[]&\Generator
+     */
+    public function getLocaleTorrents(string $locale)
+    {
+        foreach ($this->getTorrents() as $torrent) {
+            if ($torrent->getLanguage() == $locale) {
+                yield $torrent;
+            }
+        }
+    }
+
+    /**
      * @var EpisodeLocale[]
      * @ORM\OneToMany(targetEntity="App\Entity\Locale\EpisodeLocale", fetch="LAZY", mappedBy="episode")
      */
     protected $locales;
     public function getLocales() { return $this->locales; }
-    public function getLocale(string $locale): ?EpisodeLocale {
-        foreach ($this->locales as $localeObj) {
-            if ($localeObj->getLocale() === $locale) {
-                return $localeObj;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * @var Show

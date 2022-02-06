@@ -89,15 +89,6 @@ abstract class BaseMedia
      */
     abstract public function getTorrents();
     abstract public function getLocales();
-    public function getLocale(string $locale): ?BaseLocale {
-        foreach ($this->getLocales() as $localeObj) {
-            if ($localeObj->getLocale() === $locale) {
-                return $localeObj;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * @param string $locale

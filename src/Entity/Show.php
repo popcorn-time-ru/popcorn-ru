@@ -51,21 +51,6 @@ class Show extends BaseMedia
     public function getTorrents() { return $this->torrents; }
 
     /**
-     * @param string $locale
-     * @return BaseTorrent[]&Generator
-     */
-    public function getLocaleTorrents(string $locale) {
-        yield from parent::getLocaleTorrents($locale);
-        foreach ($this->getEpisodes() as $episode) {
-            foreach ($episode->getTorrents() as $torrent) {
-                if ($torrent->getLanguage() === $locale) {
-                    yield $torrent;
-                }
-            }
-        }
-    }
-
-    /**
      * @var ShowLocale[]
      * @ORM\OneToMany(targetEntity="App\Entity\Locale\ShowLocale", fetch="LAZY", mappedBy="show")
      */

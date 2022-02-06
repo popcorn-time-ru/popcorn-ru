@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\HttpFoundation\CacheJsonResponse;
+use App\Repository\EpisodeRepository;
 use App\Repository\MediaStatRepository;
 use App\Repository\ShowRepository;
 use App\Request\LocaleRequest;
@@ -18,6 +19,9 @@ class ShowsController extends AbstractController
 {
     /** @required */
     public ShowRepository $repo;
+
+    /** @required */
+    public EpisodeRepository $episodeRepo;
 
     /** @required */
     public MediaStatRepository $statRepo;
@@ -104,6 +108,32 @@ class ShowsController extends AbstractController
             'localeParams' => $localeParams,
         ];
         $data = $this->serializer->serialize($show->getLocaleTorrents($localeParams->bestContentLocale), 'json', $context);
+
+        return new CacheJsonResponse($data, true);
+    }
+
+    /**
+     * @Route("/show/{id}/{season}/{episode}/torrents", name="show_episode_torrents")
+     * @ParamConverter(name="localeParams", converter="locale_params")
+     */
+    public function episodeTorrents($id, $season, $episode, LocaleRequest $localeParams)
+    {
+        $show = $this->repo->findByImdb($id);
+        if (!$show) {
+            throw new NotFoundHttpException();
+        }
+
+        $episodeItem = $this->episodeRepo->findOneByShowAndNumber($show, $season, $episode);
+        if (!$episodeItem) {
+            throw new NotFoundHttpException();
+        }
+
+        $context = [
+            JsonEncode::OPTIONS => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+            'mode' => 'torrents',
+            'localeParams' => $localeParams,
+        ];
+        $data = $this->serializer->serialize($episodeItem->getLocaleTorrents($localeParams->bestContentLocale), 'json', $context);
 
         return new CacheJsonResponse($data, true);
     }

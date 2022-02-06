@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\BaseMedia;
 use App\Entity\Episode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,32 +20,15 @@ class EpisodeRepository extends ServiceEntityRepository
         parent::__construct($registry, Episode::class);
     }
 
-    // /**
-    //  * @return Episode[] Returns an array of Episode objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findOneByShowAndNumber(BaseMedia $show, int $season, int $episode): ?Episode
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('e.show = :show')->setParameter('show', $show)
+            ->andWhere('e.season = :season')->setParameter('season', $season)
+            ->andWhere('e.episode = :episode')->setParameter('episode', $episode)
             ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Episode
-    {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
+            ->enableResultCache()
             ->getOneOrNullResult()
         ;
     }
-    */
 }
