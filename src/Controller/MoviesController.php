@@ -48,7 +48,7 @@ class MoviesController extends AbstractController
     }
 
     /**
-     * @Route("/movies/{page}", name="movies_page")
+     * @Route("/movies/{page}", name="movies_page", requirements={"page"="\d+"})
      * @ParamConverter(name="pageParams", converter="page_params")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */

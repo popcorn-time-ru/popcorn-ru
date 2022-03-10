@@ -52,7 +52,7 @@ class ShowsController extends AbstractController
     }
 
     /**
-     * @Route("/shows/{page}", name="shows_page")
+     * @Route("/shows/{page}", name="shows_page", requirements={"page"="\d+"})
      * @ParamConverter(name="pageParams", converter="page_params")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */

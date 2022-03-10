@@ -28,7 +28,7 @@ class AnimeController extends AbstractController
     }
 
     /**
-     * @Route("/animes/{page}", name="animes_page")
+     * @Route("/animes/{page}", name="animes_page", requirements={"page"="\d+"})
      * @ParamConverter(name="pageParams", converter="page_params")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
