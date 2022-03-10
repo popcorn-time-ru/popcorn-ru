@@ -181,11 +181,11 @@ class TorrentService
         $this->torrentRepo->flush();
     }
 
-    protected function selectActiveForMovie(Movie $movie, string $language, bool $active = true)
+    protected function selectActiveForMovie(Movie $movie, string $language, bool $onlyActive = true)
     {
         /** @var BaseTorrent[] $active */
         $active = [];
-        foreach ($this->torrentRepo->getMediaTorrents($movie, [$language], $active) as $torrent) {
+        foreach ($this->torrentRepo->getMediaTorrents($movie, [$language], $onlyActive) as $torrent) {
             $torrent->setActive(false);
             if (empty($active[$torrent->getQuality()])
                 || $this->needReplaceTorrent($active[$torrent->getQuality()], $torrent)) {
@@ -198,20 +198,20 @@ class TorrentService
         }
     }
 
-    protected function selectActiveForShow(Show $show, string $language, bool $active = true)
+    protected function selectActiveForShow(Show $show, string $language, bool $onlyActive = true)
     {
         /** @var BaseTorrent[][] $active */
         $active = [];
         foreach ($show->getEpisodes() as $episode) {
             $key = $episode->getSeason() . ':' . $episode->getEpisode();
-            foreach ($this->torrentRepo->getEpisodeTorrents($episode, [$language], $active) as $torrent) {
+            foreach ($this->torrentRepo->getEpisodeTorrents($episode, [$language], $onlyActive) as $torrent) {
                 $torrent->setActive(false);
                 if (empty($active[$key][$torrent->getQuality()])
                     || $this->needReplaceTorrent($active[$key][$torrent->getQuality()], $torrent)) {
                     $active[$key][$torrent->getQuality()] = $torrent;
                 }
             }
-            foreach ($this->torrentRepo->getMediaTorrents($show, [$language], $active) as $torrent) {
+            foreach ($this->torrentRepo->getMediaTorrents($show, [$language], $onlyActive) as $torrent) {
                 $torrent->setActive(false);
                 $file = null;
                 foreach ($torrent->getFiles() as $torrentFile) {
