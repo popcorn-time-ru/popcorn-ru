@@ -159,6 +159,12 @@ class TorrentService
 
         $media->syncTranslations();
         $this->em->flush();
+
+        if ($media instanceof Movie) {
+            $this->selectActiveForMovie($media, $torrent->getLanguage());
+        } else {
+            $this->selectActiveForShow($media, $torrent->getLanguage());
+        }
     }
 
     public function updateActive(UuidInterface $torrentId)
@@ -175,11 +181,11 @@ class TorrentService
         $this->torrentRepo->flush();
     }
 
-    protected function selectActiveForMovie(Movie $movie, string $language)
+    protected function selectActiveForMovie(Movie $movie, string $language, bool $active = true)
     {
         /** @var BaseTorrent[] $active */
         $active = [];
-        foreach ($this->torrentRepo->getMediaTorrents($movie, [$language]) as $torrent) {
+        foreach ($this->torrentRepo->getMediaTorrents($movie, [$language], $active) as $torrent) {
             $torrent->setActive(false);
             if (empty($active[$torrent->getQuality()])
                 || $this->needReplaceTorrent($active[$torrent->getQuality()], $torrent)) {
@@ -192,20 +198,20 @@ class TorrentService
         }
     }
 
-    protected function selectActiveForShow(Show $show, string $language)
+    protected function selectActiveForShow(Show $show, string $language, bool $active = true)
     {
         /** @var BaseTorrent[][] $active */
         $active = [];
         foreach ($show->getEpisodes() as $episode) {
             $key = $episode->getSeason() . ':' . $episode->getEpisode();
-            foreach ($this->torrentRepo->getEpisodeTorrents($episode, [$language]) as $torrent) {
+            foreach ($this->torrentRepo->getEpisodeTorrents($episode, [$language], $active) as $torrent) {
                 $torrent->setActive(false);
                 if (empty($active[$key][$torrent->getQuality()])
                     || $this->needReplaceTorrent($active[$key][$torrent->getQuality()], $torrent)) {
                     $active[$key][$torrent->getQuality()] = $torrent;
                 }
             }
-            foreach ($this->torrentRepo->getMediaTorrents($show, [$language]) as $torrent) {
+            foreach ($this->torrentRepo->getMediaTorrents($show, [$language], $active) as $torrent) {
                 $torrent->setActive(false);
                 $file = null;
                 foreach ($torrent->getFiles() as $torrentFile) {
