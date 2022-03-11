@@ -19,6 +19,8 @@ class Rutracker extends AbstractSpider
 {
     public const BASE_URL = 'https://rutracker.org/forum/';
 
+    public const BASE_URL_TOR = 'http://torrentsru5dbmqszbdinnz7cjiubxsjngq52qij6ih3fmp3gn7hwqqd.onion/';
+
     private const PAGE_SIZE = 50;
 
     private const LOGIN = 'nataly2019s';
@@ -31,7 +33,7 @@ class Rutracker extends AbstractSpider
     {
         $torProxy = '';
         $this->client = new Client([
-            'base_uri' => self::BASE_URL,
+            'base_uri' =>  $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
             RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
             RequestOptions::PROXY => $torProxy,
             'curl' => [
