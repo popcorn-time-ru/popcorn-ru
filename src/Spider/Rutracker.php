@@ -19,7 +19,7 @@ class Rutracker extends AbstractSpider
 {
     public const BASE_URL = 'https://rutracker.org/forum/';
 
-    public const BASE_URL_TOR = 'http://torrentsru5dbmqszbdinnz7cjiubxsjngq52qij6ih3fmp3gn7hwqqd.onion/';
+    public const BASE_URL_TOR = 'http://torrentsru5dbmqszbdinnz7cjiubxsjngq52qij6ih3fmp3gn7hwqqd.onion/forum/';
 
     private const PAGE_SIZE = 50;
 
@@ -36,6 +36,9 @@ class Rutracker extends AbstractSpider
             'base_uri' =>  $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
             RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
             RequestOptions::PROXY => $torProxy,
+            RequestOptions::HEADERS => [
+                'Accept-Encoding' => 'gzip',
+            ],
             'curl' => [
                 CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
             ],
@@ -102,6 +105,19 @@ class Rutracker extends AbstractSpider
         ]);
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
+
+        if (strpos($crawler->filter('.topmenu')->html(), self::LOGIN) === false) {
+            $this->login();
+
+            $res = $this->client->get('viewforum.php', [
+                'query' => [
+                    'f' => $forum->id,
+                    'start' => (($forum->page-1)*self::PAGE_SIZE),
+                ]
+            ]);
+            $html = $res->getBody()->getContents();
+            $crawler = new Crawler($html);
+        }
 
         $table = $crawler->filter('#main_content table.forumline');
         $lines = array_filter(
@@ -206,13 +222,7 @@ class Rutracker extends AbstractSpider
 
         //Так, таки надо тянуть файлы, проверяем залогиены ли мы, и если нет, то логинимся
         if (strpos($crawler->filter('.topmenu')->html(), self::LOGIN) === false) {
-            $resp = $this->client->post('login.php', [
-                'form_params' => [
-                    'login_username' => self::LOGIN,
-                    'login_password' => self::PASS,
-                    'login' => 'вход',
-                ]
-            ]);
+            $this->login();
         }
 
         $files = $this->getFiles($topic->id);
@@ -243,6 +253,16 @@ class Rutracker extends AbstractSpider
         $this->torrentService->updateTorrent($torrent);
     }
 
+    protected function login()
+    {
+        $resp = $this->client->post('login.php', [
+            'form_params' => [
+                'login_username' => self::LOGIN,
+                'login_password' => self::PASS,
+                'login' => 'вход',
+            ]
+        ]);
+    }
 
     protected function getFiles($fileListId): array
     {
