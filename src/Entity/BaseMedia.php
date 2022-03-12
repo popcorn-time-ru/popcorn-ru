@@ -28,8 +28,10 @@ abstract class BaseMedia
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->createdAt = new DateTime();
-        $this->syncAt = new DateTime();
+        $this->createdAt = 
+        $this->syncAt =
+        $this->lastActiveCheck =
+            new DateTime();
         $this->images = new Images();
         $this->rating = new Rating();
     }
