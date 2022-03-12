@@ -13,6 +13,7 @@ use App\Processors\TorrentActiveProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
@@ -160,11 +161,7 @@ class TorrentService
         $media->syncTranslations();
         $this->em->flush();
 
-        if ($media instanceof Movie) {
-            $this->selectActiveForMovie($media, $torrent->getLanguage());
-        } else {
-            $this->selectActiveForShow($media, $torrent->getLanguage());
-        }
+        $this->selectActive($media, $torrent->getLanguage(), false);
     }
 
     public function updateActive(UuidInterface $torrentId)
@@ -173,12 +170,21 @@ class TorrentService
         if (!$torrent) {
             return;
         }
-        if ($torrent instanceof MovieTorrent) {
-            $this->selectActiveForMovie($torrent->getMedia(), $torrent->getLanguage());
-        } else {
-            $this->selectActiveForShow($torrent->getMedia(), $torrent->getLanguage());
+        $media = $torrent->getMedia();
+        if ($media->getLastActiveCheck()->diff(new DateTime())->days > 30) {
+            $this->selectActive($media, $torrent->getLanguage());
         }
-        $this->torrentRepo->flush();
+    }
+
+    protected function selectActive(BaseMedia $media, string $language, bool $onlyActive = true)
+    {
+        if ($media instanceof Movie) {
+            $this->selectActiveForMovie($media, $language, $onlyActive);
+        } else {
+            $this->selectActiveForShow($media, $language, $onlyActive);
+        }
+        $media->setLastActiveCheck(new DateTime());
+        $this->em->flush();
     }
 
     protected function selectActiveForMovie(Movie $movie, string $language, bool $onlyActive = true)

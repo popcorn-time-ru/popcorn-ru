@@ -85,6 +85,13 @@ abstract class BaseMedia
     }
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    protected DateTime $lastActiveCheck;
+    public function getLastActiveCheck() { return $this->lastActiveCheck; }
+    public function setLastActiveCheck($lastActiveCheck) { $this->lastActiveCheck = $lastActiveCheck; return $this;}
+
+    /**
      * @return BaseTorrent[]
      */
     abstract public function getTorrents();
