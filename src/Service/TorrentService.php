@@ -140,6 +140,7 @@ class TorrentService
         $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
             'torrentId' => $torrent->getId()->toString(),
         ]));
+        $torrentMessage->setDelay(3600);
         $topic = $torrent instanceof ShowTorrent ? ShowTorrentProcessor::TOPIC : TorrentActiveProcessor::TOPIC;
         $this->producer->sendEvent($topic, $torrentMessage);
     }
