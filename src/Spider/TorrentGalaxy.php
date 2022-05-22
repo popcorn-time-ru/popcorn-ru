@@ -18,7 +18,7 @@ class TorrentGalaxy extends AbstractSpider
 {
     public const BASE_URL = 'https://torrentgalaxy.to/';
 
-    public const BASE_URL_TOR = 'http://galaxy2gchufcb3z.onion';
+    public const BASE_URL_TOR = 'http://galaxy3yrfbwlwo72q3v2wlyjinqr2vejgpkxb22ll5pcpuaxlnqjiid.onion/';
 
     /** @var Client */
     private $client;
