@@ -94,6 +94,19 @@ abstract class AbstractSpider implements SpiderInterface
         );
     }
 
+    protected function hackForReleaserLang(BaseTorrent $torrent, Crawler $post)
+    {
+        // Release group put all they content with incorrect lang
+        if (stripos($torrent->getProviderTitle(), 'mircrew') !== false) {
+            $torrent->setLanguage('it');
+        }
+        if (preg_match('#ita|spa#i', $torrent->getProviderTitle())) {
+            if (stripos($post->html(), 'mircrew') !== false) {
+                $torrent->setLanguage('it');
+            }
+        }
+    }
+
     protected function langName2IsoCode(string $lang): string
     {
         static $languagesMap = [

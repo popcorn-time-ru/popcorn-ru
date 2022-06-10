@@ -140,6 +140,8 @@ class TorrentGalaxy extends AbstractSpider
             ->setLanguage($language)
         ;
 
+        $this->hackForReleaserLang($torrent, $post);
+
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);

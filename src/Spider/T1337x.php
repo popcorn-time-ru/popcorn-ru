@@ -115,6 +115,8 @@ class T1337x extends AbstractSpider
             ->setLanguage($language)
         ;
 
+        $this->hackForReleaserLang($torrent, $post);
+
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);
