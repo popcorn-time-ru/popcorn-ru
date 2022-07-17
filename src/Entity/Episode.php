@@ -35,7 +35,7 @@ class Episode
     /**
      * @var EpisodeTorrent[]
      * @ORM\OneToMany(targetEntity="App\Entity\Torrent\EpisodeTorrent", fetch="LAZY", mappedBy="episode")
-     * @ORM\OrderBy({"peer" = "ASC"})
+     * @ORM\OrderBy({"peer" = "DESC"})
      */
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
