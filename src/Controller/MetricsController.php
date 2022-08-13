@@ -35,6 +35,7 @@ class MetricsController
     {
         $g = $this->cr->getOrRegisterGauge('test', 'xxx_yyy', 'help', ['label1', 'label2']);
         $g->set(random_int(1,10), ['xxx', 'yyy']);
+        $g->set(random_int(1,10), ['a', 'b']);
 
         return new Response('', 200, ['Content-Type' => 'text/plain']);
 

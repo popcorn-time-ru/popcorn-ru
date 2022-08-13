@@ -17,66 +17,23 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
+use Prometheus\CollectorRegistry;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class TorrentService
 {
-    /** @var MediaService */
-    protected $mediaInfo;
-
-    /** @var EntityManagerInterface */
-    protected $em;
-
-    /** @var TorrentRepository */
-    protected $torrentRepo;
-
-    /** @var MovieRepository */
-    protected $movieRepo;
-
-    /** @var ShowRepository */
-    protected $showRepo;
-
-    /** @var ProducerInterface */
-    private $producer;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /** @var ContainerInterface */
-    private $container;
-
-    /**
-     * TorrentService constructor.
-     *
-     * @param MediaService           $mediaInfo
-     * @param EntityManagerInterface $em
-     * @param ProducerInterface      $producer
-     * @param TorrentRepository      $torrentRepo
-     * @param MovieRepository        $movieRepo
-     * @param ShowRepository         $showRepo
-     * @param LoggerInterface        $logger
-     */
-    public function __construct(
-        ContainerInterface $container,
-        MediaService $mediaInfo,
-        EntityManagerInterface $em,
-        ProducerInterface $producer,
-        TorrentRepository $torrentRepo,
-        MovieRepository $movieRepo,
-        ShowRepository $showRepo,
-        LoggerInterface $logger
-    ) {
-        $this->mediaInfo = $mediaInfo;
-        $this->torrentRepo = $torrentRepo;
-        $this->movieRepo = $movieRepo;
-        $this->showRepo = $showRepo;
-        $this->producer = $producer;
-        $this->em = $em;
-        $this->logger = $logger;
-        $this->container = $container;
-    }
+    #[Required] public MediaService $mediaInfo;
+    #[Required] public EntityManagerInterface $em;
+    #[Required] public TorrentRepository $torrentRepo;
+    #[Required] public MovieRepository $movieRepo;
+    #[Required] public ShowRepository $showRepo;
+    #[Required] public ProducerInterface $producer;
+    #[Required] public LoggerInterface $logger;
+    #[Required] public ContainerInterface $container;
+    #[Required] public CollectorRegistry $cr;
 
     public function searchMovieByTitleAndYear(string $title, int $year)
     {
@@ -119,6 +76,9 @@ class TorrentService
             return $torrent;
         }
 
+        $metric = $this->cr->getOrRegisterCounter('popcorn', 'createTorrent', 'torrent created', ['provider']);
+        $metric->inc([$provider]);
+
         $new->setProvider($provider);
         $new->setProviderExternalId($externalId);
         $this->em->persist($new);
@@ -136,6 +96,9 @@ class TorrentService
 
         $torrent->getMedia()->addExistTranslation($torrent->getLanguage());
         $this->em->flush();
+
+        $metric = $this->cr->getOrRegisterCounter('popcorn', 'updateTorrent', 'torrent deleted', ['provider']);
+        $metric->inc([$torrent->getProvider()]);
 
         $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
             'torrentId' => $torrent->getId()->toString(),
@@ -155,6 +118,9 @@ class TorrentService
         if (!$torrent) {
             return;
         }
+
+        $metric = $this->cr->getOrRegisterCounter('popcorn', 'deleteTorrent', 'torrent deleted', ['provider']);
+        $metric->inc([$torrent->getProvider()]);
 
         $media = $torrent->getMedia();
         $this->torrentRepo->delete($torrent);

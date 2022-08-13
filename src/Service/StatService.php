@@ -5,32 +5,33 @@ namespace App\Service;
 use App\Repository\MediaStatRepository;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
+use App\Repository\TorrentRepository;
+use Prometheus\CollectorRegistry;
+use Symfony\Contracts\Service\Attribute\Required;
 use Tmdb\Repository\GenreRepository;
 
 class StatService
 {
-    /** @var MovieRepository */
-    protected $movieRepo;
+    #[Required] public MovieRepository $movieRepo;
+    #[Required] public ShowRepository $showRepo;
+    #[Required] public TorrentRepository $torrent;
+    #[Required] public MediaStatRepository $statRepo;
+    #[Required] public GenreRepository $genresRepo;
+    #[Required] public CollectorRegistry $cr;
 
-    /** @var ShowRepository */
-    protected $showRepo;
-
-    /** @var MediaStatRepository */
-    protected $statRepo;
-
-    /** @var GenreRepository */
-    protected $genresRepo;
-
-    public function __construct(MovieRepository $movieRepo, ShowRepository $showRepo, MediaStatRepository $statRepo, GenreRepository $genresRepo)
+    public function calculateTorrentStat()
     {
-        $this->movieRepo = $movieRepo;
-        $this->showRepo = $showRepo;
-        $this->genresRepo = $genresRepo;
-        $this->statRepo = $statRepo;
+        $torrentProm = $this->cr->getOrRegisterGauge('popcorn', 'torrent', 'torrents count', ['provider']);
+        foreach($this->torrent->getStatByProvider() as $provider => $count) {
+            $torrentProm->set($count, [$provider]);
+        }
     }
 
     public function calculateMediaStat()
     {
+        $movieProm = $this->cr->getOrRegisterGauge('popcorn', 'movies', 'movies count', ['lang', 'genre']);
+        $showProm = $this->cr->getOrRegisterGauge('popcorn', 'shows', 'shows count', ['lang', 'genre']);
+
         $movieStat = $this->groupGenreStat($this->movieRepo->getGenreStatistics(), $this->movieRepo->getGenreLangStatistics());
         $showStat = $this->groupGenreStat($this->showRepo->getGenreStatistics(), $this->showRepo->getGenreLangStatistics());
 
@@ -45,6 +46,7 @@ class StatService
                 }
                 $stat->setCountLang($count);
                 $stat->setCountAll($movieStat['all'][$genre]);
+                $movieProm->set($count, [$lang, $genre]);
             }
         }
 
@@ -59,6 +61,7 @@ class StatService
                 }
                 $stat->setCountLang($count);
                 $stat->setCountAll($showStat['all'][$genre]);
+                $showProm->set($count, [$lang, $genre]);
             }
         }
         $this->statRepo->flush();
