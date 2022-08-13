@@ -65,6 +65,7 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
 
         $locale = [];
         if ($localeParams->needLocale) {
+            $l = null;
             foreach($context['episodesLocales'] as $el) {
                 /** @var EpisodeLocale $el */
                 if ($el->getEpisode() == $object) {
