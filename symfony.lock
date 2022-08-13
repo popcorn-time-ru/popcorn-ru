@@ -1,4 +1,17 @@
 {
+    "artprima/prometheus-metrics-bundle": {
+        "version": "1.14",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.14",
+            "ref": "9522bce04594caddf6c61ec78c88fea5f5ffa121"
+        },
+        "files": [
+            "config/packages/prometheus_metrics.yaml",
+            "config/routes/metrics.yaml"
+        ]
+    },
     "doctrine/annotations": {
         "version": "1.13",
         "recipe": {

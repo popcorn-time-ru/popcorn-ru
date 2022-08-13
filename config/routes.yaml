@@ -1,3 +1,7 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+app_metrics:
+  path: /metrics
+  controller: Artprima\PrometheusMetricsBundle\Controller\MetricsController::prometheus

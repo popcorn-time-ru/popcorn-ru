@@ -64,6 +64,8 @@ services:
 
     App\Service\Search\SearchInterface: '@App\Service\Search\Elastic'
 
+    Prometheus\CollectorRegistry: '@prometheus_metrics_bundle.collector_registry'
+
     App\Service\Search\Elastic:
         arguments:
             - '@fos_elastica.finder.movies'
