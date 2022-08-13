@@ -7,6 +7,7 @@ use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Prometheus\CollectorRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,11 +25,19 @@ class MetricsController
     /** @required */
     public EntityManagerInterface $em;
 
+    /** @required */
+    public CollectorRegistry $cr;
+
     /**
-     * @Route(path="/metrics")
+     * @Route(path="/metrics-old")
      */
     public function index()
     {
+        $g = $this->cr->getOrRegisterGauge('test', 'xxx_yyy', 'help', ['label1', 'label2']);
+        $g->set(random_int(1,10), ['xxx', 'yyy']);
+
+        return new Response('', 200, ['Content-Type' => 'text/plain']);
+
         $content = '';
         $content.= '# Help app_movies_all All Films count'.PHP_EOL;
         $content.= '# TYPE app_movies_all gauge'.PHP_EOL;
