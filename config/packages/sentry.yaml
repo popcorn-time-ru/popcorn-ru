@@ -1,20 +1,17 @@
 sentry:
     dsn: '%env(SENTRY_DSN)%'
-    register_error_listener: false # Disables the ErrorListener
-    monolog:
-        error_handler:
-            enabled: true
-            level: error
+    register_error_listener: false # Disables the ErrorListener to avoid duplicated log in sentry
     options:
         error_types: E_ALL
-        excluded_exceptions:
-            - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+        integrations:
+            - 'Sentry\Integration\IgnoreErrorsIntegration'
 
 monolog:
     handlers:
         sentry:
-            type: service
-            id: Sentry\Monolog\Handler
+            type: sentry
+            level: !php/const Monolog\Logger::ERROR
+            hub_id: Sentry\State\HubInterface
         file_log:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"

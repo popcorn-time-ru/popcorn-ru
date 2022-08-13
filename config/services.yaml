@@ -44,6 +44,12 @@ services:
         calls:
             - [setApiKey, ['%env(resolve:TRAKT_KEY)%']]
 
+    Sentry\Integration\IgnoreErrorsIntegration:
+        arguments:
+            $options:
+                ignore_exceptions:
+                    - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+
     App\Request\PageParamConverter:
         tags:
             - { name: request.param_converter, converter: page_params }
