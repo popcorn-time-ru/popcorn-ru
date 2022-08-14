@@ -97,7 +97,7 @@ class TorrentService
         $torrent->getMedia()->addExistTranslation($torrent->getLanguage());
         $this->em->flush();
 
-        $metric = $this->cr->getOrRegisterCounter('popcorn', 'updateTorrent', 'torrent deleted', ['provider']);
+        $metric = $this->cr->getOrRegisterCounter('popcorn', 'updateTorrent', 'torrent updated', ['provider']);
         $metric->inc([$torrent->getProvider()]);
 
         $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
