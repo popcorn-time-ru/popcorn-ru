@@ -153,7 +153,7 @@ DATABASE_URL=mysql://root:password1234@127.0.0.1:3306/popcorn?serverVersion=mari
 ```
 After that, we are going to configure the TMDB and TRAKT API keys in the `.env.local` file.<br>
 You can get a TMDB API key [here](https://www.themoviedb.org/settings/api). Make sure to use the - `v3 Auth Key`<br>
-You can get a TRAKT API key [here](https://trakt.tv/oauth/applications/). Make sure to use the - `Client Secret`<br>
+You can get a TRAKT API key [here](https://trakt.tv/oauth/applications/). Make sure to use the - `Client ID`<br>
 ```env
 TMDB_API_KEY=
 TRAKT_KEY=
