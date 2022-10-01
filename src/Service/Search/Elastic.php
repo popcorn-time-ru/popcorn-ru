@@ -105,25 +105,26 @@ class Elastic implements SearchInterface
 
     private function buildSort(string $sort, string $order): array
     {
+        $n = ['nested' => ['path' => 'rating']];
         return match ($sort) {
             'title', 'name' => ['title' => $order, 'locales.title' => $order],
             'popularity' => [
-                'rating.popularity' => ['order' => $order],
-                'rating.watchers' => ['order' => $order],
+                'rating.popularity' => $n + ['order' => $order],
+                'rating.watchers' => $n + ['order' => $order],
             ],
             'rating' => [
-                'rating.weightRating' => ['order' => $order],
+                'rating.weightRating' => $n + ['order' => $order],
             ],
             'released', 'updated' => ['released' => $order],
             'last added' => ['created' => $order],
             'trending' => [
-                'rating.watching' => ['order' => $order],
-                'rating.watchers' => ['order' => $order],
+                'rating.watching' => $n + ['order' => $order],
+                'rating.watchers' => $n + ['order' => $order],
             ],
             'year' => ['year' => $order],
             default => [
-                'rating.popularity' => ['order' => 'desc'],
-                'rating.watchers' => ['order' => 'desc'],
+                'rating.popularity' => $n + ['order' => 'desc'],
+                'rating.watchers' => $n + ['order' => 'desc'],
             ],
         };
     }
