@@ -16,7 +16,7 @@ apt -y install software-properties-common curl apt-transport-https ca-certificat
 ```
 
 #### Remove The Firewall
-Next, we are going to disable SELinux, this will allow the Popcorn Time API to work correctly.<br>
+Next, we are going to remove the firewall, this will allow the Popcorn Time API to work correctly.<br>
 ```sh
 apt remove -y ufw
 ```
