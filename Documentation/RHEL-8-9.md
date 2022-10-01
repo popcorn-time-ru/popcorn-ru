@@ -221,7 +221,7 @@ We will now initialise the Popcorn Time database with the default data and set u
 (crontab -l ; echo "0 0 1 */3 * /var/www/popcorntime/bin/console spider:run --all")| crontab -
 (crontab -l ; echo "0 0 * * * /var/www/popcorntime/bin/console spider:run --all --last=48")| crontab -
 (crontab -l ; echo "0 8 * * 1 /var/www/popcorntime/bin/console update:stat")| crontab -
-(crontab -l ; echo "0 3,11,19 /var/www/popcorntime/bin/console update:trending")| crontab -
+(crontab -l ; echo "0 3,11,19 * * * /var/www/popcorntime/bin/console update:trending")| crontab -
 (crontab -l ; echo "0 1 * * * /var/www/popcorntime/bin/console update:syncOld 500 --days-check=180 --days-delete=360")| crontab -
 (crontab -l ; echo "0 23 * * * /var/www/popcorntime/bin/console cache:clear")| crontab -
 (crontab -l ; echo "9  * * * * cd /var/www/popcorntime/ && killall -9 php")| crontab -
