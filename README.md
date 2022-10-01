@@ -41,3 +41,9 @@ Additionally, you may set up grafana and use `grafana.json` for the app dashboar
 
 ### Ansible install
 The deployment playbook for a single server is located in the deploy folder.
+
+### Debug Console
+You can run the following command to view a live debug log of the API.<br>
+```
+bin/console enqueue:consume -vvv --logger=stdout
+```

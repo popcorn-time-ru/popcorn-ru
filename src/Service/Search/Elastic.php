@@ -31,12 +31,12 @@ class Elastic implements SearchInterface
         $this->showFiner = $showFiner;
     }
 
-    public static function isIndexMovie(Movie $movie)
+    public static function isIndexMovie(Movie $movie): bool
     {
         return true;
     }
 
-    public static function isIndexShow(Show $show)
+    public static function isIndexShow(Show $show): bool
     {
         return $show->getEpisodes()->count() > 0;
     }
@@ -103,37 +103,28 @@ class Elastic implements SearchInterface
         return $finder ? $finder->find($query) : [];
     }
 
-    private function buildSort(string $sort, string $order)
+    private function buildSort(string $sort, string $order): array
     {
-        switch ($sort) {
-            case 'title':
-            case 'name':
-                return [ 'title' => $order, 'locales.title' => $order ];
-            case 'popularity':
-                return [
-                    'rating.popularity' => [ 'nested_path' => 'rating', 'order' => $order],
-                    'rating.watchers' => [ 'nested_path' => 'rating', 'order' => $order],
-                ];
-            case 'rating':
-                return [
-                    'rating.weightRating' => [ 'nested_path' => 'rating', 'order' => $order],
-                ];
-            case 'released':
-            case 'updated':
-                return [ 'released' => $order ];
-            case 'last added':
-                return [ 'created' => $order ];
-            case 'trending':
-                return [
-                    'rating.watching' => [ 'nested_path' => 'rating', 'order' => $order],
-                    'rating.watchers' => [ 'nested_path' => 'rating', 'order' => $order],
-                ];
-            case 'year':
-                return [ 'year' => $order ];
-        }
-        return [
-            'rating.popularity' => [ 'nested_path' => 'rating', 'order' => 'desc'],
-            'rating.watchers' => [ 'nested_path' => 'rating', 'order' => 'desc'],
-        ];
+        return match ($sort) {
+            'title', 'name' => ['title' => $order, 'locales.title' => $order],
+            'popularity' => [
+                'rating.popularity' => ['order' => $order],
+                'rating.watchers' => ['order' => $order],
+            ],
+            'rating' => [
+                'rating.weightRating' => ['order' => $order],
+            ],
+            'released', 'updated' => ['released' => $order],
+            'last added' => ['created' => $order],
+            'trending' => [
+                'rating.watching' => ['order' => $order],
+                'rating.watchers' => ['order' => $order],
+            ],
+            'year' => ['year' => $order],
+            default => [
+                'rating.popularity' => ['order' => 'desc'],
+                'rating.watchers' => ['order' => 'desc'],
+            ],
+        };
     }
 }
