@@ -1,5 +1,5 @@
 ## Installation Process for Debian based systems
-We are now going to install all the required dependencies for the Popcorn Time Ru API.<br>
+We are now going to install all the required dependencies for the Popcorn Time API.<br>
 Make sure that all these commands are ran as the `root` user.<br>
 You can do this by running `sudo su`.<br>
 
@@ -16,13 +16,13 @@ apt -y install software-properties-common curl apt-transport-https ca-certificat
 ```
 
 #### Remove The Firewall
-Next, we are going to disable SELinux, this will allow the Popcorn Time Ru API to work correctly.<br>
+Next, we are going to disable SELinux, this will allow the Popcorn Time API to work correctly.<br>
 ```sh
 apt remove -y ufw
 ```
 
 #### MariaDB & Redis
-Next, we are going to install MariaDB and Redis, these are the databases that the Popcorn Time Ru API will use.<br>
+Next, we are going to install MariaDB and Redis, these are the databases that the Popcorn Time API will use.<br>
 ```sh
 sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server mariadb-client mariadb-common redis-server"
 systemctl enable --now mariadb redis-server
@@ -53,7 +53,7 @@ curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
 ```
 
 #### Tor
-Next, we are going to install Tor, this is the proxy that the Popcorn Time Ru API will use to scrape the torrent sites.<br>
+Next, we are going to install Tor, this is the proxy that the Popcorn Time API will use to scrape the torrent sites.<br>
 Tor does not need any configuration, and will work out of the box for our use case.<br>
 ```sh
 apt install -y tor
@@ -61,7 +61,7 @@ systemctl enable --now tor
 ```
 
 #### Elasticsearch
-Next, we are going to install Elasticsearch, this is the search engine that the Popcorn Time Ru API will use.<br>
+Next, we are going to install Elasticsearch, this is the search engine that the Popcorn Time API will use.<br>
 ```sh
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
@@ -126,8 +126,8 @@ server {
 }
 ```
 
-#### Install The Popcorn Time Ru API
-Finally, we are going to configure & install the Popcorn Time Ru API.<br>
+#### Install The Popcorn Time API
+Finally, we are going to configure & install the Popcorn Time API.<br>
 We are going to download all the files first.<br>
 ```sh
 cd /var/www/
@@ -138,7 +138,7 @@ chown -R www-data:www-data /var/www/popcorntime/*
 chown www-data:www-data /var/www/popcorntime/.env
 chmod 400 /var/www/popcorntime/.env
 ```
-Now we are going to configure the Popcorn Time Ru API `.env` file to our needs.<br>
+Now we are going to configure the Popcorn Time API `.env` file to our needs.<br>
 Firstly, login to your MariaDB database and note down the server version number.<br>
 ```sh
 ### First run this command, then enter the password when prompted
@@ -166,5 +166,18 @@ composer install
 bin/console doctrine:database:create
 bin/console doctrine:schema:create
 bin/console enqueue:setup-broker
+```
+
+### Initialise Popcorn Time Database
+We will now initialise the Popcorn Time database with the default data and set up the cron jobs.<br>
+```sh
+(crontab -l ; echo "0 0 1 */3 * /var/www/popcorntime/bin/console spider:run --all")| crontab -
+(crontab -l ; echo "0 0 * * * /var/www/popcorntime/bin/console spider:run --all --last=48")| crontab -
+(crontab -l ; echo "0 8 * * 1 /var/www/popcorntime/bin/console update:stat")| crontab -
+(crontab -l ; echo "0 3,11,19 /var/www/popcorntime/bin/console update:trending")| crontab -
+(crontab -l ; echo "0 1 * * * /var/www/popcorntime/bin/console update:syncOld 500 --days-check=180 --days-delete=360")| crontab -
+(crontab -l ; echo "0 23 * * * /var/www/popcorntime/bin/console cache:clear")| crontab -
+(crontab -l ; echo "9  * * * * cd /var/www/popcorntime/ && killall -9 php")| crontab -
+(crontab -l ; echo '10  * * * * cd /var/www/popcorntime/ && pgrep -c -f enqueue:consume || bin/console enqueue:consume --time-limit="now + 55 minutes" --no-debug --memory-limit=200')| crontab -
 bin/console spider:run --all
 ```
