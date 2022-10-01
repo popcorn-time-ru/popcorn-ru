@@ -33,10 +33,10 @@ class LocaleParamConverter implements ParamConverterInterface
             ['pt', 'cn', 'cn', 'es'],
             $localeRequest->locale
         );
-        $localeRequest->contentLocales = str_replace(
+        $contextLocales = str_replace(
             ['pt-br', 'zh-cn', 'zh-tw', 'es-mx'],
             ['pt', 'cn', 'cn', 'es'],
-            $localeRequest->contentLocales
+            $contextLocales
         );
 
         $showAll = $request->query->has('showAll');
