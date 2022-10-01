@@ -68,6 +68,7 @@ class TorrentGalaxy extends AbstractSpider
         $crawler = new Crawler($html);
 
         $panels = $crawler->filter('#panelmain')->each(static function (Crawler $c) { return $c;});
+        $post = null;
         foreach ($panels as $panel) {
             if (strpos($panel->html(), 'Torrent details')) {
                 $post = $panel;
