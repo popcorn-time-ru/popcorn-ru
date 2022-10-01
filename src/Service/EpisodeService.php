@@ -152,7 +152,7 @@ class EpisodeService
         $components = pathinfo($filePathAndName);
         $dir = $components['dirname'];
         $file = $components['filename'];
-        $ext = $components['extension'];
+        $ext = $components['extension'] ?? '';
         if (!in_array(strtolower($ext), ['avi', 'mkv', 'mp4'])) {
             return [false, false];
         }
