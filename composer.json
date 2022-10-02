@@ -38,7 +38,8 @@
         "symfony/property-info": "^5.0",
         "symfony/proxy-manager-bridge": "^5.0",
         "symfony/serializer": "^5.0",
-        "symfony/yaml": "^5.1"
+        "symfony/yaml": "^5.1",
+        "ext-curl": "*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
