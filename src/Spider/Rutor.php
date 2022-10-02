@@ -4,13 +4,10 @@ namespace App\Spider;
 
 use App\Entity\File;
 use App\Entity\Torrent\BaseTorrent;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class Rutor extends AbstractSpider
@@ -20,7 +17,7 @@ class Rutor extends AbstractSpider
     public const BASE_URL_TOR = 'http://rutorc6mqdinc4cz.onion';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct(string $torProxy)
     {

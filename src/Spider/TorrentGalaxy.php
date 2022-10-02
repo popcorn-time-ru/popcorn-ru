@@ -4,14 +4,11 @@ namespace App\Spider;
 
 use App\Entity\File;
 use App\Entity\Torrent\BaseTorrent;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class TorrentGalaxy extends AbstractSpider
@@ -21,7 +18,7 @@ class TorrentGalaxy extends AbstractSpider
     public const BASE_URL_TOR = 'http://galaxy3yrfbwlwo72q3v2wlyjinqr2vejgpkxb22ll5pcpuaxlnqjiid.onion/';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function useTor(): bool
     {

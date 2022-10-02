@@ -4,15 +4,11 @@ namespace App\Spider;
 
 use App\Entity\File;
 use App\Entity\Torrent\BaseTorrent;
-use App\Entity\Torrent\MovieTorrent;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class Rutracker extends AbstractSpider
@@ -27,7 +23,7 @@ class Rutracker extends AbstractSpider
     private const PASS = 'B9Z98RQ94CFjBJSG2PC7';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function useTor(): bool
     {

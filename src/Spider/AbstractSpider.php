@@ -56,7 +56,7 @@ abstract class AbstractSpider implements SpiderInterface
     protected function ruStrToTime(string $format, string $time): DateTime
     {
         $ru = ['Янв', 'Фев', 'Мар', 'Апр', 'Июн', 'Май', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
-        $en = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct',' nov', 'dec'];
+        $en = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',' Nov', 'Dec'];
         $time = str_replace($ru, $en, $time);
         return DateTime::createFromFormat($format, $time);
     }
@@ -331,10 +331,8 @@ abstract class AbstractSpider implements SpiderInterface
         }
         $size = (float) $m[1];
         switch (strtoupper($m[2])) {
-            case 'GB':
-                $size *= 1024;
             case 'MB':
-                $size *= 1024;
+            case 'GB':
             case 'KB':
                 $size *= 1024;
         }

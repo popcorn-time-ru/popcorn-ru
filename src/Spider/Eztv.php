@@ -5,20 +5,18 @@ namespace App\Spider;
 use App\Entity\Episode;
 use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Show;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 
 class Eztv extends AbstractSpider
 {
     public const BASE_URL = 'https://eztv.re/';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct()
     {
@@ -33,6 +31,9 @@ class Eztv extends AbstractSpider
         return [1];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function getPage(ForumDto $forum): \Generator
     {
         $res = $this->client->get('/api/get-torrents', [
