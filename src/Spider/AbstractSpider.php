@@ -337,8 +337,10 @@ abstract class AbstractSpider implements SpiderInterface
         }
         $size = (float) $m[1];
         switch (strtoupper($m[2])) {
-            case 'MB':
             case 'GB':
+                $size *= 1024;
+            case 'MB':
+                $size *= 1024;
             case 'KB':
                 $size *= 1024;
         }
