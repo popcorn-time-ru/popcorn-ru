@@ -27,7 +27,26 @@ abstract class BaseLocale
      * @ORM\Column(type="uuid")
      */
     protected $id;
-    public function getId(): UuidInterface { return $this->id; }
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $locale;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $title = '';
+    /**
+     * @var string
+     * @ORM\Column(type="text")
+     */
+    protected $synopsis = '';
+    /**
+     * @var Images
+     * @ORM\Embedded(class="App\Entity\VO\Images", columnPrefix="images_")
+     */
+    protected $images;
 
     public function __construct()
     {
@@ -35,38 +54,51 @@ abstract class BaseLocale
         $this->images = new Images();
     }
 
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $locale;
-    public function getLocale() { return $this->locale; }
-    public function setLocale($locale) { $this->locale = $locale; return $this;}
+    public function getId(): UuidInterface
+    {
+        return $this->id;
+    }
 
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $title = '';
-    public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $title; return $this;}
+    public function getLocale()
+    {
+        return $this->locale;
+    }
 
-    /**
-     * @var string
-     * @ORM\Column(type="text")
-     */
-    protected $synopsis = '';
-    public function getSynopsis() { return $this->synopsis; }
-    public function setSynopsis($synopsis) { $this->synopsis = $synopsis; return $this;}
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+        return $this;
+    }
 
-    /**
-     * @var Images
-     * @ORM\Embedded(class="App\Entity\VO\Images", columnPrefix="images_")
-     */
-    protected $images;
-    public function getImages() { return $this->images; }
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-    public function isEmpty() {
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getSynopsis()
+    {
+        return $this->synopsis;
+    }
+
+    public function setSynopsis($synopsis)
+    {
+        $this->synopsis = $synopsis;
+        return $this;
+    }
+
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    public function isEmpty()
+    {
         return $this->title === ''
             && $this->synopsis === ''
             && $this->images->isEmpty();

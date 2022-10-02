@@ -1,120 +1,130 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>Popcorn Time</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <title>Popcorn Time</title>
+    <style>
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
-    body {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-    }
-    h1, h2 {
-      color: black;
-      text-align: center;
-    }
-    p {
-      text-align: center;
-    }
-    .links {
-      display: flex;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-    }
-    .links li {
-      list-style: none;
-    }
-    .links a {
-      color: black;
-      font-weight: bold;
-      font-size: 20px;
-      display: block;
-      margin: 10px;
-      padding: 10px;
-    }
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
 
-    #forkongithub a {
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      font-family: arial, sans-serif;
-      text-align: center;
-      font-weight: bold;
-      padding: 5px 40px;
-      font-size: 1rem;
-      line-height: 2rem;
-      position: relative;
-      transition: 0.5s;
-    }
+        body {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
 
-    #forkongithub a:hover {
-      background: #c11;
-      color: #fff;
-    }
+        h1, h2 {
+            color: black;
+            text-align: center;
+        }
 
-    #forkongithub a::before, #forkongithub a::after {
-      content: "";
-      width: 100%;
-      display: block;
-      position: absolute;
-      top: 1px;
-      left: 0;
-      height: 1px;
-      background: #fff;
-    }
+        p {
+            text-align: center;
+        }
 
-    #forkongithub a::after {
-      bottom: 1px;
-      top: auto;
-    }
-    @media screen and (min-width: 800px)
-    {
-      #forkongithub {
-        position: absolute;
-        display: block;
-        top: 0;
-        right: 0;
-        width: 200px;
-        overflow: hidden;
-        height: 200px;
-        z-index: 9999;
-      }
+        .links {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
 
-      #forkongithub a {
-        width: 200px;
-        position: absolute;
-        top: 60px;
-        right: -60px;
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        -moz-transform: rotate(45deg);
-        -o-transform: rotate(45deg);
-        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
-      }
-    }
+        .links li {
+            list-style: none;
+        }
 
-  </style>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-33769655-2"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+        .links a {
+            color: black;
+            font-weight: bold;
+            font-size: 20px;
+            display: block;
+            margin: 10px;
+            padding: 10px;
+        }
 
-    gtag('config', 'UA-33769655-2');
-  </script>
+        #forkongithub a {
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            font-family: arial, sans-serif;
+            text-align: center;
+            font-weight: bold;
+            padding: 5px 40px;
+            font-size: 1rem;
+            line-height: 2rem;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        #forkongithub a:hover {
+            background: #c11;
+            color: #fff;
+        }
+
+        #forkongithub a::before, #forkongithub a::after {
+            content: "";
+            width: 100%;
+            display: block;
+            position: absolute;
+            top: 1px;
+            left: 0;
+            height: 1px;
+            background: #fff;
+        }
+
+        #forkongithub a::after {
+            bottom: 1px;
+            top: auto;
+        }
+
+        @media screen and (min-width: 800px) {
+            #forkongithub {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 0;
+                width: 200px;
+                overflow: hidden;
+                height: 200px;
+                z-index: 9999;
+            }
+
+            #forkongithub a {
+                width: 200px;
+                position: absolute;
+                top: 60px;
+                right: -60px;
+                transform: rotate(45deg);
+                -webkit-transform: rotate(45deg);
+                -ms-transform: rotate(45deg);
+                -moz-transform: rotate(45deg);
+                -o-transform: rotate(45deg);
+                box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);
+            }
+        }
+
+    </style>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-33769655-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-33769655-2');
+    </script>
 </head>
 <body>
 <span id="forkongithub"><a href="https://github.com/popcorn-time-ru/popcorn-ru/">Fork me on GitHub</a></span>
@@ -123,27 +133,27 @@
 <h2>Слава Украине! Героям слава!</h2>
 
 <section>
-  <h2>API</h2>
-  <p>Popcorn Time API server</p>
-  <p>Just add this url to API servers</p>
+    <h2>API</h2>
+    <p>Popcorn Time API server</p>
+    <p>Just add this url to API servers</p>
 </section>
 
 <section>
-  <h2>Download</h2>
-  <ul class="links">
-    <li><a href="/build/">Release builds</a></li>
-    <li><a href="/build-ru/">Ru fork builds</a></li>
-  </ul>
-  <h2>Info</h2>
-  <ul class="links">
-    <li><a href="https://www.reddit.com/r/PopCornTimeApp/">Reddit</a></li>
-  </ul>
-  <p>Project pages</p>
-  <ul class="links">
-    <li><a href="https://github.com/popcorn-official/popcorn-desktop/releases">Releases</a></li>
-    <li><a href="https://github.com/popcorn-official/popcorn-desktop/actions">Builds</a></li>
-    <li><a href="https://aur.archlinux.org/packages/popcorntime-bin">AUR</a></li>
-  </ul>
+    <h2>Download</h2>
+    <ul class="links">
+        <li><a href="/build/">Release builds</a></li>
+        <li><a href="/build-ru/">Ru fork builds</a></li>
+    </ul>
+    <h2>Info</h2>
+    <ul class="links">
+        <li><a href="https://www.reddit.com/r/PopCornTimeApp/">Reddit</a></li>
+    </ul>
+    <p>Project pages</p>
+    <ul class="links">
+        <li><a href="https://github.com/popcorn-official/popcorn-desktop/releases">Releases</a></li>
+        <li><a href="https://github.com/popcorn-official/popcorn-desktop/actions">Builds</a></li>
+        <li><a href="https://aur.archlinux.org/packages/popcorntime-bin">AUR</a></li>
+    </ul>
 </section>
 </body>
 </html>

@@ -31,9 +31,9 @@ class LocaleNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
         switch ($context['mode']) {
             default:
                 return [
-                    'title' => $object->getTitle(),
-                    'synopsis' => $object->getSynopsis(),
-                ] + $object->getImages()->getApiArray();
+                        'title' => $object->getTitle(),
+                        'synopsis' => $object->getSynopsis(),
+                    ] + $object->getImages()->getApiArray();
         }
     }
 

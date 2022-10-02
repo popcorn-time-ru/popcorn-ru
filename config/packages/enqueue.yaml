@@ -1,8 +1,8 @@
 enqueue:
-    default:
-        transport: '%env(resolve:DATABASE_URL)%'
-        client: null
-        extensions:
-            doctrine_clear_identity_map_extension: true
-            doctrine_closed_entity_manager_extension: true
-            signal_extension:     true
+  default:
+    transport: '%env(resolve:DATABASE_URL)%'
+    client: null
+    extensions:
+      doctrine_clear_identity_map_extension: true
+      doctrine_closed_entity_manager_extension: true
+      signal_extension: true

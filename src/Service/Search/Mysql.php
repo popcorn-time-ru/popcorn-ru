@@ -6,7 +6,6 @@ use App\Entity\Locale\MovieLocale;
 use App\Entity\Locale\ShowLocale;
 use App\Entity\Show;
 use App\Repository\Locale\BaseLocaleRepository;
-use App\Repository\MovieRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -31,14 +30,14 @@ class Mysql implements SearchInterface
                 ->setParameters([
                     'ids' => $mediaIds,
                     'imdb' => $pageRequest->keywords,
-                    'title' => '%'.str_replace('%', '%%', $pageRequest->keywords).'%',
+                    'title' => '%' . str_replace('%', '%%', $pageRequest->keywords) . '%',
                 ]);
         }
         if ($pageRequest->genre) {
-            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%'.$pageRequest->genre.'%');
+            $qb->andWhere('m.genres LIKE :genre')->setParameter('genre', '%' . $pageRequest->genre . '%');
         }
         $qb->andWhere('m.existTranslations LIKE :locale')
-            ->setParameter('locale', '%'.$localeParams->bestContentLocale.'%');
+            ->setParameter('locale', '%' . $localeParams->bestContentLocale . '%');
         if ($class->getName() === Show::class) {
             $qb->andWhere('m.episodes IS NOT EMPTY');
         }

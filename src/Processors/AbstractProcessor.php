@@ -9,7 +9,7 @@ abstract class AbstractProcessor implements Processor
     protected function catchRequestException($e): string
     {
         if ($e->getResponse()) {
-            echo $e->getMessage().PHP_EOL;
+            echo $e->getMessage() . PHP_EOL;
             if ($e->getResponse()->getStatusCode() > 500) {
                 // 503 - it's temporary
                 return self::REQUEUE;
@@ -21,7 +21,7 @@ abstract class AbstractProcessor implements Processor
             return self::ACK;
         }
         // no response - it's temporary
-        echo $e->getMessage().PHP_EOL;
+        echo $e->getMessage() . PHP_EOL;
         return self::REQUEUE;
     }
 }

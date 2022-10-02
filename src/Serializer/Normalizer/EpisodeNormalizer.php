@@ -4,13 +4,11 @@ namespace App\Serializer\Normalizer;
 
 use App\Entity\Episode;
 use App\Entity\Locale\EpisodeLocale;
-use App\Entity\Show;
 use App\Repository\TorrentRepository;
 use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, NormalizerAwareInterface
 {
@@ -66,7 +64,7 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         $locale = [];
         if ($localeParams->needLocale) {
             $l = null;
-            foreach($context['episodesLocales'] as $el) {
+            foreach ($context['episodesLocales'] as $el) {
                 /** @var EpisodeLocale $el */
                 if ($el->getEpisode() == $object) {
                     $l = $el;
@@ -83,18 +81,18 @@ class EpisodeNormalizer implements NormalizerInterface, CacheableSupportsMethodI
         switch ($context['mode']) {
             case 'item':
                 return [
-                    'date_based' => false,
-                    'season' => $object->getSeason(),
-                    'episode' => $object->getEpisode(),
-                    'first_aired' => $object->getFirstAired(),
-                    'title' => $object->getTitle(),
-                    'overview' => $object->getOverview(),
-                    'watched' => [
-                        'watched' => false,
-                    ],
-                    'tvdb_id' => (int)$object->getTvdb(),
-                    'torrents' => $torrents,
-                ] + $locale;
+                        'date_based' => false,
+                        'season' => $object->getSeason(),
+                        'episode' => $object->getEpisode(),
+                        'first_aired' => $object->getFirstAired(),
+                        'title' => $object->getTitle(),
+                        'overview' => $object->getOverview(),
+                        'watched' => [
+                            'watched' => false,
+                        ],
+                        'tvdb_id' => (int)$object->getTvdb(),
+                        'torrents' => $torrents,
+                    ] + $locale;
             default:
                 return [];
         }

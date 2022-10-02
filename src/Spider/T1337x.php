@@ -84,7 +84,9 @@ class T1337x extends AbstractSpider
         $files = $this->getFiles($crawler);
 
         $lang = current(array_filter(
-            $crawler->filter('ul.list li')->each(static function (Crawler $c) { return $c;}),
+            $crawler->filter('ul.list li')->each(static function (Crawler $c) {
+                return $c;
+            }),
             static function (Crawler $c) {
                 return str_contains($c->html(), 'Language');
             }
@@ -110,115 +112,13 @@ class T1337x extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage($language)
-        ;
+            ->setLanguage($language);
 
         $this->hackForReleaserLang($torrent, $post);
 
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);
-    }
-
-    public function getPage(ForumDto $forum): \Generator
-    {
-        $res = $this->client->get("/cat/{$forum->id}/{$forum->page}/");
-        $html = $res->getBody()->getContents();
-        $crawler = new Crawler($html);
-
-        /** @var Crawler $table */
-        $table = $crawler->filter('.featured-list table');
-        $lines = array_filter(
-            $table->filter('tr')->each(
-                static function (Crawler $c) {
-                    return $c;
-                }
-            ),
-            function (Crawler $c) use ($forum) {
-                return str_contains($c->html(), 'href="/torrent');
-            }
-        );
-
-        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
-        $exist = false;
-
-        foreach ($lines as $n => $line) {
-            /** @var Crawler $line */
-            if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
-                $timeString = $line->filter('td.coll-date')->first()->html();
-                $timeString = str_replace("'", '', $timeString);
-                try {
-                    $time = new \DateTime($timeString);
-                } catch (\Exception $e) {
-                    $time = false;
-                }
-                if ($time && $time < $after) {
-                    continue;
-                }
-
-                $seed = $line->filter('td.seeds')->first()->text();
-                $seed = preg_replace('#[^0-9]#', '', $seed);
-                $leech = $line->filter('td.leeches')->text();
-                $leech = preg_replace('#[^0-9]#', '', $leech);
-
-                yield new TopicDto(
-                    $m[1],
-                    (int) $seed,
-                    (int) $leech,
-                    $n * 10 + random_int(10, 20)
-                );
-                $exist = true;
-                continue;
-            }
-        }
-
-        if (!$exist) {
-            return;
-        }
-
-        $pages = $crawler->filter('.pagination');
-        if (str_contains($pages->html(), 'Last')) {
-            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
-        }
-    }
-
-    protected function getFiles(Crawler $c): array
-    {
-        $crawlerFiles = $c->filter('#files');
-        $files = $crawlerFiles->children('ul')->each($this->subTree(...));
-        $flat = array();
-        array_walk_recursive($files, function($a) use (&$flat) { $flat[] = $a; });
-        return array_filter($flat);
-    }
-
-    public function subTree(Crawler $c): array
-    {
-        $files = [];
-        if ($c->previousAll()->attr('class') === 'head') {
-            $dir = trim($c->previousAll()->text()) . '/';
-        } else {
-            $dir = '';
-        }
-
-        $subs = $c->children('ul')->each(static function (Crawler $c) { return $c;});
-        foreach($subs as $sub) {
-            $subfiles = $this->subTree($sub);
-            foreach($subfiles as $item) {
-                /** @var File $item */
-                $item->setName($dir . $item->getName());
-                $files[] = $item;
-            }
-        }
-
-        $items = $c->children('li')->each(static function (Crawler $c) { return $c;});
-        foreach($items as $item) {
-            preg_match('#(.*?)\((.*?)\)#', $item->text(), $m);
-            $name = trim($m[1]);
-            $size = $this->approximateSize($m[2]);
-            $files[] = new File($dir . $name, $size);
-        }
-
-        return $files;
     }
 
     private function getImdbByTitle(string $titleStr): ?string
@@ -259,5 +159,112 @@ class T1337x extends AbstractSpider
         }
 
         return $this->torrentService->searchMovieByTitleAndYear($name, $year);
+    }
+
+    protected function getFiles(Crawler $c): array
+    {
+        $crawlerFiles = $c->filter('#files');
+        $files = $crawlerFiles->children('ul')->each($this->subTree(...));
+        $flat = array();
+        array_walk_recursive($files, function ($a) use (&$flat) {
+            $flat[] = $a;
+        });
+        return array_filter($flat);
+    }
+
+    public function getPage(ForumDto $forum): \Generator
+    {
+        $res = $this->client->get("/cat/{$forum->id}/{$forum->page}/");
+        $html = $res->getBody()->getContents();
+        $crawler = new Crawler($html);
+
+        /** @var Crawler $table */
+        $table = $crawler->filter('.featured-list table');
+        $lines = array_filter(
+            $table->filter('tr')->each(
+                static function (Crawler $c) {
+                    return $c;
+                }
+            ),
+            function (Crawler $c) use ($forum) {
+                return str_contains($c->html(), 'href="/torrent');
+            }
+        );
+
+        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
+        $exist = false;
+
+        foreach ($lines as $n => $line) {
+            /** @var Crawler $line */
+            if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
+                $timeString = $line->filter('td.coll-date')->first()->html();
+                $timeString = str_replace("'", '', $timeString);
+                try {
+                    $time = new \DateTime($timeString);
+                } catch (\Exception $e) {
+                    $time = false;
+                }
+                if ($time && $time < $after) {
+                    continue;
+                }
+
+                $seed = $line->filter('td.seeds')->first()->text();
+                $seed = preg_replace('#[^0-9]#', '', $seed);
+                $leech = $line->filter('td.leeches')->text();
+                $leech = preg_replace('#[^0-9]#', '', $leech);
+
+                yield new TopicDto(
+                    $m[1],
+                    (int)$seed,
+                    (int)$leech,
+                    $n * 10 + random_int(10, 20)
+                );
+                $exist = true;
+                continue;
+            }
+        }
+
+        if (!$exist) {
+            return;
+        }
+
+        $pages = $crawler->filter('.pagination');
+        if (str_contains($pages->html(), 'Last')) {
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
+        }
+    }
+
+    public function subTree(Crawler $c): array
+    {
+        $files = [];
+        if ($c->previousAll()->attr('class') === 'head') {
+            $dir = trim($c->previousAll()->text()) . '/';
+        } else {
+            $dir = '';
+        }
+
+        $subs = $c->children('ul')->each(static function (Crawler $c) {
+            return $c;
+        });
+        foreach ($subs as $sub) {
+            $subfiles = $this->subTree($sub);
+            foreach ($subfiles as $item) {
+                /** @var File $item */
+                $item->setName($dir . $item->getName());
+                $files[] = $item;
+            }
+        }
+
+        $items = $c->children('li')->each(static function (Crawler $c) {
+            return $c;
+        });
+        foreach ($items as $item) {
+            preg_match('#(.*?)\((.*?)\)#', $item->text(), $m);
+            $name = trim($m[1]);
+            $size = $this->approximateSize($m[2]);
+            $files[] = new File($dir . $name, $size);
+        }
+
+        return $files;
     }
 }

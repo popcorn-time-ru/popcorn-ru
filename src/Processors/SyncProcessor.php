@@ -2,9 +2,9 @@
 
 namespace App\Processors;
 
-use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Movie;
 use App\Entity\Show;
+use App\Entity\Torrent\BaseTorrent;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
@@ -17,7 +17,6 @@ use Enqueue\Util\JSON;
 use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
-use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
 class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterface
@@ -42,13 +41,13 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
 
     public function __construct(
         EntityManagerInterface $em,
-        MediaService $extractor,
-        TorrentRepository $torrentRepository,
-        TorrentService $torrentService,
-        MovieRepository $movieRepository,
-        ShowRepository $showRepository,
-        ProducerInterface $producer,
-        LoggerInterface $logger)
+        MediaService           $extractor,
+        TorrentRepository      $torrentRepository,
+        TorrentService         $torrentService,
+        MovieRepository        $movieRepository,
+        ShowRepository         $showRepository,
+        ProducerInterface      $producer,
+        LoggerInterface        $logger)
     {
         $this->producer = $producer;
         $this->logger = $logger;
@@ -58,6 +57,14 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
         $this->showRepository = $showRepository;
         $this->extractor = $extractor;
         $this->em = $em;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSubscribedTopics(): string
+    {
+        return self::TOPIC;
     }
 
     /**
@@ -125,13 +132,5 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
-    }
-
-    /**
-     *@return string
-     */
-    public static function getSubscribedTopics(): string
-    {
-        return self::TOPIC;
     }
 }

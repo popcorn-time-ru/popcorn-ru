@@ -2,4 +2,6 @@
 
 namespace App\Traktor\Exception;
 
-class MissingApiKeyException extends RequestException {}
+class MissingApiKeyException extends RequestException
+{
+}

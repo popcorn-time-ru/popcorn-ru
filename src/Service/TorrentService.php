@@ -6,7 +6,6 @@ use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
 use App\Entity\Torrent\BaseTorrent;
-use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Torrent\ShowTorrent;
 use App\Processors\ShowTorrentProcessor;
 use App\Processors\TorrentActiveProcessor;
@@ -39,6 +38,7 @@ class TorrentService
     {
         return $this->mediaInfo->searchMovieByTitleAndYear($title, $year);
     }
+
     public function searchShowByTitle(string $title)
     {
         return $this->mediaInfo->searchShowByTitle($title);
@@ -131,18 +131,6 @@ class TorrentService
         $this->selectActive($media, $torrent->getLanguage(), false);
     }
 
-    public function updateActive(UuidInterface $torrentId)
-    {
-        $torrent = $this->torrentRepo->find($torrentId);
-        if (!$torrent) {
-            return;
-        }
-        $media = $torrent->getMedia();
-        if ($media->getLastActiveCheck()->diff(new DateTime())->days > 3) {
-            $this->selectActive($media, $torrent->getLanguage());
-        }
-    }
-
     protected function selectActive(BaseMedia $media, string $language, bool $onlyActive = true)
     {
         if ($media instanceof Movie) {
@@ -169,6 +157,19 @@ class TorrentService
         foreach ($active as $q => $t) {
             $t->setActive(true);
         }
+    }
+
+    protected function needReplaceTorrent(BaseTorrent $current, BaseTorrent $new): bool
+    {
+        /** @var SpiderSelector $selector */
+        $selector = $this->container->get(SpiderSelector::class);
+        $priorityCurrent = $selector->get($current->getProvider())->getPriority($current);
+        $priorityNew = $selector->get($new->getProvider())->getPriority($new);
+
+        if ($priorityCurrent !== $priorityNew) {
+            return $priorityCurrent < $priorityNew;
+        }
+        return $current->getPeer() < $new->getPeer();
     }
 
     protected function selectActiveForShow(Show $show, string $language, bool $onlyActive = true)
@@ -211,16 +212,15 @@ class TorrentService
         }
     }
 
-    protected function needReplaceTorrent(BaseTorrent $current, BaseTorrent $new): bool
+    public function updateActive(UuidInterface $torrentId)
     {
-        /** @var SpiderSelector $selector */
-        $selector = $this->container->get(SpiderSelector::class);
-        $priorityCurrent = $selector->get($current->getProvider())->getPriority($current);
-        $priorityNew = $selector->get($new->getProvider())->getPriority($new);
-
-        if ($priorityCurrent !== $priorityNew) {
-            return $priorityCurrent < $priorityNew;
+        $torrent = $this->torrentRepo->find($torrentId);
+        if (!$torrent) {
+            return;
         }
-        return $current->getPeer() < $new->getPeer();
+        $media = $torrent->getMedia();
+        if ($media->getLastActiveCheck()->diff(new DateTime())->days > 3) {
+            $this->selectActive($media, $torrent->getLanguage());
+        }
     }
 }

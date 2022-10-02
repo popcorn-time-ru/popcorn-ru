@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\HttpFoundation\CacheJsonResponse;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController

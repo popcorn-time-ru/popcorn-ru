@@ -2,8 +2,8 @@
 
 namespace App\Entity\Locale;
 
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Show;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
@@ -16,8 +16,20 @@ class ShowLocale extends BaseLocale
      * @ORM\JoinColumn(name="media_id")
      */
     protected $show;
-    public function getShow(): Show { return $this->show; }
-    public function setShow(Show $show): self { $this->show = $show; return $this; }
 
-    public function getMedia() { return $this->show; }
+    public function getShow(): Show
+    {
+        return $this->show;
+    }
+
+    public function setShow(Show $show): self
+    {
+        $this->show = $show;
+        return $this;
+    }
+
+    public function getMedia()
+    {
+        return $this->show;
+    }
 }

@@ -17,8 +17,20 @@ class EpisodeTorrent extends BaseTorrent
      * @ORM\JoinColumn(name="media_id")
      */
     protected $episode;
-    public function getEpisode(): Episode { return $this->episode; }
-    public function setEpisode(Episode $episode): self { $this->episode = $episode; return $this; }
 
-    public function getMedia(): BaseMedia { return $this->episode->getShow();}
+    public function getEpisode(): Episode
+    {
+        return $this->episode;
+    }
+
+    public function setEpisode(Episode $episode): self
+    {
+        $this->episode = $episode;
+        return $this;
+    }
+
+    public function getMedia(): BaseMedia
+    {
+        return $this->episode->getShow();
+    }
 }

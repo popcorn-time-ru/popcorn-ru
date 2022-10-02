@@ -1,101 +1,101 @@
 # Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
 fos_elastica:
-    clients:
-        default: { url: '%env(ELASTICSEARCH_URL)%' }
-    indexes:
-        movies:
-            indexable_callback: ['App\Service\Search\Elastic', 'isIndexMovie']
-            properties:
-                imdb: ~
-                title:
-                    type: "text"
-                    fielddata: true
-                genres:
-                    type: "keyword"
-                year:
-                    type: "integer"
-                created:
-                    type: "date"
-                    property_path: createdForElastic
-                released:
-                    type: "date"
-                    property_path: released
-                #synopsis: ~
-                existTranslations: ~
-                locales:
-                    type: "nested"
-                    properties:
-                        locale: ~
-                        title:
-                            type: "text"
-                            fielddata: true
-                        #synopsis: ~
-                rating:
-                    type: "nested"
-                    properties:
-                        percentage:
-                            type: "short"
-                        watching:
-                            type: "short"
-                        watchers:
-                            type: "integer"
-                        popularity:
-                            type: "float"
-                        weightRating:
-                            type: "float"
-            persistence:
-                driver: orm
-                model: App\Entity\Movie
-                provider: ~
-                finder: ~
-                elastica_to_model_transformer:
-                    ignore_missing: true
-                listener: ~
-        shows:
-            indexable_callback: ['App\Service\Search\Elastic', 'isIndexShow']
-            properties:
-                imdb: ~
-                title:
-                    type: "text"
-                    fielddata: true
-                year:
-                    type: "integer"
-                created:
-                    type: "date"
-                    property_path: createdForElastic
-                released:
-                    type: "date"
-                    property_path: lastUpdated
-                genres:
-                    type: "keyword"
-                #synopsis: ~
-                existTranslations: ~
-                locales:
-                    type: "nested"
-                    properties:
-                        locale: ~
-                        title:
-                            type: "text"
-                            fielddata: true
-                        #synopsis: ~
-                rating:
-                    type: "nested"
-                    properties:
-                        percentage:
-                            type: "short"
-                        watching:
-                            type: "short"
-                        watchers:
-                            type: "integer"
-                        popularity:
-                            type: "float"
-                        weightRating:
-                            type: "float"
-            persistence:
-                driver: orm
-                model: App\Entity\Show
-                provider: ~
-                finder: ~
-                elastica_to_model_transformer:
-                    ignore_missing: true
-                listener: ~
+  clients:
+    default: { url: '%env(ELASTICSEARCH_URL)%' }
+  indexes:
+    movies:
+      indexable_callback: [ 'App\Service\Search\Elastic', 'isIndexMovie' ]
+      properties:
+        imdb: ~
+        title:
+          type: "text"
+          fielddata: true
+        genres:
+          type: "keyword"
+        year:
+          type: "integer"
+        created:
+          type: "date"
+          property_path: createdForElastic
+        released:
+          type: "date"
+          property_path: released
+        #synopsis: ~
+        existTranslations: ~
+        locales:
+          type: "nested"
+          properties:
+            locale: ~
+            title:
+              type: "text"
+              fielddata: true
+            #synopsis: ~
+        rating:
+          type: "nested"
+          properties:
+            percentage:
+              type: "short"
+            watching:
+              type: "short"
+            watchers:
+              type: "integer"
+            popularity:
+              type: "float"
+            weightRating:
+              type: "float"
+      persistence:
+        driver: orm
+        model: App\Entity\Movie
+        provider: ~
+        finder: ~
+        elastica_to_model_transformer:
+          ignore_missing: true
+        listener: ~
+    shows:
+      indexable_callback: [ 'App\Service\Search\Elastic', 'isIndexShow' ]
+      properties:
+        imdb: ~
+        title:
+          type: "text"
+          fielddata: true
+        year:
+          type: "integer"
+        created:
+          type: "date"
+          property_path: createdForElastic
+        released:
+          type: "date"
+          property_path: lastUpdated
+        genres:
+          type: "keyword"
+        #synopsis: ~
+        existTranslations: ~
+        locales:
+          type: "nested"
+          properties:
+            locale: ~
+            title:
+              type: "text"
+              fielddata: true
+            #synopsis: ~
+        rating:
+          type: "nested"
+          properties:
+            percentage:
+              type: "short"
+            watching:
+              type: "short"
+            watchers:
+              type: "integer"
+            popularity:
+              type: "float"
+            weightRating:
+              type: "float"
+      persistence:
+        driver: orm
+        model: App\Entity\Show
+        provider: ~
+        finder: ~
+        elastica_to_model_transformer:
+          ignore_missing: true
+        listener: ~

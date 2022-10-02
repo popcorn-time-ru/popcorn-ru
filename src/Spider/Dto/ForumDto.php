@@ -19,10 +19,10 @@ class ForumDto
     /**
      * ForumDto constructor.
      *
-     * @param string      $id
-     * @param int         $page
+     * @param string $id
+     * @param int $page
      * @param string|null $last
-     * @param int         $delay
+     * @param int $delay
      */
     public function __construct(string $id, int $page = 1, ?string $last = null, int $delay = 0)
     {

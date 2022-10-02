@@ -23,46 +23,83 @@ class EpisodeLocale
      * @ORM\Column(type="uuid")
      */
     protected $id;
-    public function getId(): UuidInterface { return $this->id; }
+    /**
+     * @var Episode
+     * @ORM\ManyToOne(targetEntity="App\Entity\Episode", inversedBy="locales")
+     */
+    protected $episode;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $locale;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    protected $title = '';
+    /**
+     * @var string
+     * @ORM\Column(type="text")
+     */
+    protected $overview = '';
 
     public function __construct()
     {
         $this->id = Uuid::uuid4();
     }
 
-    /**
-     * @var Episode
-     * @ORM\ManyToOne(targetEntity="App\Entity\Episode", inversedBy="locales")
-     */
-    protected $episode;
-    public function getEpisode(): Episode { return $this->episode; }
-    public function setEpisode(Episode $episode): self { $this->episode = $episode; return $this; }
+    public function getId(): UuidInterface
+    {
+        return $this->id;
+    }
 
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $locale;
-    public function getLocale() { return $this->locale; }
-    public function setLocale($locale) { $this->locale = $locale; return $this;}
+    public function getEpisode(): Episode
+    {
+        return $this->episode;
+    }
 
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    protected $title = '';
-    public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $title; return $this;}
+    public function setEpisode(Episode $episode): self
+    {
+        $this->episode = $episode;
+        return $this;
+    }
 
-    /**
-     * @var string
-     * @ORM\Column(type="text")
-     */
-    protected $overview = '';
-    public function getOverview() { return $this->overview; }
-    public function setOverview($overview) { $this->overview = $overview; return $this;}
+    public function getLocale()
+    {
+        return $this->locale;
+    }
 
-    public function isEmpty() {
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getOverview()
+    {
+        return $this->overview;
+    }
+
+    public function setOverview($overview)
+    {
+        $this->overview = $overview;
+        return $this;
+    }
+
+    public function isEmpty()
+    {
         return $this->title === ''
             && $this->overview === '';
     }

@@ -25,7 +25,7 @@ class PageParamConverter implements ParamConverterInterface
         $pageRequest->keywords = trim($request->query->get('keywords', ''));
         $pageRequest->keywords = str_replace('%', '', $pageRequest->keywords);
         $pageRequest->sort = $request->query->get('sort', '');
-        $order = (int) $request->query->get('order', -1);
+        $order = (int)$request->query->get('order', -1);
         $pageRequest->order = $order > 0 ? 'ASC' : 'DESC';
 
         $request->attributes->set($configuration->getName(), $pageRequest);

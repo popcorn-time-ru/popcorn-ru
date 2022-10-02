@@ -20,11 +20,6 @@ class TorrentGalaxy extends AbstractSpider
     /** @var Client */
     private Client $client;
 
-    public function useTor(): bool
-    {
-        return true;
-    }
-
     public function __construct(string $torProxy)
     {
         $this->client = new Client([
@@ -36,6 +31,11 @@ class TorrentGalaxy extends AbstractSpider
             ],
             'cookies' => new FileCookieJar(sys_get_temp_dir() . '/torrentgalaxy.cookie.json', true)
         ]);
+    }
+
+    public function useTor(): bool
+    {
+        return true;
     }
 
     public function getPriority(BaseTorrent $torrent): int
@@ -68,7 +68,9 @@ class TorrentGalaxy extends AbstractSpider
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
-        $panels = $crawler->filter('#panelmain')->each(static function (Crawler $c) { return $c;});
+        $panels = $crawler->filter('#panelmain')->each(static function (Crawler $c) {
+            return $c;
+        });
         $post = null;
         foreach ($panels as $panel) {
             if (strpos($panel->html(), 'Torrent details')) {
@@ -113,7 +115,9 @@ class TorrentGalaxy extends AbstractSpider
         $files = $this->getFiles($post);
 
         $lang = current(array_filter(
-            $post->filter('div.tprow')->each(static function (Crawler $c) { return $c;}),
+            $post->filter('div.tprow')->each(static function (Crawler $c) {
+                return $c;
+            }),
             static function (Crawler $c) {
                 return str_contains($c->html(), 'Language');
             }
@@ -139,101 +143,13 @@ class TorrentGalaxy extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage($language)
-        ;
+            ->setLanguage($language);
 
         $this->hackForReleaserLang($torrent, $post);
 
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);
-    }
-
-    public function getPage(ForumDto $forum): \Generator
-    {
-        $res = $this->client->get('/torrents.php', [
-            'query' => [
-                'cat' => $forum->id,
-                'page' => $forum->page-1,
-            ]
-        ]);
-        $html = $res->getBody()->getContents();
-        $crawler = new Crawler($html);
-
-        /** @var Crawler $table */
-        $table = $crawler->filter('div.tgxtable');
-        $lines = array_filter(
-            $table->filter('div.tgxtablerow')->each(
-                static function (Crawler $c) {
-                    return $c;
-                }
-            ),
-            function (Crawler $c) use ($forum) {
-                return str_contains($c->html(), 'href="/torrent');
-            }
-        );
-
-        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
-        $exist = false;
-
-        foreach ($lines as $n => $line) {
-            /** @var Crawler $line */
-            if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
-                $time = false;
-                $cells = $line->filter('div.tgxtablecell');
-                foreach ($cells as $cell) {
-                    if (preg_match('#^\d{2}/\d{2}/\d{2} \d{2}:\d{2}$#', $cell->nodeValue)) {
-                        $time = \DateTime::createFromFormat('d/m/y H:i', $cell->nodeValue);
-                    }
-                }
-                if ($time && $time < $after) {
-                    continue;
-                }
-
-                $seed = $line->filter('span[title] font')->first()->text();
-                $seed = preg_replace('#[^0-9]#', '', $seed);
-                $leech = $line->filter('span[title] font')->last()->text();
-                $leech = preg_replace('#[^0-9]#', '', $leech);
-
-                yield new TopicDto(
-                    $m[1],
-                    (int) $seed,
-                    (int) $leech,
-                    $n * 10 + random_int(10, 20)
-                );
-                $exist = true;
-                continue;
-            }
-        }
-
-        if (!$exist) {
-            return;
-        }
-
-        $pages = $crawler->filter('#pager');
-        if ($pages->count() === 0) {
-            return;
-        }
-        yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
-    }
-
-    protected function getFiles(Crawler $c): array
-    {
-        $crawlerFiles = $c->filter('#k1');
-        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
-            $col = $c->filter('td.table_col1');
-            if (!$col->count()) {
-                return false;
-            }
-            $name = trim($c->filter('td.table_col1')->html());
-            $size = $this->approximateSize($c->filter('td.table_col2')->text());
-            if (!$size) {
-                return false;
-            }
-
-            return new File($name, $size);
-        });
-        return array_filter($files);
     }
 
     private function getImdbByTitle(string $titleStr): ?string
@@ -274,6 +190,93 @@ class TorrentGalaxy extends AbstractSpider
         }
 
         return $this->torrentService->searchMovieByTitleAndYear($name, $year);
+    }
+
+    protected function getFiles(Crawler $c): array
+    {
+        $crawlerFiles = $c->filter('#k1');
+        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
+            $col = $c->filter('td.table_col1');
+            if (!$col->count()) {
+                return false;
+            }
+            $name = trim($c->filter('td.table_col1')->html());
+            $size = $this->approximateSize($c->filter('td.table_col2')->text());
+            if (!$size) {
+                return false;
+            }
+
+            return new File($name, $size);
+        });
+        return array_filter($files);
+    }
+
+    public function getPage(ForumDto $forum): \Generator
+    {
+        $res = $this->client->get('/torrents.php', [
+            'query' => [
+                'cat' => $forum->id,
+                'page' => $forum->page - 1,
+            ]
+        ]);
+        $html = $res->getBody()->getContents();
+        $crawler = new Crawler($html);
+
+        /** @var Crawler $table */
+        $table = $crawler->filter('div.tgxtable');
+        $lines = array_filter(
+            $table->filter('div.tgxtablerow')->each(
+                static function (Crawler $c) {
+                    return $c;
+                }
+            ),
+            function (Crawler $c) use ($forum) {
+                return str_contains($c->html(), 'href="/torrent');
+            }
+        );
+
+        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
+        $exist = false;
+
+        foreach ($lines as $n => $line) {
+            /** @var Crawler $line */
+            if (preg_match('#href="(/torrent/[^"]+)"#', $line->html(), $m)) {
+                $time = false;
+                $cells = $line->filter('div.tgxtablecell');
+                foreach ($cells as $cell) {
+                    if (preg_match('#^\d{2}/\d{2}/\d{2} \d{2}:\d{2}$#', $cell->nodeValue)) {
+                        $time = \DateTime::createFromFormat('d/m/y H:i', $cell->nodeValue);
+                    }
+                }
+                if ($time && $time < $after) {
+                    continue;
+                }
+
+                $seed = $line->filter('span[title] font')->first()->text();
+                $seed = preg_replace('#[^0-9]#', '', $seed);
+                $leech = $line->filter('span[title] font')->last()->text();
+                $leech = preg_replace('#[^0-9]#', '', $leech);
+
+                yield new TopicDto(
+                    $m[1],
+                    (int)$seed,
+                    (int)$leech,
+                    $n * 10 + random_int(10, 20)
+                );
+                $exist = true;
+                continue;
+            }
+        }
+
+        if (!$exist) {
+            return;
+        }
+
+        $pages = $crawler->filter('#pager');
+        if ($pages->count() === 0) {
+            return;
+        }
+        yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
     }
 }
 

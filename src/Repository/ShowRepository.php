@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Show;
-use App\Repository\Locale\BaseLocaleRepository;
 use App\Service\Search\SearchInterface;
 use Doctrine\Persistence\ManagerRegistry;
 

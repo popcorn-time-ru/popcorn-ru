@@ -39,7 +39,7 @@ class BaseLocaleRepository extends ServiceEntityRepository
             ->select('m')
             ->from($info[0], 'm');
         $qb->andWhere('m.locale = :locale')->setParameter('locale', $locale);
-        $qb->andWhere('m.'.$info[1].' = :id')->setParameter('id', $media->getId());
+        $qb->andWhere('m.' . $info[1] . ' = :id')->setParameter('id', $media->getId());
         return $qb->getQuery()->enableResultCache()->getOneOrNullResult();
     }
 
@@ -93,11 +93,11 @@ class BaseLocaleRepository extends ServiceEntityRepository
             ->select('l')
             ->from($class, 'l')
             ->where('l.title LIKE :title')
-            ->setParameter('title', '%'.str_replace('%', '%%', $title).'%')
+            ->setParameter('title', '%' . str_replace('%', '%%', $title) . '%')
             ->setMaxResults(100) // just first 100 - for possible mem limit
         ;
 
-        return array_map(static function(BaseLocale $l) {
+        return array_map(static function (BaseLocale $l) {
             return $l->getMedia()->getId();
         }, $qb->getQuery()->getResult());
     }

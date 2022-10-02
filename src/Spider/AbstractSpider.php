@@ -4,10 +4,10 @@ namespace App\Spider;
 
 use App\Entity\Episode;
 use App\Entity\Movie;
+use App\Entity\Show;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Torrent\MovieTorrent;
-use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
 use App\Service\EpisodeService;
 use App\Service\ParseHelperService;
@@ -44,11 +44,6 @@ abstract class AbstractSpider implements SpiderInterface
         }
     }
 
-    public function getName(): string
-    {
-        return (new ReflectionClass($this))->getShortName();
-    }
-
     public function getPriority(BaseTorrent $torrent): int
     {
         return 0;
@@ -59,10 +54,29 @@ abstract class AbstractSpider implements SpiderInterface
         return '';
     }
 
+    public function approximateSize(string $size): int
+    {
+        preg_match('#([\d.]+)\W*([KMG]?B)#i', $size, $m);
+        if (!$m) {
+            return 0;
+        }
+        $size = (float)$m[1];
+        switch (strtoupper($m[2])) {
+            case 'GB':
+                $size *= 1024;
+            case 'MB':
+                $size *= 1024;
+            case 'KB':
+                $size *= 1024;
+        }
+
+        return (int)$size;
+    }
+
     protected function ruStrToTime(string $format, string $time): DateTime
     {
         $ru = ['Янв', 'Фев', 'Мар', 'Апр', 'Июн', 'Май', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
-        $en = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',' Nov', 'Dec'];
+        $en = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', ' Nov', 'Dec'];
         $time = str_replace($ru, $en, $time);
         return DateTime::createFromFormat($format, $time);
     }
@@ -84,6 +98,11 @@ abstract class AbstractSpider implements SpiderInterface
         }
 
         return $this->torrentService->findExistOrCreateTorrent($this->getName(), $topicId, $newTorrent);
+    }
+
+    public function getName(): string
+    {
+        return (new ReflectionClass($this))->getShortName();
     }
 
     protected function getEpisodeTorrentByImdb(string $topicId, string $imdb, int $s, int $e)
@@ -327,24 +346,5 @@ abstract class AbstractSpider implements SpiderInterface
         $this->logger->warning('Unknown Language', $this->context + ['lang' => $lang]);
 
         return '';
-    }
-
-    public function approximateSize(string $size): int
-    {
-        preg_match('#([\d.]+)\W*([KMG]?B)#i', $size, $m);
-        if (!$m) {
-            return 0;
-        }
-        $size = (float) $m[1];
-        switch (strtoupper($m[2])) {
-            case 'GB':
-                $size *= 1024;
-            case 'MB':
-                $size *= 1024;
-            case 'KB':
-                $size *= 1024;
-        }
-
-        return (int)$size;
     }
 }

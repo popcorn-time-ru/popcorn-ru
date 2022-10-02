@@ -3,8 +3,8 @@
 namespace App\Spider;
 
 use App\Entity\Episode;
-use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Show;
+use App\Entity\Torrent\EpisodeTorrent;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use Exception;
@@ -51,10 +51,10 @@ class Eztv extends AbstractSpider
         $json = $res->getBody()->getContents();
         $data = json_decode($json, true);
         if (empty($data['torrents'])) {
-            return ;
+            return;
         }
 
-        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
+        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
 
         if (!$after || $this->hasNewTorrents($data, $after)) {
             yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
@@ -75,29 +75,6 @@ class Eztv extends AbstractSpider
         return false;
     }
 
-    public function getTopic(TopicDto $topic)
-    {
-        [$showId, ] = explode(':', $topic->id);
-        $page = 1;
-        while (true) {
-            $res = $this->client->get('/api/get-torrents', [
-                'query' => [
-                    'imdb_id' => $showId,
-                    'page' => $page++,
-                ]
-            ]);
-            $json = $res->getBody()->getContents();
-            $data = json_decode($json, true);
-            if (empty($data['torrents'])) {
-                return ;
-            }
-
-            foreach ($data['torrents'] as $torrentData) {
-                $this->buildFromTorrentData($torrentData);
-            }
-        }
-    }
-
     /**
      * @param array $torrentData
      */
@@ -112,7 +89,7 @@ class Eztv extends AbstractSpider
             $quality = $m[1];
         }
 
-        $media = $this->torrentService->getMediaByImdb('tt'.$torrentData['imdb_id']);
+        $media = $this->torrentService->getMediaByImdb('tt' . $torrentData['imdb_id']);
         if (!($media instanceof Show)) {
             return;
         }
@@ -138,5 +115,28 @@ class Eztv extends AbstractSpider
         $torrent->setSize($torrentData['size_bytes']);
 
         $this->torrentService->updateTorrent($torrent);
+    }
+
+    public function getTopic(TopicDto $topic)
+    {
+        [$showId,] = explode(':', $topic->id);
+        $page = 1;
+        while (true) {
+            $res = $this->client->get('/api/get-torrents', [
+                'query' => [
+                    'imdb_id' => $showId,
+                    'page' => $page++,
+                ]
+            ]);
+            $json = $res->getBody()->getContents();
+            $data = json_decode($json, true);
+            if (empty($data['torrents'])) {
+                return;
+            }
+
+            foreach ($data['torrents'] as $torrentData) {
+                $this->buildFromTorrentData($torrentData);
+            }
+        }
     }
 }

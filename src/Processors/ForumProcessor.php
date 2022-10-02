@@ -8,11 +8,9 @@ use App\Spider\Dto\TopicDto;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
-use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
 class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterface
@@ -33,6 +31,14 @@ class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         $this->selector = $selector;
         $this->producer = $producer;
         $this->logger = $logger;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSubscribedTopics(): string
+    {
+        return self::TOPIC;
     }
 
     /**
@@ -85,13 +91,5 @@ class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterfa
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
-    }
-
-    /**
-     *@return string
-     */
-    public static function getSubscribedTopics(): string
-    {
-        return self::TOPIC;
     }
 }
