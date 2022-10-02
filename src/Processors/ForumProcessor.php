@@ -20,13 +20,13 @@ class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterfa
     public const TOPIC = 'getPage';
 
     /** @var SpiderSelector */
-    protected $selector;
+    protected SpiderSelector $selector;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /** @var ProducerInterface */
-    private $producer;
+    private ProducerInterface $producer;
 
     public function __construct(SpiderSelector $selector, ProducerInterface $producer, LoggerInterface $logger)
     {
@@ -35,7 +35,12 @@ class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         $this->logger = $logger;
     }
 
-    public function process(Message $message, Context $context)
+    /**
+     * @param Message $message
+     * @param Context $context
+     * @return object|string
+     */
+    public function process(Message $message, Context $context): object|string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -82,7 +87,10 @@ class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

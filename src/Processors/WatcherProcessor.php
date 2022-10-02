@@ -25,7 +25,8 @@ class WatcherProcessor implements TopicSubscriberInterface, Processor
      * WatcherProcessor constructor.
      *
      * @param MovieRepository $movieRepository
-     * @param ShowRepository  $showRepository
+     * @param ShowRepository $showRepository
+     * @param LoggerInterface $logger
      */
     public function __construct(MovieRepository $movieRepository, ShowRepository $showRepository, LoggerInterface $logger)
     {
@@ -34,7 +35,12 @@ class WatcherProcessor implements TopicSubscriberInterface, Processor
         $this->logger = $logger;
     }
 
-    public function process(Message $message, Context $context)
+    /**
+     * @param Message $message
+     * @param Context $context
+     * @return string
+     */
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -58,7 +64,10 @@ class WatcherProcessor implements TopicSubscriberInterface, Processor
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

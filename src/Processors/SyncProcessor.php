@@ -60,7 +60,12 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
         $this->em = $em;
     }
 
-    public function process(Message $message, Context $context)
+    /**
+     * @param Message $message
+     * @param Context $context
+     * @return string
+     */
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -122,7 +127,10 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }
