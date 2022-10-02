@@ -6,29 +6,31 @@ use App\Entity\Episode;
 use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
+use App\Traktor\Client;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class EpisodeService
 {
     /** @var TorrentRepository */
-    protected $torrentRepo;
+    protected TorrentRepository $torrentRepo;
 
     /** @var MediaService */
-    protected $mediaInfo;
+    protected MediaService $mediaInfo;
 
     /** @var EntityManagerInterface */
-    protected $em;
+    protected EntityManagerInterface $em;
 
     /** @var LocaleService */
-    protected $localeService;
+    protected LocaleService $localeService;
 
-    /** @var \App\Traktor\Client */
-    private $trakt;
+    /** @var Client */
+    private Client $trakt;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * EpisodeService constructor.
@@ -38,7 +40,7 @@ class EpisodeService
      * @param EntityManagerInterface $em
      * @param LocaleService          $localeService
      * @param LoggerInterface        $logger
-     * @param \App\Traktor\Client    $trakt
+     * @param Client    $trakt
      */
     public function __construct(
         TorrentRepository $torrentRepo,
@@ -46,7 +48,7 @@ class EpisodeService
         EntityManagerInterface $em,
         LocaleService $localeService,
         LoggerInterface $logger,
-        \App\Traktor\Client $trakt
+        Client $trakt
     )
     {
         $this->torrentRepo = $torrentRepo;
@@ -80,7 +82,11 @@ class EpisodeService
         }
     }
 
-    protected $showCache = [];
+    protected array $showCache = [];
+
+    /**
+     * @throws Exception
+     */
     public function getEpisode(Show $show, int $s, int $e): ?Episode
     {
         $item = null;
@@ -113,7 +119,7 @@ class EpisodeService
                     try {
                         $trakt = $this->trakt->get("shows/{$show->getImdb()}/seasons/{$s}/episodes/{$e}");
                         $item->setTvdb($trakt->ids->tvdb ?? -$trakt->ids->trakt ?? 0);
-                    } catch (\Exception $exception) {
+                    } catch (Exception $exception) {
                         $this->logger->error($exception->getMessage());
                     }
                 }
@@ -147,7 +153,7 @@ class EpisodeService
         return $item;
     }
 
-    protected function getSEFromName($filePathAndName, Show $show)
+    protected function getSEFromName($filePathAndName, Show $show): array
     {
         $components = pathinfo($filePathAndName);
         $dir = $components['dirname'];

@@ -8,7 +8,6 @@ use App\Spider\Dto\TopicDto;
 
 interface SpiderInterface
 {
-    public function useTor(): bool;
 
     public function getForumKeys(): array;
 

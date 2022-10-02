@@ -28,7 +28,7 @@ abstract class BaseMedia
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->createdAt = 
+        $this->createdAt =
         $this->syncAt =
         $this->lastActiveCheck =
             new DateTime();
