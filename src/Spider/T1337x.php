@@ -86,7 +86,7 @@ class T1337x extends AbstractSpider
         $lang = current(array_filter(
             $crawler->filter('ul.list li')->each(static function (Crawler $c) { return $c;}),
             static function (Crawler $c) {
-                return strpos($c->html(), 'Language') !== false;
+                return str_contains($c->html(), 'Language');
             }
         ));
         $lang = $lang->filter('span')->first()->text();
@@ -135,7 +135,7 @@ class T1337x extends AbstractSpider
                 }
             ),
             function (Crawler $c) use ($forum) {
-                return strpos($c->html(), 'href="/torrent') !== false;
+                return str_contains($c->html(), 'href="/torrent');
             }
         );
 
@@ -177,7 +177,7 @@ class T1337x extends AbstractSpider
         }
 
         $pages = $crawler->filter('.pagination');
-        if (strpos($pages->html(), 'Last') !== false) {
+        if (str_contains($pages->html(), 'Last')) {
             yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }
@@ -185,7 +185,7 @@ class T1337x extends AbstractSpider
     protected function getFiles(Crawler $c): array
     {
         $crawlerFiles = $c->filter('#files');
-        $files = $crawlerFiles->children('ul')->each(\Closure::fromCallable([$this, 'subTree']));
+        $files = $crawlerFiles->children('ul')->each($this->subTree(...));
         $flat = array();
         array_walk_recursive($files, function($a) use (&$flat) { $flat[] = $a; });
         return array_filter($flat);

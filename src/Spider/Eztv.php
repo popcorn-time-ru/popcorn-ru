@@ -7,6 +7,7 @@ use App\Entity\Torrent\EpisodeTorrent;
 use App\Entity\Show;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
@@ -37,7 +38,7 @@ class Eztv extends AbstractSpider
 
     /**
      * @throws GuzzleException
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPage(ForumDto $forum): \Generator
     {

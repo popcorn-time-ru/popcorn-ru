@@ -106,7 +106,7 @@ class Rutracker extends AbstractSpider
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
-        if (strpos($crawler->filter('.topmenu')->html(), self::LOGIN) === false) {
+        if (!str_contains($crawler->filter('.topmenu')->html(), self::LOGIN)) {
             $this->login();
 
             $res = $this->client->get('viewforum.php', [
@@ -123,11 +123,11 @@ class Rutracker extends AbstractSpider
         $lines = array_filter(
             $table->filter('tr')->each(static function (Crawler $c) { return $c;}),
             function (Crawler $c) use ($forum){
-                if (strpos($c->html(), 'href="viewforum.php') !== false) {
+                if (str_contains($c->html(), 'href="viewforum.php')) {
                     return true;
                 }
 
-                return strpos($c->html(), 'href="dl.php') !== false;
+                return str_contains($c->html(), 'href="dl.php');
             }
         );
 
@@ -169,7 +169,7 @@ class Rutracker extends AbstractSpider
         }
 
         $pages = $crawler->filter('#pagination');
-        if ($pages->count() && strpos($pages->html(), 'След.') !== false) {
+        if ($pages->count() && str_contains($pages->html(), 'След.')) {
             yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }
@@ -221,7 +221,7 @@ class Rutracker extends AbstractSpider
         $url = $m[1];
 
         //Так, таки надо тянуть файлы, проверяем залогиены ли мы, и если нет, то логинимся
-        if (strpos($crawler->filter('.topmenu')->html(), self::LOGIN) === false) {
+        if (!str_contains($crawler->filter('.topmenu')->html(), self::LOGIN)) {
             $this->login();
         }
 
@@ -275,7 +275,7 @@ class Rutracker extends AbstractSpider
         $crawlerFiles = new Crawler();
         $crawlerFiles->addHtmlContent($html, 'UTF-8');
 
-        $files = $crawlerFiles->filter('ul.ftree > li')->each(\Closure::fromCallable([$this, 'subTree']));
+        $files = $crawlerFiles->filter('ul.ftree > li')->each($this->subTree(...));
         $flat = array();
         array_walk_recursive($files, function($a) use (&$flat) { $flat[] = $a; });
         return array_filter($flat);
@@ -287,7 +287,7 @@ class Rutracker extends AbstractSpider
         if ($c->attr('class') === 'dir') {
             $dir = ltrim($c->children('div')->filter('b')->html(), './');
 
-            $items = $c->children('ul > li')->each(\Closure::fromCallable([$this, 'subTree']));
+            $items = $c->children('ul > li')->each($this->subTree(...));
             $subfiles = array();
             array_walk_recursive($items, function($a) use (&$subfiles) { $subfiles[] = $a; });
             foreach($subfiles as $item) {

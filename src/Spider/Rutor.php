@@ -59,7 +59,7 @@ class Rutor extends AbstractSpider
                 }
             ),
             function (Crawler $c) use ($forum) {
-                return strpos($c->html(), 'href="/torrent') !== false;
+                return str_contains($c->html(), 'href="/torrent');
             }
         );
 
@@ -95,7 +95,7 @@ class Rutor extends AbstractSpider
             return;
         }
 
-        if (strpos($crawler->html(), sprintf('/browse/%d/%d/0/0', $forum->page, $forum->id)) !== false) {
+        if (str_contains($crawler->html(), sprintf('/browse/%d/%d/0/0', $forum->page, $forum->id))) {
             yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }

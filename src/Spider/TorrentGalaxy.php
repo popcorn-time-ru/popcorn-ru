@@ -115,7 +115,7 @@ class TorrentGalaxy extends AbstractSpider
         $lang = current(array_filter(
             $post->filter('div.tprow')->each(static function (Crawler $c) { return $c;}),
             static function (Crawler $c) {
-                return strpos($c->html(), 'Language') !== false;
+                return str_contains($c->html(), 'Language');
             }
         ));
         $lang = $lang ? $lang->filter('img')->first()->attr('alt') : 'English';
@@ -169,7 +169,7 @@ class TorrentGalaxy extends AbstractSpider
                 }
             ),
             function (Crawler $c) use ($forum) {
-                return strpos($c->html(), 'href="/torrent') !== false;
+                return str_contains($c->html(), 'href="/torrent');
             }
         );
 

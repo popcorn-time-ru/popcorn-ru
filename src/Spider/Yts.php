@@ -120,7 +120,7 @@ class Yts extends AbstractSpider
      * @param array $movieData
      * @param array $torrentData
      */
-    private function buildTorrentFromData(Movie $media, $movieData, $torrentData): void
+    private function buildTorrentFromData(Movie $media, array $movieData, array $torrentData): void
     {
         $url = 'magnet:?xt=urn:btih:' . $torrentData['hash'] . '&' . implode('&', array_map(function ($item) {
             return 'tr=' . $item;

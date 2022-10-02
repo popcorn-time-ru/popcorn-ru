@@ -8,6 +8,7 @@ use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\FileCookieJar;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -74,12 +75,12 @@ class NnmClub extends AbstractSpider
             static function (Crawler $c) use ($forum){
                 // показывает дочерние форумы на всех страницах, парсим только на первой
                 if ($forum->page === 1) {
-                    if (strpos($c->html(), 'href="viewforum.php') !== false) {
+                    if (str_contains($c->html(), 'href="viewforum.php')) {
                         return true;
                     }
                 }
 
-                return strpos($c->html(), 'href="download.php') !== false;
+                return str_contains($c->html(), 'href="download.php');
             }
         );
 
@@ -115,7 +116,7 @@ class NnmClub extends AbstractSpider
         }
 
         $pages = $crawler->filter('form span.gensmall');
-        if (strpos($pages->html(), 'След.') !== false) {
+        if (str_contains($pages->html(), 'След.')) {
             yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
     }
@@ -234,6 +235,7 @@ class NnmClub extends AbstractSpider
 
     /**
      * @param TopicDto $topic
+     * @throws GuzzleException
      */
     private function getPeers(TopicDto $topic): void
     {
