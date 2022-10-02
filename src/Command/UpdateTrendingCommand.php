@@ -3,6 +3,9 @@
 namespace App\Command;
 
 use App\Entity\BaseMedia;
+use App\Entity\Movie;
+use App\Entity\Show;
+use App\Processors\TorrentActiveProcessor;
 use App\Processors\WatcherProcessor;
 use App\Repository\MediaRepository;
 use App\Repository\MovieRepository;
@@ -32,7 +35,8 @@ class UpdateTrendingCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Update Trending from Trakt.tv');
+            ->setDescription('Update Trending from Trakt.tv')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -50,6 +54,16 @@ class UpdateTrendingCommand extends Command
             $currentMap[$info->movie->ids->imdb] = $info->watchers;
         }
         $this->update('movie', $this->movieRepository, $currentMap);
+    }
+
+    protected function updateShows()
+    {
+        $current = $this->trakt->get('shows/trending', ['limit' => 1000]);
+        $currentMap = [];
+        foreach ($current as $info) {
+            $currentMap[$info->show->ids->imdb] = $info->watchers;
+        }
+        $this->update('show', $this->showRepository, $currentMap);
     }
 
     protected function update($type, MediaRepository $repository, $currentMap)
@@ -79,15 +93,5 @@ class UpdateTrendingCommand extends Command
         ]));
         $topicMessage->setDelay(random_int(120, 600));
         $this->producer->sendEvent(WatcherProcessor::TOPIC, $topicMessage);
-    }
-
-    protected function updateShows()
-    {
-        $current = $this->trakt->get('shows/trending', ['limit' => 1000]);
-        $currentMap = [];
-        foreach ($current as $info) {
-            $currentMap[$info->show->ids->imdb] = $info->watchers;
-        }
-        $this->update('show', $this->showRepository, $currentMap);
     }
 }

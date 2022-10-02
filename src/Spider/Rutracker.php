@@ -25,10 +25,15 @@ class Rutracker extends AbstractSpider
     /** @var Client */
     private Client $client;
 
+    public function useTor(): bool
+    {
+        return true;
+    }
+
     public function __construct(string $torProxy)
     {
         $this->client = new Client([
-            'base_uri' => $this->useTor() ? self::BASE_URL_TOR : self::BASE_URL,
+            'base_uri' =>  $this->useTor() ? self::BASE_URL_TOR : self::BASE_URL,
             RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
             RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
             RequestOptions::HEADERS => [
@@ -41,14 +46,9 @@ class Rutracker extends AbstractSpider
         ]);
     }
 
-    public function useTor(): bool
-    {
-        return true;
-    }
-
     public function getSource(BaseTorrent $torrent): string
     {
-        return self::BASE_URL . 'viewtopic.php?t=' . $torrent->getProviderExternalId();
+        return self::BASE_URL . 'viewtopic.php?t='.$torrent->getProviderExternalId();
     }
 
     public function getForumKeys(): array
@@ -66,98 +66,6 @@ class Rutracker extends AbstractSpider
             815, // Зарубежные мультсериалы
             1460, // Зарубежные мультсериалы HD
         ];
-    }
-
-    public function getPage(ForumDto $forum): \Generator
-    {
-        $res = $this->client->get('viewforum.php', [
-            'query' => [
-                'f' => $forum->id,
-                'start' => (($forum->page - 1) * self::PAGE_SIZE),
-            ]
-        ]);
-        $html = $res->getBody()->getContents();
-        $crawler = new Crawler($html);
-
-        if (!str_contains($crawler->filter('.topmenu')->html(), self::LOGIN)) {
-            $this->login();
-
-            $res = $this->client->get('viewforum.php', [
-                'query' => [
-                    'f' => $forum->id,
-                    'start' => (($forum->page - 1) * self::PAGE_SIZE),
-                ]
-            ]);
-            $html = $res->getBody()->getContents();
-            $crawler = new Crawler($html);
-        }
-
-        $table = $crawler->filter('#main_content table.forumline');
-        $lines = array_filter(
-            $table->filter('tr')->each(static function (Crawler $c) {
-                return $c;
-            }),
-            function (Crawler $c) use ($forum) {
-                if (str_contains($c->html(), 'href="viewforum.php')) {
-                    return true;
-                }
-
-                return str_contains($c->html(), 'href="dl.php');
-            }
-        );
-
-        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
-        $exist = false;
-
-        foreach ($lines as $n => $line) {
-            /** @var Crawler $line */
-            if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
-                if (!in_array((int)$m[1], $this->blackListForums())) {
-                    yield new ForumDto($m[1], 1, $forum->last, random_int(1800, 3600));
-                }
-                continue;
-            }
-            if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
-                $time = $line->filter('td.vf-col-last-post p')->first()->html();
-                if ($this->ruStrToTime('Y-m-d H:i', $time) < $after) {
-                    continue;
-                }
-
-                $seed = $line->filter('span.seedmed')->first()->text();
-                $seed = preg_replace('#[^0-9]#', '', $seed);
-                $leech = $line->filter('span.leechmed')->first()->text();
-                $leech = preg_replace('#[^0-9]#', '', $leech);
-
-                yield new TopicDto(
-                    $m[1],
-                    (int)$seed,
-                    (int)$leech,
-                    $n * 10 + random_int(10, 30)
-                );
-                $exist = true;
-                continue;
-            }
-        }
-
-        if (!$exist) {
-            return;
-        }
-
-        $pages = $crawler->filter('#pagination');
-        if ($pages->count() && str_contains($pages->html(), 'След.')) {
-            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
-        }
-    }
-
-    protected function login()
-    {
-        $resp = $this->client->post('login.php', [
-            'form_params' => [
-                'login_username' => self::LOGIN,
-                'login_password' => self::PASS,
-                'login' => 'вход',
-            ]
-        ]);
     }
 
     protected function blackListForums(): array
@@ -185,6 +93,85 @@ class Rutracker extends AbstractSpider
             190, //архив
             1147, //обсуждение
         ];
+    }
+
+    public function getPage(ForumDto $forum): \Generator
+    {
+        $res = $this->client->get('viewforum.php', [
+            'query' => [
+                'f' => $forum->id,
+                'start' => (($forum->page-1)*self::PAGE_SIZE),
+            ]
+        ]);
+        $html = $res->getBody()->getContents();
+        $crawler = new Crawler($html);
+
+        if (!str_contains($crawler->filter('.topmenu')->html(), self::LOGIN)) {
+            $this->login();
+
+            $res = $this->client->get('viewforum.php', [
+                'query' => [
+                    'f' => $forum->id,
+                    'start' => (($forum->page-1)*self::PAGE_SIZE),
+                ]
+            ]);
+            $html = $res->getBody()->getContents();
+            $crawler = new Crawler($html);
+        }
+
+        $table = $crawler->filter('#main_content table.forumline');
+        $lines = array_filter(
+            $table->filter('tr')->each(static function (Crawler $c) { return $c;}),
+            function (Crawler $c) use ($forum){
+                if (str_contains($c->html(), 'href="viewforum.php')) {
+                    return true;
+                }
+
+                return str_contains($c->html(), 'href="dl.php');
+            }
+        );
+
+        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
+        $exist = false;
+
+        foreach($lines as $n => $line) {
+            /** @var Crawler $line */
+            if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
+                if (!in_array((int) $m[1], $this->blackListForums())) {
+                    yield new ForumDto($m[1], 1, $forum->last, random_int(1800, 3600));
+                }
+                continue;
+            }
+            if (preg_match('#viewtopic\.php\?t=(\d+)#', $line->html(), $m)) {
+                $time = $line->filter('td.vf-col-last-post p')->first()->html();
+                if ($this->ruStrToTime('Y-m-d H:i', $time) < $after) {
+                    continue;
+                }
+
+                $seed = $line->filter('span.seedmed')->first()->text();
+                $seed = preg_replace('#[^0-9]#', '', $seed);
+                $leech = $line->filter('span.leechmed')->first()->text();
+                $leech = preg_replace('#[^0-9]#', '', $leech);
+
+                yield new TopicDto(
+                    $m[1],
+                    (int) $seed,
+                    (int) $leech,
+                    $n * 10 + random_int(10, 30)
+                );
+                $exist = true;
+                continue;
+            }
+        }
+
+        if (!$exist) {
+            return;
+        }
+
+        $pages = $crawler->filter('#pagination');
+        if ($pages->count() && str_contains($pages->html(), 'След.')) {
+            yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
+        }
     }
 
     public function getTopic(TopicDto $topic)
@@ -245,8 +232,8 @@ class Rutracker extends AbstractSpider
         $leech = $crawler->filter('span.leech b');
         $leech = $leech->count() ? $leech->first()->text() : 0;
 
-        $topic->seed = (int)$seed;
-        $topic->leech = (int)$leech;
+        $topic->seed = (int) $seed;
+        $topic->leech = (int) $leech;
 
         $torrent = $this->getTorrentByImdb($topic->id, $imdb);
         if (!$torrent) {
@@ -258,11 +245,64 @@ class Rutracker extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage('ru');
+            ->setLanguage('ru')
+        ;
 
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);
+    }
+
+    protected function login()
+    {
+        $resp = $this->client->post('login.php', [
+            'form_params' => [
+                'login_username' => self::LOGIN,
+                'login_password' => self::PASS,
+                'login' => 'вход',
+            ]
+        ]);
+    }
+
+    protected function getFiles($fileListId): array
+    {
+        $res = $this->client->post('viewtorrent.php', [
+            'form_params' => [
+                't' => $fileListId,
+            ]
+        ]);
+        $html = $res->getBody()->getContents();
+        $crawlerFiles = new Crawler();
+        $crawlerFiles->addHtmlContent($html, 'UTF-8');
+
+        $files = $crawlerFiles->filter('ul.ftree > li')->each($this->subTree(...));
+        $flat = array();
+        array_walk_recursive($files, function($a) use (&$flat) { $flat[] = $a; });
+        return array_filter($flat);
+    }
+
+    public function subTree(Crawler $c): array
+    {
+        $files = [];
+        if ($c->attr('class') === 'dir') {
+            $dir = ltrim($c->children('div')->filter('b')->html(), './');
+
+            $items = $c->children('ul > li')->each($this->subTree(...));
+            $subfiles = array();
+            array_walk_recursive($items, function($a) use (&$subfiles) { $subfiles[] = $a; });
+            foreach($subfiles as $item) {
+                /** @var File $item */
+                $item->setName($dir . '/' . $item->getName());
+                $files[] = $item;
+            }
+        } else {
+            $files[] = new File(
+                $c->filter('b')->html(),
+                (int) $c->filter('i')->html()
+            );
+        }
+
+        return $files;
     }
 
     private function getImdbByTitle(string $titleStr): ?string
@@ -292,56 +332,12 @@ class Rutracker extends AbstractSpider
         foreach ($names as $name) {
             $imdb = $isSerial
                 ? $this->torrentService->searchShowByTitle($name)
-                : $this->torrentService->searchMovieByTitleAndYear($name, $year);
+                : $this->torrentService->searchMovieByTitleAndYear($name, $year)
+            ;
             if ($imdb) {
                 return $imdb;
             }
         }
         return null;
-    }
-
-    protected function getFiles($fileListId): array
-    {
-        $res = $this->client->post('viewtorrent.php', [
-            'form_params' => [
-                't' => $fileListId,
-            ]
-        ]);
-        $html = $res->getBody()->getContents();
-        $crawlerFiles = new Crawler();
-        $crawlerFiles->addHtmlContent($html, 'UTF-8');
-
-        $files = $crawlerFiles->filter('ul.ftree > li')->each($this->subTree(...));
-        $flat = array();
-        array_walk_recursive($files, function ($a) use (&$flat) {
-            $flat[] = $a;
-        });
-        return array_filter($flat);
-    }
-
-    public function subTree(Crawler $c): array
-    {
-        $files = [];
-        if ($c->attr('class') === 'dir') {
-            $dir = ltrim($c->children('div')->filter('b')->html(), './');
-
-            $items = $c->children('ul > li')->each($this->subTree(...));
-            $subfiles = array();
-            array_walk_recursive($items, function ($a) use (&$subfiles) {
-                $subfiles[] = $a;
-            });
-            foreach ($subfiles as $item) {
-                /** @var File $item */
-                $item->setName($dir . '/' . $item->getName());
-                $files[] = $item;
-            }
-        } else {
-            $files[] = new File(
-                $c->filter('b')->html(),
-                (int)$c->filter('i')->html()
-            );
-        }
-
-        return $files;
     }
 }

@@ -3,11 +3,13 @@
 namespace App\Command;
 
 use App\Processors\TopicProcessor;
+use App\Service\MediaService;
 use Enqueue\Null\NullContext;
 use Interop\Amqp\Impl\AmqpMessage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class TestTopicCommand extends Command
@@ -22,7 +24,8 @@ class TestTopicCommand extends Command
         $this
             ->setDescription('Extract torrent from tracker')
             ->addArgument('spider', InputArgument::REQUIRED, 'Spider')
-            ->addArgument('id', InputArgument::REQUIRED, 'Id');
+            ->addArgument('id', InputArgument::REQUIRED, 'Id')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

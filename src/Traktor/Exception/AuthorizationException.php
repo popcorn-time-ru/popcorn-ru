@@ -2,6 +2,4 @@
 
 namespace App\Traktor\Exception;
 
-class AuthorizationException extends RequestException
-{
-}
+class AuthorizationException extends RequestException {}

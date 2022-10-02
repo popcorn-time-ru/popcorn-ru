@@ -20,9 +20,9 @@ class TopicDto
      * TopicDto constructor.
      *
      * @param string $id
-     * @param int $seed
-     * @param int $leech
-     * @param int $delay
+     * @param int    $seed
+     * @param int    $leech
+     * @param int    $delay
      */
     public function __construct(string $id, int $seed, int $leech, int $delay = 0)
     {

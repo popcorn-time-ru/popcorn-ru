@@ -15,17 +15,29 @@ class Images
      * @ORM\Column(type="string")
      */
     protected string $poster = '';
+    public function getPoster() { return $this->get($this->poster); }
+    public function setPoster($poster) { $this->poster = $poster; return $this;}
+
     /**
      * @ORM\Column(type="string")
      */
     protected string $fanart = '';
+    public function getFanart() { return $this->get($this->fanart); }
+    public function setFanart($fanart) { $this->fanart = $fanart; return $this;}
+
     /**
      * @ORM\Column(type="string")
      */
     protected string $banner = '';
+    public function getBanner() { return $this->get($this->banner); }
+    public function setBanner($banner) { $this->banner = $banner; return $this;}
 
-    public function isEmpty()
-    {
+    protected function get($item) {
+        $cleaned = str_replace(self::IMAGE_BASE, '', $item);
+        return $cleaned ? (self::IMAGE_BASE . $cleaned) : '';
+    }
+
+    public function isEmpty() {
         return $this->banner === ''
             && $this->fanart === ''
             && $this->poster === '';
@@ -38,44 +50,5 @@ class Images
             'fanart' => $this->getFanart(),
             'banner' => $this->getBanner(),
         ];
-    }
-
-    public function getPoster()
-    {
-        return $this->get($this->poster);
-    }
-
-    public function setPoster($poster)
-    {
-        $this->poster = $poster;
-        return $this;
-    }
-
-    protected function get($item)
-    {
-        $cleaned = str_replace(self::IMAGE_BASE, '', $item);
-        return $cleaned ? (self::IMAGE_BASE . $cleaned) : '';
-    }
-
-    public function getFanart()
-    {
-        return $this->get($this->fanart);
-    }
-
-    public function setFanart($fanart)
-    {
-        $this->fanart = $fanart;
-        return $this;
-    }
-
-    public function getBanner()
-    {
-        return $this->get($this->banner);
-    }
-
-    public function setBanner($banner)
-    {
-        $this->banner = $banner;
-        return $this;
     }
 }

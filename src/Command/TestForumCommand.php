@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use App\Processors\ForumProcessor;
+use App\Processors\TopicProcessor;
+use App\Service\MediaService;
 use Enqueue\Null\NullContext;
 use Interop\Amqp\Impl\AmqpMessage;
 use Symfony\Component\Console\Command\Command;
@@ -25,7 +27,8 @@ class TestForumCommand extends Command
             ->addArgument('spider', InputArgument::REQUIRED, 'Spider')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
             ->addArgument('page', InputArgument::OPTIONAL, 'page', 1)
-            ->addOption('last', null, InputOption::VALUE_REQUIRED, 'Only last N hours');
+            ->addOption('last', null, InputOption::VALUE_REQUIRED, 'Only last N hours')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

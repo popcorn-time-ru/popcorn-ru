@@ -39,10 +39,10 @@ class MediaService
     private $client;
 
     public function __construct(
-        Client              $client,
-        MovieRepository     $movieRepo,
-        TvRepository        $showRepo,
-        LocaleService       $localeService,
+        Client $client,
+        MovieRepository $movieRepo,
+        TvRepository $showRepo,
+        LocaleService $localeService,
         \App\Traktor\Client $trakt
     )
     {
@@ -155,10 +155,48 @@ class MediaService
         return null;
     }
 
+    protected function fillShow(TmdbShow $showInfo, Show $show): Show
+    {
+        $show
+            ->setImdb($showInfo->getExternalIds()->getImdbId())
+            ->setTmdb($showInfo->getId())
+            ->setTvdb($showInfo->getExternalIds()->getTvdbId() ?? $showInfo->getExternalIds()->getImdbId())
+            ->setTitle($showInfo->getOriginalName())
+            ->setYear($showInfo->getFirstAirDate() ? $showInfo->getFirstAirDate()->format('Y') : '')
+            ->setSynopsis($showInfo->getOverview())
+            ->setAirDay('') // TODO: инфы нет
+            ->setAirTime('') // TODO: инфы нет
+            ->setStatus($showInfo->getStatus())
+            ->setOrigLang($showInfo->getOriginalLanguage())
+            ->setNumSeasons($showInfo->getNumberOfSeasons())
+            ->setLastUpdated($showInfo->getLastAirDate())
+        ;
+        /** @var Country $country */
+        $country = current($showInfo->getOriginCountry()->toArray());
+        /** @var Network $network */
+        $network = current(current($showInfo->getNetworks()));
+        $show
+            ->setCountry($country ? $country->getIso31661() : '')
+            ->setNetwork($network ? $network->getName() : '')
+        ;
+        $show->setRuntime((string)current($showInfo->getEpisodeRunTime()));
+
+        $slug = preg_replace('#[^a-zA-Z0-9 \-]#', '', $showInfo->getName());
+        $slug = preg_replace('#[\s]#', '-', $slug);
+        $slug = strtolower($slug);
+        $show->setSlug($slug);
+
+        $this->fillRating($show, $showInfo);
+        $this->fillImagesGenres($show, $showInfo);
+        $this->localeService->fillMedia($show, $showInfo);
+
+        return $show;
+    }
+
     protected function fillMovie(TmdbMovie $movieInfo, Movie $movie): Movie
     {
         $certification = '';
-        foreach ($movieInfo->getReleaseDates() as $release) {
+        foreach($movieInfo->getReleaseDates() as $release) {
             if ($release->getIso31661() == self::US) {
                 $certification = $release->getCertification();
             }
@@ -183,13 +221,32 @@ class MediaService
             ->setYear($movieInfo->getReleaseDate() ? $movieInfo->getReleaseDate()->format('Y') : '')
             ->setOrigLang($movieInfo->getOriginalLanguage())
             ->setRuntime((string)$movieInfo->getRuntime())
-            ->setTrailer($trailer);
+            ->setTrailer($trailer)
+        ;
 
         $this->fillRating($movie, $movieInfo);
         $this->fillImagesGenres($movie, $movieInfo);
         $this->localeService->fillMedia($movie, $movieInfo);
 
         return $movie;
+    }
+
+    public function updateMedia(BaseMedia $media)
+    {
+        $search = $this->client->getFindApi()->findBy($media->getImdb(), ['external_source' => 'imdb_id']);
+        if (!empty($search['movie_results']) && $media instanceof Movie) {
+            $id = $search['movie_results'][0]['id'];
+            /** @var TmdbMovie $info */
+            $info = $this->movieRepo->load($id);
+            $media = $this->fillMovie($info, $media);
+        }
+        if (!empty($search['tv_results']) && $media instanceof Show) {
+            $id = $search['tv_results'][0]['id'];
+            /** @var TmdbShow $info */
+            $info = $this->showRepo->load($id);
+            $media = $this->fillShow($info, $media);
+        }
+        $media->syncTranslations();
     }
 
     /**
@@ -218,7 +275,8 @@ class MediaService
             ->setWatchers($trakt->watchers)
             ->setPercentage($info->getVoteAverage() * 10)
             ->setPopularity($info->getPopularity())
-            ->setWeightRating($weightRating);
+            ->setWeightRating($weightRating)
+        ;
     }
 
     /**
@@ -230,67 +288,14 @@ class MediaService
         $media->getImages()
             ->setPoster($info->getPosterPath() ?: '')
             ->setFanart($info->getBackdropPath() ?: '')
-            ->setBanner($info->getPosterPath() ?: '');
+            ->setBanner($info->getPosterPath() ?: '')
+        ;
 
         $genres = [];
-        foreach ($info->getGenres()->getGenres() as $genre) {
+        foreach($info->getGenres()->getGenres() as $genre) {
             $genres[] = strtolower($genre->getName());
         }
         $genres = $genres ?: ['unknown'];
         $media->setGenres($genres);
-    }
-
-    protected function fillShow(TmdbShow $showInfo, Show $show): Show
-    {
-        $show
-            ->setImdb($showInfo->getExternalIds()->getImdbId())
-            ->setTmdb($showInfo->getId())
-            ->setTvdb($showInfo->getExternalIds()->getTvdbId() ?? $showInfo->getExternalIds()->getImdbId())
-            ->setTitle($showInfo->getOriginalName())
-            ->setYear($showInfo->getFirstAirDate() ? $showInfo->getFirstAirDate()->format('Y') : '')
-            ->setSynopsis($showInfo->getOverview())
-            ->setAirDay('') // TODO: инфы нет
-            ->setAirTime('') // TODO: инфы нет
-            ->setStatus($showInfo->getStatus())
-            ->setOrigLang($showInfo->getOriginalLanguage())
-            ->setNumSeasons($showInfo->getNumberOfSeasons())
-            ->setLastUpdated($showInfo->getLastAirDate());
-        /** @var Country $country */
-        $country = current($showInfo->getOriginCountry()->toArray());
-        /** @var Network $network */
-        $network = current(current($showInfo->getNetworks()));
-        $show
-            ->setCountry($country ? $country->getIso31661() : '')
-            ->setNetwork($network ? $network->getName() : '');
-        $show->setRuntime((string)current($showInfo->getEpisodeRunTime()));
-
-        $slug = preg_replace('#[^a-zA-Z0-9 \-]#', '', $showInfo->getName());
-        $slug = preg_replace('#[\s]#', '-', $slug);
-        $slug = strtolower($slug);
-        $show->setSlug($slug);
-
-        $this->fillRating($show, $showInfo);
-        $this->fillImagesGenres($show, $showInfo);
-        $this->localeService->fillMedia($show, $showInfo);
-
-        return $show;
-    }
-
-    public function updateMedia(BaseMedia $media)
-    {
-        $search = $this->client->getFindApi()->findBy($media->getImdb(), ['external_source' => 'imdb_id']);
-        if (!empty($search['movie_results']) && $media instanceof Movie) {
-            $id = $search['movie_results'][0]['id'];
-            /** @var TmdbMovie $info */
-            $info = $this->movieRepo->load($id);
-            $media = $this->fillMovie($info, $media);
-        }
-        if (!empty($search['tv_results']) && $media instanceof Show) {
-            $id = $search['tv_results'][0]['id'];
-            /** @var TmdbShow $info */
-            $info = $this->showRepo->load($id);
-            $media = $this->fillShow($info, $media);
-        }
-        $media->syncTranslations();
     }
 }

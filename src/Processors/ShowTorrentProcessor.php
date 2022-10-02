@@ -2,13 +2,16 @@
 
 namespace App\Processors;
 
+use App\Entity\Torrent\ShowTorrent;
 use App\Service\EpisodeService;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -28,7 +31,7 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
     /**
      * ShowTorrentProducer constructor.
      *
-     * @param EpisodeService $episodes
+     * @param EpisodeService  $episodes
      * @param LoggerInterface $logger
      */
     public function __construct(EpisodeService $episodes, ProducerInterface $producer, LoggerInterface $logger)
@@ -36,14 +39,6 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
         $this->episodes = $episodes;
         $this->logger = $logger;
         $this->producer = $producer;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSubscribedTopics(): string
-    {
-        return self::TOPIC;
     }
 
     /**
@@ -70,5 +65,13 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
+    }
+
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
+    {
+        return self::TOPIC;
     }
 }

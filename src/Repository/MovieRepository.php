@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Movie;
+use App\Repository\Locale\BaseLocaleRepository;
 use App\Service\Search\SearchInterface;
 use Doctrine\Persistence\ManagerRegistry;
 

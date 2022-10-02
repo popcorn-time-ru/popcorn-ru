@@ -59,10 +59,10 @@ class Yts extends AbstractSpider
         $data = json_decode($json, true);
 
         if (empty($data['data']['movies'])) {
-            return;
+            return ;
         }
 
-        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
+        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
         if (!$after || $this->hasNewTorrents($data, $after)) {
             yield new ForumDto($forum->id, $forum->page + 1, $forum->last, random_int(1800, 3600));
         }
@@ -72,7 +72,7 @@ class Yts extends AbstractSpider
             if (!($media instanceof Movie)) {
                 continue;
             }
-            foreach ($movieData['torrents'] as $torrentData) {
+            foreach($movieData['torrents'] as $torrentData) {
                 $this->buildTorrentFromData($media, $movieData, $torrentData);
             }
         }
@@ -81,13 +81,38 @@ class Yts extends AbstractSpider
     private function hasNewTorrents($data, \DateTime $after): bool
     {
         foreach ($data['data']['movies'] as $movieData) {
-            foreach ($movieData['torrents'] as $torrentData) {
+            foreach($movieData['torrents'] as $torrentData) {
                 if ($after->getTimestamp() < $torrentData['date_uploaded_unix']) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public function getTopic(TopicDto $topic)
+    {
+        [$movieId, ] = explode(':', $topic->id);
+        $res = $this->client->get('/api/v2/movie_details.json', [
+            'query' => [
+                'movie_id' => $movieId,
+            ]
+        ]);
+        $json = $res->getBody()->getContents();
+        $data = json_decode($json, true);
+
+        if (empty($data['data']['movie'])) {
+            return ;
+        }
+        $movieData = $data['data']['movie'];
+        $media = $this->torrentService->getMediaByImdb($movieData['imdb_code']);
+        if (!($media instanceof Movie)) {
+            return ;
+        }
+
+        foreach($movieData['torrents'] as $torrentData) {
+            $this->buildTorrentFromData($media, $movieData, $torrentData);
+        }
     }
 
     /**
@@ -98,25 +123,25 @@ class Yts extends AbstractSpider
     private function buildTorrentFromData(Movie $media, array $movieData, array $torrentData): void
     {
         $url = 'magnet:?xt=urn:btih:' . $torrentData['hash'] . '&' . implode('&', array_map(function ($item) {
-                return 'tr=' . $item;
-            }, [
-                'udp://tracker.opentrackr.org:1337',
-                'udp://tracker.tiny-vps.com:6969',
-                'udp://tracker.openbittorrent.com:1337',
-                'udp://tracker.coppersurfer.tk:6969',
-                'udp://tracker.leechers-paradise.org:6969',
-                'udp://p4p.arenabg.ch:1337',
-                'udp://p4p.arenabg.com:1337',
-                'udp://tracker.internetwarriors.net:1337',
-                'udp://9.rarbg.to:2710',
-                'udp://9.rarbg.me:2710',
-                'udp://exodus.desync.com:6969',
-                'udp://tracker.cyberia.is:6969',
-                'udp://tracker.torrent.eu.org:451',
-                'udp://open.stealth.si:80',
-                'udp://tracker.moeking.me:6969',
-                'udp://tracker.zerobytes.xyz:1337',
-            ]));
+            return 'tr=' . $item;
+        }, [
+            'udp://tracker.opentrackr.org:1337',
+            'udp://tracker.tiny-vps.com:6969',
+            'udp://tracker.openbittorrent.com:1337',
+            'udp://tracker.coppersurfer.tk:6969',
+            'udp://tracker.leechers-paradise.org:6969',
+            'udp://p4p.arenabg.ch:1337',
+            'udp://p4p.arenabg.com:1337',
+            'udp://tracker.internetwarriors.net:1337',
+            'udp://9.rarbg.to:2710',
+            'udp://9.rarbg.me:2710',
+            'udp://exodus.desync.com:6969',
+            'udp://tracker.cyberia.is:6969',
+            'udp://tracker.torrent.eu.org:451',
+            'udp://open.stealth.si:80',
+            'udp://tracker.moeking.me:6969',
+            'udp://tracker.zerobytes.xyz:1337',
+        ]));
 
         $newTorrent = new MovieTorrent();
         $newTorrent->setMovie($media);
@@ -137,30 +162,5 @@ class Yts extends AbstractSpider
         $torrent->setSize($torrentData['size_bytes']);
 
         $this->torrentService->updateTorrent($torrent);
-    }
-
-    public function getTopic(TopicDto $topic)
-    {
-        [$movieId,] = explode(':', $topic->id);
-        $res = $this->client->get('/api/v2/movie_details.json', [
-            'query' => [
-                'movie_id' => $movieId,
-            ]
-        ]);
-        $json = $res->getBody()->getContents();
-        $data = json_decode($json, true);
-
-        if (empty($data['data']['movie'])) {
-            return;
-        }
-        $movieData = $data['data']['movie'];
-        $media = $this->torrentService->getMediaByImdb($movieData['imdb_code']);
-        if (!($media instanceof Movie)) {
-            return;
-        }
-
-        foreach ($movieData['torrents'] as $torrentData) {
-            $this->buildTorrentFromData($media, $movieData, $torrentData);
-        }
     }
 }

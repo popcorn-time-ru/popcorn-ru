@@ -4,70 +4,70 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-  defaultLocale: en
-  extractLocales:
-    [ 'en', 'ar', 'bg', 'bn', 'ca', 'cs', 'da', 'de', 'el', 'es', 'et', 'eu', 'fa', 'fi', 'fr', 'gl', 'gu',
-      'he', 'hr', 'hu', 'hi', 'id', 'it', 'is', 'ka', 'kn', 'ko', 'ja', 'lt', 'ml', 'mk', 'ms', 'no', 'nb', 'nl',
-      'nn', 'pl', 'pt', 'pt-br', 'ro', 'ru', 'sk', 'sl', 'sr', 'sv', 'ta', 'tr', 'tl', 'th', 'te', 'vi', 'uk', 'ur',
-      'cn' ]
+    defaultLocale: en
+    extractLocales:
+        ['en', 'ar', 'bg', 'bn', 'ca', 'cs', 'da', 'de', 'el', 'es', 'et', 'eu', 'fa', 'fi', 'fr', 'gl', 'gu',
+        'he', 'hr', 'hu', 'hi', 'id', 'it', 'is', 'ka', 'kn', 'ko', 'ja', 'lt', 'ml', 'mk', 'ms', 'no', 'nb', 'nl',
+        'nn', 'pl', 'pt', 'pt-br', 'ro', 'ru', 'sk', 'sl', 'sr', 'sv', 'ta', 'tr', 'tl', 'th', 'te', 'vi', 'uk', 'ur',
+        'cn' ]
 
 services:
-  # default configuration for services in *this* file
-  _defaults:
-    autowire: true      # Automatically injects dependencies in your services.
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    bind:
-      string $torProxy: '%env(resolve:TOR_PROXY)%'
-      string $defaultLocale: '%defaultLocale%'
-      array $extractLocales: '%extractLocales%'
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            string $torProxy: '%env(resolve:TOR_PROXY)%'
+            string $defaultLocale: '%defaultLocale%'
+            array $extractLocales: '%extractLocales%'
 
-  _instanceof:
-    App\Spider\SpiderInterface:
-      tags: [ 'tracker.spider' ]
+    _instanceof:
+        App\Spider\SpiderInterface:
+            tags: ['tracker.spider']
 
-  # makes classes in src/ available to be used as services
-  # this creates a service per class whose id is the fully-qualified class name
-  App\:
-    resource: '../src/*'
-    exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-  # controllers are imported separately to make sure services can be injected
-  # as action arguments even if you don't extend any base controller class
-  App\Controller\:
-    resource: '../src/Controller'
-    tags: [ 'controller.service_arguments' ]
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
 
-  # add more service definitions when explicit configuration is needed
-  # please note that last definitions always *replace* previous ones
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
 
-  App\Traktor\Client:
-    calls:
-      - [ setApiKey, [ '%env(resolve:TRAKT_KEY)%' ] ]
+    App\Traktor\Client:
+        calls:
+            - [setApiKey, ['%env(resolve:TRAKT_KEY)%']]
 
-  Sentry\Integration\IgnoreErrorsIntegration:
-    arguments:
-      $options:
-        ignore_exceptions:
-          - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+    Sentry\Integration\IgnoreErrorsIntegration:
+        arguments:
+            $options:
+                ignore_exceptions:
+                    - Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 
-  App\Request\PageParamConverter:
-    tags:
-      - { name: request.param_converter, converter: page_params }
-  App\Request\LocaleParamConverter:
-    tags:
-      - { name: request.param_converter, converter: locale_params }
+    App\Request\PageParamConverter:
+        tags:
+            - { name: request.param_converter, converter: page_params }
+    App\Request\LocaleParamConverter:
+        tags:
+            - { name: request.param_converter, converter: locale_params }
 
-  App\Service\SpiderSelector:
-    public: true
-    arguments:
-      - !tagged_iterator 'tracker.spider'
+    App\Service\SpiderSelector:
+        public: true
+        arguments:
+            - !tagged_iterator 'tracker.spider'
 
-  App\Service\Search\SearchInterface: '@App\Service\Search\Elastic'
+    App\Service\Search\SearchInterface: '@App\Service\Search\Elastic'
 
-  Prometheus\CollectorRegistry: '@prometheus_metrics_bundle.collector_registry'
+    Prometheus\CollectorRegistry: '@prometheus_metrics_bundle.collector_registry'
 
-  App\Service\Search\Elastic:
-    arguments:
-      - '@fos_elastica.finder.movies'
-      - '@fos_elastica.finder.shows'
+    App\Service\Search\Elastic:
+        arguments:
+            - '@fos_elastica.finder.movies'
+            - '@fos_elastica.finder.shows'
 

@@ -63,9 +63,9 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
                 return $base;
             case 'item':
                 $episodes = $this->normalizer->normalize($object->getEpisodes(), $format, $context + [
-                        'episodesLocales' => $this->episodeLocale->findByShowAndLocale($object, $base['contextLocale']),
-                        'locale' => $base['contextLocale'],
-                    ]);
+                    'episodesLocales' => $this->episodeLocale->findByShowAndLocale($object, $base['contextLocale']),
+                    'locale' => $base['contextLocale'],
+                ]);
                 $episodes = array_values(array_filter($episodes, static function ($episode) {
                     return !empty($episode['torrents']);
                 }));
@@ -90,6 +90,16 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
         }
     }
 
+    public function supportsNormalization($data, $format = null): bool
+    {
+        return $data instanceof Show;
+    }
+
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
+    }
+
     private function findBestLocale(LocaleRequest $localeParams, Show $object)
     {
         $locales = $localeParams->contentLocales ?: $object->getExistTranslations();
@@ -104,15 +114,5 @@ class ShowNormalizer implements NormalizerInterface, CacheableSupportsMethodInte
             return 'en';
         }
         return current($locales);
-    }
-
-    public function supportsNormalization($data, $format = null): bool
-    {
-        return $data instanceof Show;
-    }
-
-    public function hasCacheableSupportsMethod(): bool
-    {
-        return true;
     }
 }

@@ -28,6 +28,7 @@ class EpisodeRepository extends ServiceEntityRepository
             ->andWhere('e.episode = :episode')->setParameter('episode', $episode)
             ->getQuery()
             ->enableResultCache()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult()
+        ;
     }
 }

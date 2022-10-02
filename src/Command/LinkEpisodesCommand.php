@@ -2,10 +2,16 @@
 
 namespace App\Command;
 
+use App\Processors\ForumProcessor;
 use App\Processors\ShowTorrentProcessor;
+use App\Processors\SyncProcessor;
+use App\Repository\MovieRepository;
+use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
+use App\Service\SpiderSelector;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +31,8 @@ class LinkEpisodesCommand extends Command
     {
         $this
             ->setDescription('Try Link unlinked show torrents')
-            ->addArgument('limit', InputArgument::REQUIRED, 'Limit');
+            ->addArgument('limit', InputArgument::REQUIRED, 'Limit')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

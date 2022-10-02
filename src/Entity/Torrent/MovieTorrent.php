@@ -17,20 +17,8 @@ class MovieTorrent extends BaseTorrent
      * @ORM\JoinColumn(name="media_id")
      */
     protected $movie;
+    public function getMovie(): Movie { return $this->movie; }
+    public function setMovie(Movie $movie): self { $this->movie = $movie; return $this; }
 
-    public function getMovie(): Movie
-    {
-        return $this->movie;
-    }
-
-    public function setMovie(Movie $movie): self
-    {
-        $this->movie = $movie;
-        return $this;
-    }
-
-    public function getMedia(): BaseMedia
-    {
-        return $this->movie;
-    }
+    public function getMedia(): BaseMedia { return $this->movie;}
 }

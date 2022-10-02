@@ -9,6 +9,7 @@ use App\Request\LocaleRequest;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface, NormalizerAwareInterface
 {
@@ -49,24 +50,34 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
         }
 
         return [
-                '_id' => $object->getImdb(),
-                'imdb_id' => $object->getImdb(),
-                'tmdb_id' => $object->getTmdb(),
-                'title' => $object->getTitle(),
-                'year' => $object->getYear(),
-                'original_language' => $object->getOrigLang(),
-                'exist_translations' => $object->getExistTranslations(),
-                'contextLocale' => $this->findBestLocale($localeParams, $object),
-                'synopsis' => $object->getSynopsis(),
-                'runtime' => $object->getRuntime(),
-                'released' => $object->getReleased()->getTimestamp(),
-                'certification' => $object->getCertification(),
-                'torrents' => $torrents,
-                'trailer' => $object->getTrailer(),
-                'genres' => $object->getGenres(),
-                'images' => $object->getImages()->getApiArray(),
-                'rating' => $object->getRating()->getApiArray(),
-            ] + $locale;
+            '_id' => $object->getImdb(),
+            'imdb_id' => $object->getImdb(),
+            'tmdb_id' => $object->getTmdb(),
+            'title' => $object->getTitle(),
+            'year' => $object->getYear(),
+            'original_language' => $object->getOrigLang(),
+            'exist_translations' => $object->getExistTranslations(),
+            'contextLocale' => $this->findBestLocale($localeParams, $object),
+            'synopsis' => $object->getSynopsis(),
+            'runtime' => $object->getRuntime(),
+            'released' => $object->getReleased()->getTimestamp(),
+            'certification' => $object->getCertification(),
+            'torrents' => $torrents,
+            'trailer' => $object->getTrailer(),
+            'genres' => $object->getGenres(),
+            'images' => $object->getImages()->getApiArray(),
+            'rating' => $object->getRating()->getApiArray(),
+        ] + $locale;
+    }
+
+    public function supportsNormalization($data, $format = null): bool
+    {
+        return $data instanceof Movie;
+    }
+
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 
     private function findBestLocale(LocaleRequest $localeParams, Movie $object)
@@ -83,15 +94,5 @@ class MovieNormalizer implements NormalizerInterface, CacheableSupportsMethodInt
             return 'en';
         }
         return current($locales);
-    }
-
-    public function supportsNormalization($data, $format = null): bool
-    {
-        return $data instanceof Movie;
-    }
-
-    public function hasCacheableSupportsMethod(): bool
-    {
-        return true;
     }
 }

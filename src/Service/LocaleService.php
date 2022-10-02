@@ -16,9 +16,12 @@ use Tmdb\Model\Tv as TmdbShow;
 
 class LocaleService
 {
-    protected BaseLocaleRepository $localeRepo;
-    protected EpisodeLocaleRepository $episodeLocaleRepo;
     private EntityManagerInterface $em;
+
+    protected BaseLocaleRepository $localeRepo;
+
+    protected EpisodeLocaleRepository $episodeLocaleRepo;
+
     private array $extractLocales;
 
     /**
@@ -29,12 +32,11 @@ class LocaleService
      * @param array $extractLocales
      */
     public function __construct(
-        EntityManagerInterface  $em,
-        BaseLocaleRepository    $localeRepo,
+        EntityManagerInterface $em,
+        BaseLocaleRepository $localeRepo,
         EpisodeLocaleRepository $episodeLocaleRepo,
-        array                   $extractLocales
-    )
-    {
+        array $extractLocales
+    ) {
         $this->localeRepo = $localeRepo;
         $this->episodeLocaleRepo = $episodeLocaleRepo;
         $this->extractLocales = $extractLocales;
@@ -47,7 +49,8 @@ class LocaleService
      */
     public function fillMedia(BaseMedia $media, $info): void
     {
-        foreach ($this->extractLocales as $locale) {
+        foreach ($this->extractLocales as $locale)
+        {
             if ($media instanceof Movie) {
                 $mediaLocale = $this->localeRepo->findOrCreateByMovieAndLocale($media, $locale);
             } else if ($media instanceof Show) {
@@ -86,7 +89,8 @@ class LocaleService
 
     public function needFillEpisode(Episode $episode): bool
     {
-        foreach ($this->extractLocales as $locale) {
+        foreach ($this->extractLocales as $locale)
+        {
             if (!$this->episodeLocaleRepo->findByEpisodeAndLocale($episode, $locale)) {
                 return true;
             }
@@ -97,7 +101,8 @@ class LocaleService
 
     public function fillEpisode(Episode $episode, $translations): void
     {
-        foreach ($this->extractLocales as $locale) {
+        foreach ($this->extractLocales as $locale)
+        {
             $object = $this->episodeLocaleRepo->findByEpisodeAndLocale($episode, $locale);
             if (!$object) {
                 $object = new EpisodeLocale();

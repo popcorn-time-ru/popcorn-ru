@@ -7,7 +7,7 @@ use Monolog\Processor\ProcessorInterface;
 class SentryContextProcessor implements ProcessorInterface
 {
     /**
-     * @param array $record
+     * @param  array $record
      * @return array
      */
     public function __invoke(array $record)

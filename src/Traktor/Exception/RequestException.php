@@ -2,6 +2,4 @@
 
 namespace App\Traktor\Exception;
 
-class RequestException extends \RuntimeException
-{
-}
+class RequestException extends \RuntimeException {}

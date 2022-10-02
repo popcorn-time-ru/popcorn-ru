@@ -2,10 +2,12 @@
 
 namespace App\Command;
 
+use App\Processors\ForumProcessor;
 use App\Processors\SyncProcessor;
 use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
+use App\Service\SpiderSelector;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Psr\Log\LoggerInterface;
@@ -41,7 +43,8 @@ class SyncCommand extends Command
             ->setDescription('Generate task for sync old records')
             ->addOption('days-check', 'c', InputOption::VALUE_REQUIRED, 'Days for check')
             ->addOption('days-delete', 'd', InputOption::VALUE_REQUIRED, 'Days for delete')
-            ->addArgument('limit', InputArgument::REQUIRED, 'Limit');
+            ->addArgument('limit', InputArgument::REQUIRED, 'Limit')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

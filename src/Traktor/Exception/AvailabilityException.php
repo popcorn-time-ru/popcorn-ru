@@ -2,6 +2,4 @@
 
 namespace App\Traktor\Exception;
 
-class AvailabilityException extends RequestException
-{
-}
+class AvailabilityException extends RequestException {}

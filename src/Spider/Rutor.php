@@ -82,8 +82,8 @@ class Rutor extends AbstractSpider
 
                 yield new TopicDto(
                     $m[1],
-                    (int)$seed,
-                    (int)$leech,
+                    (int) $seed,
+                    (int) $leech,
                     $n * 10 + random_int(10, 20)
                 );
                 $exist = true;
@@ -152,10 +152,10 @@ class Rutor extends AbstractSpider
         $post->filter('tr')->each(
             static function (Crawler $c) use ($topic) {
                 if (strpos($c->html(), 'Раздают')) {
-                    $topic->seed = (int)$c->filter('td')->last()->html();
+                    $topic->seed = (int) $c->filter('td')->last()->html();
                 }
                 if (strpos($c->html(), 'Качают')) {
-                    $topic->leech = (int)$c->filter('td')->last()->html();
+                    $topic->leech = (int) $c->filter('td')->last()->html();
                 }
             }
         );
@@ -170,39 +170,12 @@ class Rutor extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage('ru');
+            ->setLanguage('ru')
+        ;
 
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);
-    }
-
-    private function getImdbByTitle(string $titleStr): ?string
-    {
-        $isSerial = false;
-        if (preg_match('#\[.*\]#', $titleStr)) {
-            $isSerial = true;
-        }
-        preg_match('#\((\d{4})\)#', $titleStr, $match);
-        $year = $match ? (int)$match[1] : -1;
-
-        preg_match('#^(.*?)[(\[].*#', $titleStr, $match);
-        if (count($match) != 2) {
-            return null;
-        }
-        $names = array_map('trim', explode('/', $match[1]));
-        $names = array_filter($names);
-
-        foreach ($names as $name) {
-            $imdb = $isSerial
-                ? $this->torrentService->searchShowByTitle($name)
-                : $this->torrentService->searchMovieByTitleAndYear($name, $year);
-            if ($imdb) {
-                return $imdb;
-            }
-        }
-
-        return null;
     }
 
     protected function getFiles($fileListId): array
@@ -224,10 +197,38 @@ class Rutor extends AbstractSpider
                     return false;
                 }
 
-                return new File($name, (int)$size);
+                return new File($name, (int) $size);
             }
         );
 
         return array_filter($files);
+    }
+
+    private function getImdbByTitle(string $titleStr): ?string
+    {
+        $isSerial = false;
+        if (preg_match('#\[.*\]#', $titleStr)) {
+            $isSerial = true;
+        }
+        preg_match('#\((\d{4})\)#', $titleStr, $match);
+        $year = $match ? (int) $match[1] : -1;
+
+        preg_match('#^(.*?)[(\[].*#', $titleStr, $match);
+        if (count($match) != 2) {
+            return null;
+        }
+        $names = array_map('trim', explode('/', $match[1]));
+        $names = array_filter($names);
+
+        foreach ($names as $name) {
+            $imdb = $isSerial
+                ? $this->torrentService->searchShowByTitle($name)
+                : $this->torrentService->searchMovieByTitleAndYear($name, $year);
+            if ($imdb) {
+                return $imdb;
+            }
+        }
+
+        return null;
     }
 }

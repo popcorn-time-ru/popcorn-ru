@@ -2,6 +2,4 @@
 
 namespace App\Traktor\Exception;
 
-class UnknownMethodException extends RequestException
-{
-}
+class UnknownMethodException extends RequestException {}

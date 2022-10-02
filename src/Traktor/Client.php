@@ -2,12 +2,12 @@
 
 namespace App\Traktor;
 
+use GuzzleHttp\Client as GuzzleClient;
 use App\Traktor\Exception\AuthorizationException;
 use App\Traktor\Exception\AvailabilityException;
 use App\Traktor\Exception\MissingApiKeyException;
-use App\Traktor\Exception\RequestException;
 use App\Traktor\Exception\UnknownMethodException;
-use GuzzleHttp\Client as GuzzleClient;
+use App\Traktor\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -38,7 +38,7 @@ class Client
      */
     public function __construct(GuzzleClient $client = null)
     {
-        if (!$client) {
+        if (! $client) {
             $this->client = new GuzzleClient;
         } else {
             $this->client = $client;
@@ -46,20 +46,41 @@ class Client
     }
 
     /**
+     * Set the user key for the API session.
+     *
+     * @param  string  $key
+     * @return void
+     */
+    public function setApiKey($key)
+    {
+        $this->apiKey = $key;
+    }
+
+    /**
+     * Get the user key for the API session.
+     *
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
      * Performs a GET request against the API and returns the results as
      * instance(s) of `stdClass`.
      *
-     * @param string $method
-     * @param null|array $params
+     * @param  string      $method
+     * @param  null|array  $params
      * @return mixed
      */
     public function get($method, $params = null)
     {
-        if (!$this->apiKey) {
+        if (! $this->apiKey) {
             throw new MissingApiKeyException('The request API key is unset.');
         }
 
-        if (!$params) {
+        if (! $params) {
             $params = [];
         }
 
@@ -74,8 +95,8 @@ class Client
      * Creates the complete request target based on the requested method and
      * any associated parameters.
      *
-     * @param string $method
-     * @param array $params
+     * @param  string  $method
+     * @param  array   $params
      * @return string
      */
     protected function assembleGetRequestTarget($method, $params = [])
@@ -84,8 +105,8 @@ class Client
         $params = http_build_query($params);
 
         $target = self::TRAKT_API_ENDPOINT
-            . '/' . $method
-            . '?' . $params;
+                    . '/' . $method 
+                    . '?' . $params;
 
         return $target;
     }
@@ -93,45 +114,24 @@ class Client
     /**
      * Executes the GET request specified by `$target`.
      *
-     * @param string $target
+     * @param  string  $target
      * @return ResponseInterface
      */
     protected function performGetRequest($target)
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'trakt-api-version' => 2,
-            'trakt-api-key' => $this->getApiKey(),
-        ];
-        return $this->client->get($target, ['headers' => $headers]);
-    }
-
-    /**
-     * Get the user key for the API session.
-     *
-     * @return string
-     */
-    public function getApiKey()
-    {
-        return $this->apiKey;
-    }
-
-    /**
-     * Set the user key for the API session.
-     *
-     * @param string $key
-     * @return void
-     */
-    public function setApiKey($key)
-    {
-        $this->apiKey = $key;
+		$headers = [
+			'Content-Type' => 'application/json',
+			'trakt-api-version' => 2,
+			'trakt-api-key' => $this->getApiKey(),
+		];
+		return $this->client->get($target, ['headers' => $headers]);
     }
 
     /**
      * Parse a response, appropriately converting from JSON to `stdClass` as
      * well as handling errors.
      *
-     * @param ResponseInterface
+     * @param  ResponseInterface
      * @return mixed
      */
     protected function parseResponse(ResponseInterface $response)
@@ -153,7 +153,7 @@ class Client
      * Checks a GuzzleHttp response for errors, throwing the appropriate
      * exception if necessary.
      *
-     * @param ResponseInterface
+     * @param  ResponseInterface
      * @return void
      */
     protected function checkResponseErrors($response)
@@ -183,5 +183,5 @@ class Client
                     . $response->getBody());
         }
     }
-
+    
 }

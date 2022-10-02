@@ -13,48 +13,32 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ShowTorrent extends BaseTorrent
 {
-    /**
-     * @var Show
-     * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="torrents")
-     * @ORM\JoinColumn(name="media_id")
-     */
-    protected $show;
-    /**
-     * @var File[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="App\Entity\File", mappedBy="torrent",
-     *     cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $files;
-
     public function __construct()
     {
         parent::__construct();
         $this->files = new ArrayCollection();
     }
 
-    public function getShow(): Show
-    {
-        return $this->show;
-    }
+    /**
+     * @var Show
+     * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="torrents")
+     * @ORM\JoinColumn(name="media_id")
+     */
+    protected $show;
+    public function getShow(): Show { return $this->show; }
+    public function setShow(Show $show): self { $this->show = $show; return $this; }
 
-    public function setShow(Show $show): self
-    {
-        $this->show = $show;
-        return $this;
-    }
+    public function getMedia(): BaseMedia { return $this->show;}
 
-    public function getMedia(): BaseMedia
-    {
-        return $this->show;
-    }
+    /**
+     * @var File[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="App\Entity\File", mappedBy="torrent",
+     *     cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $files;
+    public function getFiles() { return $this->files; }
 
-    public function getFiles()
-    {
-        return $this->files;
-    }
-
-    public function setFiles(array $files)
-    {
+    public function setFiles(array $files) {
         /** @var File[] $files */
         $existFiles = [];
         foreach ($files as $n => $file) {
@@ -77,7 +61,7 @@ class ShowTorrent extends BaseTorrent
 
         $size = 0;
         foreach ($this->files as $file) {
-            $size += $file->getSize();
+            $size+=$file->getSize();
         }
         $this->setSize($size);
 

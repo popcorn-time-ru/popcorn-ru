@@ -36,14 +36,6 @@ class WatcherProcessor implements TopicSubscriberInterface, Processor
     }
 
     /**
-     * @return string
-     */
-    public static function getSubscribedTopics(): string
-    {
-        return self::TOPIC;
-    }
-
-    /**
      * @param Message $message
      * @param Context $context
      * @return string
@@ -70,5 +62,13 @@ class WatcherProcessor implements TopicSubscriberInterface, Processor
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
+    }
+
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
+    {
+        return self::TOPIC;
     }
 }

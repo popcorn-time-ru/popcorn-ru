@@ -3,8 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\BaseMedia;
+use App\Entity\Locale\MovieLocale;
+use App\Entity\Locale\ShowLocale;
+use App\Entity\Movie;
+use App\Repository\Locale\BaseLocaleRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
+use App\Service\Search\Mysql;
 use App\Service\Search\SearchInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -38,7 +43,7 @@ abstract class MediaRepository extends ServiceEntityRepository
 
     /**
      * @param \DateTime $before
-     * @param int $limit
+     * @param int       $limit
      * @return BaseMedia[]
      */
     public function getOld(\DateTime $before, int $limit): array
@@ -51,7 +56,7 @@ abstract class MediaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param PageRequest $pageRequest
+     * @param PageRequest   $pageRequest
      * @param LocaleRequest $localeParams
      * @return BaseMedia[]
      */

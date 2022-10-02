@@ -38,7 +38,7 @@ class NnmClub extends AbstractSpider
 
     public function getSource(BaseTorrent $torrent): string
     {
-        return self::BASE_URL . 'viewtopic.php?t=' . $torrent->getProviderExternalId();
+        return self::BASE_URL . 'viewtopic.php?t='.$torrent->getProviderExternalId();
     }
 
     public function getForumKeys(): array
@@ -62,7 +62,7 @@ class NnmClub extends AbstractSpider
         $res = $this->client->get('viewforum.php', [
             'query' => [
                 'f' => $forum->id,
-                'start' => (($forum->page - 1) * self::PAGE_SIZE),
+                'start' => (($forum->page-1)*self::PAGE_SIZE),
             ]
         ]);
         $html = $res->getBody()->getContents();
@@ -71,10 +71,8 @@ class NnmClub extends AbstractSpider
         /** @var Crawler $table */
         $table = $crawler->filter('table.forumline');
         $lines = array_filter(
-            $table->filter('tr')->each(static function (Crawler $c) {
-                return $c;
-            }),
-            static function (Crawler $c) use ($forum) {
+            $table->filter('tr')->each(static function (Crawler $c) { return $c;}),
+            static function (Crawler $c) use ($forum){
                 // показывает дочерние форумы на всех страницах, парсим только на первой
                 if ($forum->page === 1) {
                     if (str_contains($c->html(), 'href="viewforum.php')) {
@@ -86,10 +84,10 @@ class NnmClub extends AbstractSpider
             }
         );
 
-        $after = $forum->last ? new \DateTime($forum->last . ' hours ago') : false;
+        $after = $forum->last ? new \DateTime($forum->last.' hours ago') : false;
         $exist = false;
 
-        foreach ($lines as $n => $line) {
+        foreach($lines as $n => $line) {
             /** @var Crawler $line */
             if (preg_match('#viewforum\.php\?f=(\d+)#', $line->html(), $m)) {
                 yield new ForumDto($m[1], 1, $forum->last, random_int(1800, 3600));
@@ -104,8 +102,8 @@ class NnmClub extends AbstractSpider
                 }
                 yield new TopicDto(
                     $m[1],
-                    (int)$line->filter('.seedmed b')->first()->text(),
-                    (int)$line->filter('.leechmed b')->first()->text(),
+                    (int) $line->filter('.seedmed b')->first()->text(),
+                    (int) $line->filter('.leechmed b')->first()->text(),
                     $n * 10 + random_int(10, 30)
                 );
                 $exist = true;
@@ -184,11 +182,41 @@ class NnmClub extends AbstractSpider
             ->setSeed($topic->seed)
             ->setPeer($topic->seed + $topic->leech)
             ->setQuality($quality)
-            ->setLanguage('ru');
+            ->setLanguage('ru')
+        ;
 
         $torrent->setFiles($files);
 
         $this->torrentService->updateTorrent($torrent);
+    }
+
+    protected function getFiles($fileListId): array
+    {
+        $res = $this->client->get('filelst.php', [
+            'query' => [
+                'attach_id' =>$fileListId,
+            ]
+        ]);
+        $html = $res->getBody()->getContents();
+        $html = substr($html, strpos($html, '<table'));
+        $html = substr($html, 0, strpos($html,'</table>') + 8);
+        $crawlerFiles = new Crawler();
+        $crawlerFiles->addHtmlContent($html, 'CP-1251');
+
+        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
+            $name = trim($c->filter('td[align="left"]')->html());
+            $size = preg_replace('#[^0-9]#', '', $c->filter('td[align="right"]')->html());
+            if (!$name) {
+                $this->logger->error('Files parsing error', $this->context + ['html' => $c->html()]);
+            }
+            if ($size === '') {
+                return false;
+            }
+
+            return new File($name, (int) $size);
+        });
+
+        return array_filter($files);
     }
 
     protected function getImdb(Crawler $post): ?string
@@ -203,70 +231,6 @@ class NnmClub extends AbstractSpider
 
         // пропускаем сборники
         return count($ids) == 1 ? current($ids) : null;
-    }
-
-    private function getImdbByTitle(string $titleStr): ?string
-    {
-        $isSerial = false;
-        if (mb_stripos($titleStr, 'сезон') !== false ||
-            mb_stripos($titleStr, 'серии') !== false ||
-            mb_stripos($titleStr, 'сериал') !== false
-        ) {
-            $isSerial = true;
-        }
-        preg_match('#\((\d{4})\)#', $titleStr, $match);
-        if ($match) {
-            $year = $match[1];
-        } else {
-            $isSerial = true;
-        }
-
-        preg_match('#(.*)\((\d{4})#', $titleStr, $match);
-        if (count($match) != 3) {
-            return null;
-        }
-        $titleStr = preg_replace('#\(.*?\)#', '', $match[1]);
-        $names = array_map('trim', explode('/', $titleStr));
-        $names = array_filter($names);
-
-        foreach ($names as $name) {
-            $imdb = $isSerial
-                ? $this->torrentService->searchShowByTitle($name)
-                : $this->torrentService->searchMovieByTitleAndYear($name, $year);
-            if ($imdb) {
-                return $imdb;
-            }
-        }
-        return null;
-    }
-
-    protected function getFiles($fileListId): array
-    {
-        $res = $this->client->get('filelst.php', [
-            'query' => [
-                'attach_id' => $fileListId,
-            ]
-        ]);
-        $html = $res->getBody()->getContents();
-        $html = substr($html, strpos($html, '<table'));
-        $html = substr($html, 0, strpos($html, '</table>') + 8);
-        $crawlerFiles = new Crawler();
-        $crawlerFiles->addHtmlContent($html, 'CP-1251');
-
-        $files = $crawlerFiles->filter('tr')->each(function (Crawler $c) {
-            $name = trim($c->filter('td[align="left"]')->html());
-            $size = preg_replace('#[^0-9]#', '', $c->filter('td[align="right"]')->html());
-            if (!$name) {
-                $this->logger->error('Files parsing error', $this->context + ['html' => $c->html()]);
-            }
-            if ($size === '') {
-                return false;
-            }
-
-            return new File($name, (int)$size);
-        });
-
-        return array_filter($files);
     }
 
     /**
@@ -309,7 +273,43 @@ class NnmClub extends AbstractSpider
         $seed = $seedTag->count() ? $seedTag->last()->text() : 0;
         $leech = $leechTag->count() ? $leechTag->last()->text() : 0;
 
-        $topic->seed = (int)$seed;
-        $topic->leech = (int)$leech;
+        $topic->seed = (int) $seed;
+        $topic->leech = (int) $leech;
+    }
+
+    private function getImdbByTitle(string $titleStr): ?string
+    {
+        $isSerial = false;
+        if (mb_stripos($titleStr, 'сезон') !== false ||
+            mb_stripos($titleStr, 'серии') !== false ||
+            mb_stripos($titleStr, 'сериал') !== false
+        ) {
+            $isSerial = true;
+        }
+        preg_match('#\((\d{4})\)#', $titleStr, $match);
+        if ($match) {
+            $year = $match[1];
+        } else {
+            $isSerial = true;
+        }
+
+        preg_match('#(.*)\((\d{4})#', $titleStr, $match);
+        if (count($match) != 3) {
+            return null;
+        }
+        $titleStr = preg_replace('#\(.*?\)#', '', $match[1]);
+        $names = array_map('trim', explode('/', $titleStr));
+        $names = array_filter($names);
+
+        foreach ($names as $name) {
+            $imdb = $isSerial
+                ? $this->torrentService->searchShowByTitle($name)
+                : $this->torrentService->searchMovieByTitleAndYear($name, $year)
+            ;
+            if ($imdb) {
+                return $imdb;
+            }
+        }
+        return null;
     }
 }

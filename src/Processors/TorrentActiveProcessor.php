@@ -2,9 +2,11 @@
 
 namespace App\Processors;
 
+use App\Service\EpisodeService;
 use App\Service\TorrentService;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
+use GuzzleHttp\Exception\GuzzleException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
@@ -24,21 +26,13 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
     /**
      * ShowTorrentProducer constructor.
      *
-     * @param TorrentService $torrentService
+     * @param TorrentService  $torrentService
      * @param LoggerInterface $logger
      */
     public function __construct(TorrentService $torrentService, LoggerInterface $logger)
     {
         $this->torrentService = $torrentService;
         $this->logger = $logger;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getSubscribedTopics(): string
-    {
-        return self::TOPIC;
     }
 
     /**
@@ -62,5 +56,13 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
             $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
         return self::ACK;
+    }
+
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
+    {
+        return self::TOPIC;
     }
 }

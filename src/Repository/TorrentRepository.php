@@ -6,8 +6,8 @@ use App\Entity\BaseMedia;
 use App\Entity\Episode;
 use App\Entity\Torrent\BaseTorrent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * @method BaseTorrent|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,20 +22,20 @@ class TorrentRepository extends ServiceEntityRepository
         parent::__construct($registry, BaseTorrent::class);
     }
 
+    public function flush(): void
+    {
+        $this->_em->flush();
+    }
+
     public function delete(BaseTorrent $torrent): void
     {
         $this->_em->remove($torrent);
         $this->_em->flush();
     }
 
-    public function flush(): void
-    {
-        $this->_em->flush();
-    }
-
     /**
      * @param \DateTime $before
-     * @param int $limit
+     * @param int       $limit
      * @return BaseTorrent[]
      */
     public function getOld(\DateTime $before, int $limit): array
@@ -49,7 +49,7 @@ class TorrentRepository extends ServiceEntityRepository
 
     /**
      * @param \DateTime $before
-     * @param int $limit
+     * @param int       $limit
      * @return BaseTorrent[]
      */
     public function getNotSyncAndInactive(\DateTime $before, int $limit): array
@@ -74,7 +74,8 @@ class TorrentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('t');
         $qb->select('t.provider', 'count(t.id) as c')
-            ->groupBy('t.provider');
+            ->groupBy('t.provider')
+            ;
         $result = [];
         foreach ($qb->getQuery()->getArrayResult() as $item) {
             $result[$item['provider']] = $item['c'];
@@ -85,8 +86,8 @@ class TorrentRepository extends ServiceEntityRepository
 
     /**
      * @param BaseMedia $media
-     * @param array $languages
-     * @param bool $onlyActive
+     * @param array     $languages
+     * @param bool      $onlyActive
      * @return BaseTorrent[]
      */
     public function getMediaTorrents(BaseMedia $media, array $languages, bool $onlyActive = true): array
@@ -105,8 +106,8 @@ class TorrentRepository extends ServiceEntityRepository
 
     /**
      * @param Episode $episode
-     * @param array $languages
-     * @param bool $onlyActive
+     * @param array   $languages
+     * @param bool    $onlyActive
      * @return BaseTorrent[]
      */
     public function getEpisodeTorrents(Episode $episode, array $languages, bool $onlyActive = true): array
@@ -139,9 +140,7 @@ class TorrentRepository extends ServiceEntityRepository
                     OR name LIKE \'%.mp4\'
                     OR name LIKE \'%.mkv\'
                 )
-            LIMIT ' . $limit, (new ResultSetMapping())->addScalarResult('id', 'id'));
-        return array_map(function ($a) {
-            return $a['id'];
-        }, $q->getResult());
+            LIMIT '.$limit, (new ResultSetMapping())->addScalarResult('id', 'id'));
+        return array_map(function ($a) {return $a['id'];}, $q->getResult());
     }
 }

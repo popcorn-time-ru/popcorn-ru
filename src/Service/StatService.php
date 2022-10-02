@@ -18,13 +18,11 @@ class StatService
     #[Required] public MediaStatRepository $statRepo;
     #[Required] public GenreRepository $genresRepo;
     #[Required] public CollectorRegistry $cr;
-    private $keyToNum = [];
-    private $numToTranslated = [];
 
     public function calculateTorrentStat()
     {
         $torrentProm = $this->cr->getOrRegisterGauge('popcorn', 'torrent', 'torrents count', ['provider']);
-        foreach ($this->torrent->getStatByProvider() as $provider => $count) {
+        foreach($this->torrent->getStatByProvider() as $provider => $count) {
             $torrentProm->set($count, [$provider]);
         }
     }
@@ -100,6 +98,9 @@ class StatService
         }
         return $group;
     }
+
+    private $keyToNum = [];
+    private $numToTranslated = [];
 
     private function translatedTitle(string $genre, string $lang)
     {

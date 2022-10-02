@@ -2,8 +2,9 @@
 
 namespace App\Entity\Locale;
 
-use App\Entity\Movie;
+use App\Entity\BaseMedia;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Movie;
 
 /**
  * @ORM\Entity()
@@ -16,20 +17,8 @@ class MovieLocale extends BaseLocale
      * @ORM\JoinColumn(name="media_id")
      */
     protected $movie;
+    public function getMovie(): Movie { return $this->movie; }
+    public function setMovie(Movie $movie): self { $this->movie = $movie; return $this; }
 
-    public function getMovie(): Movie
-    {
-        return $this->movie;
-    }
-
-    public function setMovie(Movie $movie): self
-    {
-        $this->movie = $movie;
-        return $this;
-    }
-
-    public function getMedia()
-    {
-        return $this->movie;
-    }
+    public function getMedia() { return $this->movie; }
 }

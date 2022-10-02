@@ -2,7 +2,9 @@
 
 namespace App\Command;
 
+use App\Repository\TorrentRepository;
 use App\Service\StatService;
+use Prometheus\CollectorRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +19,8 @@ class StatUpdateCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Media statistics update');
+            ->setDescription('Media statistics update')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
