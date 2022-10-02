@@ -159,9 +159,11 @@ APP_SECRET=ThisTokenIsNotSoSecretChangeIt
 DATABASE_URL=mysql://root:password1234@127.0.0.1:3306/popcorn?serverVersion=mariadb-10.5.1
 TMDB_API_KEY=
 TRAKT_KEY=
+### Only enable this if your ISP blocks many torrent websites ###
+TOR_ENABLED=false
 ```
 
-<i>Please note that these commands should be run once at a time</i>
+<i>Please note that these commands should be run one at a time.</i>
 ```sh
 systemctl restart php8.1-fpm nginx
 composer install
