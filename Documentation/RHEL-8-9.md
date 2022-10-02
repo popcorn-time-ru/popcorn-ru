@@ -194,14 +194,16 @@ mysql -u root -p
 ### Then you can run this command to exit mariadb
 exit
 ```
-Now the password for the root mariadb user and the server version in the `.env` file. Here is an example<br>
-```env
-DATABASE_URL=mysql://root:password1234@127.0.0.1:3306/popcorn?serverVersion=mariadb-10.3.35
-```
-After that, we are going to configure the TMDB and TRAKT API keys in the `.env.local` file.<br>
+
+After that, we are going to configure the `.env.local` file.<br>
+Make sure to change the `APP_SECRET` to a random string.<br>
+Update `password1234` to the password you set for the root mariadb user and set the correct server version.<br>
 You can get a TMDB API key [here](https://www.themoviedb.org/settings/api). Make sure to use the - `v3 Auth Key`<br>
-You can get a TRAKT API key [here](https://trakt.tv/oauth/applications/). Make sure to use the - `Client Secret`<br>
+You can get a TRAKT API key [here](https://trakt.tv/oauth/applications/). Make sure to use the - `Client ID`<br>
 ```env
+APP_ENV=prod
+APP_SECRET=ThisTokenIsNotSoSecretChangeIt
+DATABASE_URL=mysql://root:password1234@127.0.0.1:3306/popcorn?serverVersion=mariadb-10.5.1
 TMDB_API_KEY=
 TRAKT_KEY=
 ```
