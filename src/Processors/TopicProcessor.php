@@ -31,6 +31,9 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         $this->logger = $logger;
     }
 
+    /**
+    *@return string|array
+    */
     public function process(Message $message, Context $context)
     {
         try {
@@ -60,6 +63,9 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         return self::ACK;
     }
 
+    /**
+    *@return string|array
+    */
     public static function getSubscribedTopics()
     {
         return self::TOPIC;
