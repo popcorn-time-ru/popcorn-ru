@@ -8,7 +8,6 @@ use App\Traktor\Exception\AvailabilityException;
 use App\Traktor\Exception\MissingApiKeyException;
 use App\Traktor\Exception\UnknownMethodException;
 use App\Traktor\Exception\RequestException;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -49,10 +48,10 @@ class Client
     /**
      * Set the user key for the API session.
      *
-     * @param string $key
+     * @param  string  $key
      * @return void
      */
-    public function setApiKey(string $key): void
+    public function setApiKey($key)
     {
         $this->apiKey = $key;
     }
@@ -71,11 +70,11 @@ class Client
      * Performs a GET request against the API and returns the results as
      * instance(s) of `stdClass`.
      *
-     * @param string $method
-     * @param array|null $params
+     * @param  string      $method
+     * @param  null|array  $params
      * @return mixed
      */
-    public function get(string $method, array $params = null): mixed
+    public function get($method, $params = null)
     {
         if (! $this->apiKey) {
             throw new MissingApiKeyException('The request API key is unset.');
@@ -96,17 +95,17 @@ class Client
      * Creates the complete request target based on the requested method and
      * any associated parameters.
      *
-     * @param string $method
-     * @param array $params
+     * @param  string  $method
+     * @param  array   $params
      * @return string
      */
-    protected function assembleGetRequestTarget(string $method, array $params = []): string
+    protected function assembleGetRequestTarget($method, $params = [])
     {
         $method = preg_replace('/\./', '/', $method);
         $params = http_build_query($params);
 
         $target = self::TRAKT_API_ENDPOINT
-                    . '/' . $method
+                    . '/' . $method 
                     . '?' . $params;
 
         return $target;
@@ -115,11 +114,10 @@ class Client
     /**
      * Executes the GET request specified by `$target`.
      *
-     * @param string $target
+     * @param  string  $target
      * @return ResponseInterface
-     * @throws GuzzleException
      */
-    protected function performGetRequest(string $target): ResponseInterface
+    protected function performGetRequest($target)
     {
 		$headers = [
 			'Content-Type' => 'application/json',
@@ -133,10 +131,10 @@ class Client
      * Parse a response, appropriately converting from JSON to `stdClass` as
      * well as handling errors.
      *
-     * @param  ResponseInterface $response
+     * @param  ResponseInterface
      * @return mixed
      */
-    protected function parseResponse(ResponseInterface $response): mixed
+    protected function parseResponse(ResponseInterface $response)
     {
         $this->checkResponseErrors($response);
 
@@ -155,10 +153,10 @@ class Client
      * Checks a GuzzleHttp response for errors, throwing the appropriate
      * exception if necessary.
      *
-     * @param ResponseInterface $response
+     * @param  ResponseInterface
      * @return void
      */
-    protected function checkResponseErrors(ResponseInterface $response): void
+    protected function checkResponseErrors($response)
     {
         $responseStatusCode = intval($response->getStatusCode());
 

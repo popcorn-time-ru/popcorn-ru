@@ -24,19 +24,19 @@ class MediaService
     public const IMDB_COUNT = 3000;
 
     /** @var LocaleService */
-    protected LocaleService $localeService;
+    protected $localeService;
 
     /** @var MovieRepository */
-    protected MovieRepository $movieRepo;
+    protected $movieRepo;
 
     /** @var TvRepository */
-    protected TvRepository $showRepo;
+    protected $showRepo;
 
     /** @var \App\Traktor\Client */
-    private \App\Traktor\Client $trakt;
+    private $trakt;
 
     /** @var Client */
-    private Client $client;
+    private $client;
 
     public function __construct(
         Client $client,
@@ -174,7 +174,7 @@ class MediaService
         /** @var Country $country */
         $country = current($showInfo->getOriginCountry()->toArray());
         /** @var Network $network */
-        $network = current($showInfo->getNetworks()->toArray());
+        $network = current(current($showInfo->getNetworks()));
         $show
             ->setCountry($country ? $country->getIso31661() : '')
             ->setNetwork($network ? $network->getName() : '')
@@ -182,7 +182,7 @@ class MediaService
         $show->setRuntime((string)current($showInfo->getEpisodeRunTime()));
 
         $slug = preg_replace('#[^a-zA-Z0-9 \-]#', '', $showInfo->getName());
-        $slug = preg_replace('#\s#', '-', $slug);
+        $slug = preg_replace('#[\s]#', '-', $slug);
         $slug = strtolower($slug);
         $show->setSlug($slug);
 
@@ -231,7 +231,7 @@ class MediaService
         return $movie;
     }
 
-    public function updateMedia(BaseMedia $media): void
+    public function updateMedia(BaseMedia $media)
     {
         $search = $this->client->getFindApi()->findBy($media->getImdb(), ['external_source' => 'imdb_id']);
         if (!empty($search['movie_results']) && $media instanceof Movie) {
@@ -240,7 +240,7 @@ class MediaService
             $info = $this->movieRepo->load($id);
             $media = $this->fillMovie($info, $media);
         }
-        if (!empty($search['tv_results'])) {
+        if (!empty($search['tv_results']) && $media instanceof Show) {
             $id = $search['tv_results'][0]['id'];
             /** @var TmdbShow $info */
             $info = $this->showRepo->load($id);
@@ -251,14 +251,14 @@ class MediaService
 
     /**
      * @param BaseMedia $media
-     * @param TmdbMovie|TmdbShow $info
+     * @param TmdbShow|TmdbMovie $info
      */
-    private function fillRating(BaseMedia $media, TmdbShow|TmdbMovie $info): void
+    private function fillRating(BaseMedia $media, $info): void
     {
         try {
             if ($media instanceof Movie) {
                 $trakt = $this->trakt->get("movies/{$media->getImdb()}/stats");
-            } else {
+            } elseif ($media instanceof Show) {
                 $trakt = $this->trakt->get("shows/{$media->getImdb()}/stats");
             }
         } catch (\Exception $e) {
@@ -281,9 +281,9 @@ class MediaService
 
     /**
      * @param BaseMedia $media
-     * @param TmdbMovie|TmdbShow $info
+     * @param TmdbShow|TmdbMovie $info
      */
-    private function fillImagesGenres(BaseMedia $media, TmdbShow|TmdbMovie $info): void
+    private function fillImagesGenres(BaseMedia $media, $info): void
     {
         $media->getImages()
             ->setPoster($info->getPosterPath() ?: '')

@@ -27,7 +27,6 @@ class LocaleService
     /**
      * LocaleService constructor.
      *
-     * @param EntityManagerInterface $em
      * @param BaseLocaleRepository $localeRepo
      * @param EpisodeLocaleRepository $episodeLocaleRepo
      * @param array $extractLocales
@@ -46,9 +45,9 @@ class LocaleService
 
     /**
      * @param BaseMedia $media
-     * @param TmdbMovie|TmdbShow $info
+     * @param TmdbShow|TmdbMovie $info
      */
-    public function fillMedia(BaseMedia $media, TmdbShow|TmdbMovie $info): void
+    public function fillMedia(BaseMedia $media, $info): void
     {
         foreach ($this->extractLocales as $locale)
         {

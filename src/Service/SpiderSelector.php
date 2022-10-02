@@ -7,7 +7,7 @@ use App\Spider\SpiderInterface;
 class SpiderSelector
 {
     /** @var SpiderInterface[] */
-    protected array $spiders;
+    protected $spiders;
 
     public function __construct(iterable $spiders)
     {
