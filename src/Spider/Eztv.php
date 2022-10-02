@@ -18,11 +18,15 @@ class Eztv extends AbstractSpider
     /** @var Client */
     private Client $client;
 
-    public function __construct()
+    public function __construct(string $torProxy)
     {
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
+            RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
+            RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
+            'curl' => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
         ]);
     }
 
@@ -33,6 +37,7 @@ class Eztv extends AbstractSpider
 
     /**
      * @throws GuzzleException
+     * @throws \Exception
      */
     public function getPage(ForumDto $forum): \Generator
     {
@@ -95,7 +100,7 @@ class Eztv extends AbstractSpider
     /**
      * @param array $torrentData
      */
-    private function buildFromTorrentData($torrentData): void
+    private function buildFromTorrentData(array $torrentData): void
     {
         $title = $torrentData['title'];
         if (!preg_match('#S\d+E\d+#i', $title)) {

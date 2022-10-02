@@ -23,11 +23,15 @@ class NnmClub extends AbstractSpider
     /** @var Client */
     private Client $client;
 
-    public function __construct()
+    public function __construct(string $torProxy)
     {
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
+            RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
+            RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
+            'curl' => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
         ]);
     }
 
