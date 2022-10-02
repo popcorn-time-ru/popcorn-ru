@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
 use Prometheus\CollectorRegistry;
+use Prometheus\Exception\MetricsRegistrationException;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -35,11 +36,11 @@ class TorrentService
     #[Required] public ContainerInterface $container;
     #[Required] public CollectorRegistry $cr;
 
-    public function searchMovieByTitleAndYear(string $title, int $year)
+    public function searchMovieByTitleAndYear(string $title, int $year): ?string
     {
         return $this->mediaInfo->searchMovieByTitleAndYear($title, $year);
     }
-    public function searchShowByTitle(string $title)
+    public function searchShowByTitle(string $title): ?string
     {
         return $this->mediaInfo->searchShowByTitle($title);
     }
@@ -65,6 +66,9 @@ class TorrentService
         return $media;
     }
 
+    /**
+     * @throws MetricsRegistrationException
+     */
     public function findExistOrCreateTorrent(string $provider, string $externalId, BaseTorrent $new): BaseTorrent
     {
         $torrent = $this->torrentRepo->findByProviderAndExternalId(
@@ -87,8 +91,9 @@ class TorrentService
 
     /**
      * @param BaseTorrent $torrent
+     * @throws MetricsRegistrationException
      */
-    public function updateTorrent(BaseTorrent $torrent)
+    public function updateTorrent(BaseTorrent $torrent): void
     {
         $torrent->sync();
         $torrent->setActive(true);
@@ -108,7 +113,10 @@ class TorrentService
         $this->producer->sendEvent($topic, $torrentMessage);
     }
 
-    public function deleteTorrent(string $provider, string $externalId)
+    /**
+     * @throws MetricsRegistrationException
+     */
+    public function deleteTorrent(string $provider, string $externalId): void
     {
         $torrent = $this->torrentRepo->findByProviderAndExternalId(
             $provider,
@@ -131,7 +139,7 @@ class TorrentService
         $this->selectActive($media, $torrent->getLanguage(), false);
     }
 
-    public function updateActive(UuidInterface $torrentId)
+    public function updateActive(UuidInterface $torrentId): void
     {
         $torrent = $this->torrentRepo->find($torrentId);
         if (!$torrent) {
@@ -143,7 +151,7 @@ class TorrentService
         }
     }
 
-    protected function selectActive(BaseMedia $media, string $language, bool $onlyActive = true)
+    protected function selectActive(BaseMedia $media, string $language, bool $onlyActive = true): void
     {
         if ($media instanceof Movie) {
             $this->selectActiveForMovie($media, $language, $onlyActive);
@@ -154,7 +162,7 @@ class TorrentService
         $this->em->flush();
     }
 
-    protected function selectActiveForMovie(Movie $movie, string $language, bool $onlyActive = true)
+    protected function selectActiveForMovie(Movie $movie, string $language, bool $onlyActive = true): void
     {
         /** @var BaseTorrent[] $active */
         $active = [];
@@ -171,7 +179,7 @@ class TorrentService
         }
     }
 
-    protected function selectActiveForShow(Show $show, string $language, bool $onlyActive = true)
+    protected function selectActiveForShow(Show $show, string $language, bool $onlyActive = true): void
     {
         /** @var BaseTorrent[][] $active */
         $active = [];

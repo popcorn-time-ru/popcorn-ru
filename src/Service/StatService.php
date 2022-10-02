@@ -7,6 +7,7 @@ use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use App\Repository\TorrentRepository;
 use Prometheus\CollectorRegistry;
+use Prometheus\Exception\MetricsRegistrationException;
 use Symfony\Contracts\Service\Attribute\Required;
 use Tmdb\Repository\GenreRepository;
 
@@ -19,7 +20,10 @@ class StatService
     #[Required] public GenreRepository $genresRepo;
     #[Required] public CollectorRegistry $cr;
 
-    public function calculateTorrentStat()
+    /**
+     * @throws MetricsRegistrationException
+     */
+    public function calculateTorrentStat(): void
     {
         $torrentProm = $this->cr->getOrRegisterGauge('popcorn', 'torrent', 'torrents count', ['provider']);
         foreach($this->torrent->getStatByProvider() as $provider => $count) {
@@ -27,7 +31,10 @@ class StatService
         }
     }
 
-    public function calculateMediaStat()
+    /**
+     * @throws MetricsRegistrationException
+     */
+    public function calculateMediaStat(): void
     {
         $movieProm = $this->cr->getOrRegisterGauge('popcorn', 'movies', 'movies count', ['lang', 'genre']);
         $showProm = $this->cr->getOrRegisterGauge('popcorn', 'shows', 'shows count', ['lang', 'genre']);
@@ -99,8 +106,8 @@ class StatService
         return $group;
     }
 
-    private $keyToNum = [];
-    private $numToTranslated = [];
+    private array $keyToNum = [];
+    private array $numToTranslated = [];
 
     private function translatedTitle(string $genre, string $lang)
     {
