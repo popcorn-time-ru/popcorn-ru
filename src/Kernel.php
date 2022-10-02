@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -30,6 +31,9 @@ class Kernel extends BaseKernel
         return \dirname(__DIR__);
     }
 
+    /**
+     * @throws Exception
+     */
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $container->addResource(new FileResource($this->getProjectDir().'/config/bundles.php'));
