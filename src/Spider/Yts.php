@@ -5,20 +5,17 @@ namespace App\Spider;
 use App\Entity\Movie;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 
 class Yts extends AbstractSpider
 {
     public const BASE_URL = 'https://yts.mx/';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct()
     {

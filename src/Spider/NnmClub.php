@@ -3,19 +3,12 @@
 namespace App\Spider;
 
 use App\Entity\File;
-use App\Entity\Movie;
 use App\Entity\Torrent\BaseTorrent;
-use App\Entity\Torrent\MovieTorrent;
-use App\Entity\Show;
-use App\Entity\Torrent\ShowTorrent;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class NnmClub extends AbstractSpider
@@ -28,7 +21,7 @@ class NnmClub extends AbstractSpider
     private const PASS = '6x8Mt68izryiVjR2mArp';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct()
     {

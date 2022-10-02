@@ -2,19 +2,13 @@
 
 namespace App\Spider;
 
-use App\Entity\Episode;
 use App\Entity\File;
-use App\Entity\Show;
 use App\Entity\Torrent\BaseTorrent;
-use App\Entity\Torrent\EpisodeTorrent;
-use App\Service\EpisodeService;
-use App\Service\TorrentService;
 use App\Spider\Dto\ForumDto;
 use App\Spider\Dto\TopicDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class T1337x extends AbstractSpider
@@ -22,7 +16,7 @@ class T1337x extends AbstractSpider
     public const BASE_URL = 'https://1337x.to/';
 
     /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct()
     {
