@@ -16,7 +16,7 @@ use Ramsey\Uuid\UuidInterface;
 /**
  * @ORM\MappedSuperclass()
  */
-abstract class BaseMedia
+abstract class BaseMedia extends \App\Entity\Show
 {
     /**
      * @ORM\Id()
@@ -51,8 +51,7 @@ abstract class BaseMedia
     protected DateTime $syncAt;
     public function synced(int $delta): bool
     {
-        return $this->syncAt &&
-            $this->syncAt->getTimestamp() + $delta > (new \DateTime())->getTimestamp();
+        return $this->syncAt->getTimestamp() + $delta > (new \DateTime())->getTimestamp();
     }
     public function sync() { $this->syncAt = new \DateTime(); return $this;}
     public function getSynAt() { return $this->syncAt;}
@@ -90,20 +89,28 @@ abstract class BaseMedia
      * @ORM\Column(type="datetime")
      */
     protected DateTime $lastActiveCheck;
-    public function getLastActiveCheck() { return $this->lastActiveCheck; }
-    public function setLastActiveCheck($lastActiveCheck) { $this->lastActiveCheck = $lastActiveCheck; return $this;}
+    public function getLastActiveCheck(): DateTime
+    { return $this->lastActiveCheck; }
+    public function setLastActiveCheck($lastActiveCheck): BaseMedia|static
+    { $this->lastActiveCheck = $lastActiveCheck; return $this;}
 
     /**
      * @return BaseTorrent[]
      */
-    abstract public function getTorrents();
-    abstract public function getLocales();
+    public function getTorrents()
+    {
+        // TODO: Implement getTorrents() method.
+    }
+    public function getLocales()
+    {
+        // TODO: Implement getLocales() method.
+    }
 
     /**
      * @param string $locale
-     * @return BaseTorrent[]&\Generator
+     * @return array|Generator
      */
-    public function getLocaleTorrents(string $locale)
+    public function getLocaleTorrents(string $locale): array|Generator
     {
         foreach ($this->getTorrents() as $torrent) {
             if ($torrent->getLanguage() == $locale) {
@@ -118,61 +125,75 @@ abstract class BaseMedia
      * @ORM\Column(type="string")
      */
     protected $title;
-    public function getTitle() { return $this->title; }
-    public function setTitle($title) { $this->title = $title; return $this;}
+    public function getTitle(): string
+    { return $this->title; }
+    public function setTitle($title): BaseMedia|static
+    { $this->title = $title; return $this;}
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
     protected $year;
-    public function getYear() { return $this->year; }
-    public function setYear($year) { $this->year = $year; return $this;}
+    public function getYear(): string
+    { return $this->year; }
+    public function setYear($year): BaseMedia|static
+    { $this->year = $year; return $this;}
 
     /**
      * @var string
      * @ORM\Column(type="string", length=2)
      */
     protected $origLang;
-    public function getOrigLang() { return $this->origLang; }
-    public function setOrigLang($origLang) { $this->origLang = $origLang; return $this;}
+    public function getOrigLang(): string
+    { return $this->origLang; }
+    public function setOrigLang($origLang): BaseMedia|static
+    { $this->origLang = $origLang; return $this;}
 
     /**
      * @var string
      * @ORM\Column(type="text")
      */
     protected $synopsis;
-    public function getSynopsis() { return $this->synopsis; }
-    public function setSynopsis($synopsis) { $this->synopsis = $synopsis; return $this;}
+    public function getSynopsis(): string
+    { return $this->synopsis; }
+    public function setSynopsis($synopsis): BaseMedia|static
+    { $this->synopsis = $synopsis; return $this;}
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
     protected $runtime;
-    public function getRuntime() { return $this->runtime; }
-    public function setRuntime($runtime) { $this->runtime = $runtime; return $this;}
+    public function getRuntime(): string
+    { return $this->runtime; }
+    public function setRuntime($runtime): BaseMedia|static
+    { $this->runtime = $runtime; return $this;}
 
     /**
      * @var array
      * @ORM\Column(type="simple_array")
      */
     protected $genres;
-    public function getGenres() { return $this->genres; }
-    public function setGenres($genres) { $this->genres = $genres; sort($this->genres); return $this;}
+    public function getGenres(): array
+    { return $this->genres; }
+    public function setGenres($genres): BaseMedia|static
+    { $this->genres = $genres; sort($this->genres); return $this;}
 
     /**
      * @var Images
      * @ORM\Embedded(class="App\Entity\VO\Images", columnPrefix="images_")
      */
     protected $images;
-    public function getImages() { return $this->images; }
+    public function getImages(): Images
+    { return $this->images; }
 
     /**
      * @var Rating
      * @ORM\Embedded(class="App\Entity\VO\Rating", columnPrefix="rating_")
      */
     protected $rating;
-    public function getRating() { return $this->rating; }
+    public function getRating(): Rating
+    { return $this->rating; }
     //</editor-fold>
 }
