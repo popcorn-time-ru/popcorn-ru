@@ -33,6 +33,11 @@ abstract class AbstractSpider implements SpiderInterface
 
     protected $context;
 
+    public function useTor(): bool
+    {
+        return false;
+    }
+
     public function getName(): string
     {
         return (new ReflectionClass($this))->getShortName();

@@ -23,13 +23,17 @@ class TorrentGalaxy extends AbstractSpider
     /** @var Client */
     private $client;
 
+    public function useTor(): bool
+    {
+        return true;
+    }
+
     public function __construct(string $torProxy)
     {
-        //$torProxy = '';
         $this->client = new Client([
-            'base_uri' => $torProxy ? self::BASE_URL_TOR : self::BASE_URL,
-            RequestOptions::TIMEOUT => $torProxy ? 30 : 10,
-            RequestOptions::PROXY => $torProxy,
+            'base_uri' => $this->useTor() ? self::BASE_URL_TOR : self::BASE_URL,
+            RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
+            RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
             'curl' => [
                 CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
             ],
