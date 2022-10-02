@@ -18,10 +18,10 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
     public const TOPIC = 'torrentActive';
 
     /** @var TorrentService */
-    private $torrentService;
+    private TorrentService $torrentService;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * ShowTorrentProducer constructor.
@@ -35,7 +35,12 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
         $this->logger = $logger;
     }
 
-    public function process(Message $message, Context $context)
+    /**
+     * @param Message $message
+     * @param Context $context
+     * @return object|string
+     */
+    public function process(Message $message, Context $context): object|string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -53,7 +58,10 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

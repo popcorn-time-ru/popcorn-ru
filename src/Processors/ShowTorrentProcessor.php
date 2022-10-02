@@ -20,13 +20,13 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
     public const TOPIC = 'linkShowTorrent';
 
     /** @var EpisodeService */
-    protected $episodes;
+    protected EpisodeService $episodes;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /** @var ProducerInterface */
-    private $producer;
+    private ProducerInterface $producer;
 
     /**
      * ShowTorrentProducer constructor.
@@ -41,7 +41,12 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
         $this->producer = $producer;
     }
 
-    public function process(Message $message, Context $context)
+    /**
+     * @param Message $message
+     * @param Context $context
+     * @return object|string
+     */
+    public function process(Message $message, Context $context): object|string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -62,7 +67,10 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    /**
+     *@return string
+     */
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

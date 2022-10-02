@@ -20,10 +20,10 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
     public const TOPIC = 'getTopic';
 
     /** @var SpiderSelector */
-    protected $selector;
+    protected SpiderSelector $selector;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(SpiderSelector $selector, LoggerInterface $logger)
     {
@@ -32,9 +32,11 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
     }
 
     /**
-    *@return string|array
-    */
-    public function process(Message $message, Context $context)
+     * @param Message $message
+     * @param Context $context
+     * @return string
+     */
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -64,9 +66,9 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
     }
 
     /**
-    *@return string|array
-    */
-    public static function getSubscribedTopics()
+    *@return string
+     */
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

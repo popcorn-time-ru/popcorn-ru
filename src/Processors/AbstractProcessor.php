@@ -6,7 +6,7 @@ use Interop\Queue\Processor;
 
 abstract class AbstractProcessor implements Processor
 {
-    protected function catchRequestException($e)
+    protected function catchRequestException($e): string
     {
         if ($e->getResponse()) {
             echo $e->getMessage().PHP_EOL;
@@ -15,7 +15,7 @@ abstract class AbstractProcessor implements Processor
                 return self::REQUEUE;
             }
             if ($e->getResponse()->getStatusCode() > 400) {
-                // 404 - some happense
+                // 404 - some happens
                 return self::ACK;
             }
             return self::ACK;
