@@ -17,12 +17,12 @@ class Yts extends AbstractSpider
     /** @var Client */
     private Client $client;
 
-    public function __construct(string $torProxy)
+    public function __construct(string $torProxy, bool $useTorProxy)
     {
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
-            RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
+            RequestOptions::TIMEOUT => $useTorProxy ? 30 : 10,
+            RequestOptions::PROXY => $useTorProxy ? $torProxy : '',
             'curl' => [
                 CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
             ],

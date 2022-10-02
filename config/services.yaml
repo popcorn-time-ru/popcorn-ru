@@ -18,6 +18,7 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             string $torProxy: '%env(resolve:TOR_PROXY)%'
+            bool $useTorProxy: '%env(bool:TOR_ENABLED)%'
             string $defaultLocale: '%defaultLocale%'
             array $extractLocales: '%extractLocales%'
 

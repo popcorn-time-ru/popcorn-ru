@@ -33,17 +33,6 @@ abstract class AbstractSpider implements SpiderInterface
 
     protected $context;
 
-    public function useTor(): bool
-    {
-        /// If tor is enabled in the env, then use it. Else don't.
-        /// This is to prevent the spider from using TOR when it's not needed.
-        if (getenv('TOR_ENABLED') === 'true') {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public function getName(): string
     {
         return (new ReflectionClass($this))->getShortName();
