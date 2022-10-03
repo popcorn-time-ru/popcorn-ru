@@ -174,7 +174,7 @@ class MediaService
         /** @var Country $country */
         $country = current($showInfo->getOriginCountry()->toArray());
         /** @var Network $network */
-        $network = current(current($showInfo->getNetworks()));
+        $network = current($showInfo->getNetworks()->toArray());
         $show
             ->setCountry($country ? $country->getIso31661() : '')
             ->setNetwork($network ? $network->getName() : '')
