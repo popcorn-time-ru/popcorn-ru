@@ -40,6 +40,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    
+    # php 8.1 warning serialize resource - wait php-tmdb update
+    cache.default_marshaller:
+        class: Symfony\Component\Cache\Marshaller\DefaultMarshaller
+        arguments:
+            - false
+            - "%kernel.debug%"
 
     App\Traktor\Client:
         calls:
