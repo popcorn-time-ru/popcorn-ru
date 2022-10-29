@@ -6,56 +6,20 @@ use App\Entity\Episode;
 use App\Entity\Show;
 use App\Entity\Torrent\ShowTorrent;
 use App\Repository\TorrentRepository;
+use App\Traktor\Client;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class EpisodeService
 {
-    /** @var TorrentRepository */
-    protected $torrentRepo;
-
-    /** @var MediaService */
-    protected $mediaInfo;
-
-    /** @var EntityManagerInterface */
-    protected $em;
-
-    /** @var LocaleService */
-    protected $localeService;
-
-    /** @var \App\Traktor\Client */
-    private $trakt;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * EpisodeService constructor.
-     *
-     * @param TorrentRepository      $torrentRepo
-     * @param MediaService           $mediaInfo
-     * @param EntityManagerInterface $em
-     * @param LocaleService          $localeService
-     * @param LoggerInterface        $logger
-     * @param \App\Traktor\Client    $trakt
-     */
-    public function __construct(
-        TorrentRepository $torrentRepo,
-        MediaService $mediaInfo,
-        EntityManagerInterface $em,
-        LocaleService $localeService,
-        LoggerInterface $logger,
-        \App\Traktor\Client $trakt
-    )
-    {
-        $this->torrentRepo = $torrentRepo;
-        $this->mediaInfo = $mediaInfo;
-        $this->em = $em;
-        $this->localeService = $localeService;
-        $this->trakt = $trakt;
-        $this->logger = $logger;
-    }
+    #[Required] public TorrentRepository $torrentRepo;
+    #[Required] public MediaService $mediaInfo;
+    #[Required] public EntityManagerInterface $em;
+    #[Required] public LocaleService $localeService;
+    #[Required] public Client $trakt;
+    #[Required] public LoggerInterface $logger;
 
     public function link(UuidInterface $torrentId): void
     {
@@ -80,7 +44,8 @@ class EpisodeService
         }
     }
 
-    protected $showCache = [];
+    protected array $showCache = [];
+    
     public function getEpisode(Show $show, int $s, int $e): ?Episode
     {
         $item = null;
@@ -147,7 +112,7 @@ class EpisodeService
         return $item;
     }
 
-    protected function getSEFromName($filePathAndName, Show $show)
+    protected function getSEFromName($filePathAndName, Show $show): array
     {
         $components = pathinfo($filePathAndName);
         $dir = $components['dirname'];

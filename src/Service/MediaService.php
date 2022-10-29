@@ -6,6 +6,7 @@ use App\Entity\BaseMedia;
 use App\Entity\Movie;
 use App\Entity\Show;
 use DateTime;
+use Symfony\Contracts\Service\Attribute\Required;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;
 use Tmdb\Model\Common\Country;
@@ -23,35 +24,11 @@ class MediaService
     public const IMDB_RATING = 7.0;
     public const IMDB_COUNT = 3000;
 
-    /** @var LocaleService */
-    protected $localeService;
-
-    /** @var MovieRepository */
-    protected $movieRepo;
-
-    /** @var TvRepository */
-    protected $showRepo;
-
-    /** @var \App\Traktor\Client */
-    private $trakt;
-
-    /** @var Client */
-    private $client;
-
-    public function __construct(
-        Client $client,
-        MovieRepository $movieRepo,
-        TvRepository $showRepo,
-        LocaleService $localeService,
-        \App\Traktor\Client $trakt
-    )
-    {
-        $this->movieRepo = $movieRepo;
-        $this->showRepo = $showRepo;
-        $this->client = $client;
-        $this->localeService = $localeService;
-        $this->trakt = $trakt;
-    }
+    #[Required] public LocaleService $localeService;
+    #[Required] public MovieRepository $movieRepo;
+    #[Required] public TvRepository $showRepo;
+    #[Required] public \App\Traktor\Client $trakt;
+    #[Required] public \Tmdb\Client $client;
 
     public function getSeasonEpisodes(Show $show, int $season): array
     {
@@ -250,10 +227,10 @@ class MediaService
     }
 
     /**
-     * @param BaseMedia $media
-     * @param TmdbShow|TmdbMovie $info
+     * @param BaseMedia          $media
+     * @param TmdbMovie|TmdbShow $info
      */
-    private function fillRating(BaseMedia $media, $info): void
+    private function fillRating(BaseMedia $media, TmdbShow|TmdbMovie $info): void
     {
         try {
             if ($media instanceof Movie) {
@@ -280,10 +257,10 @@ class MediaService
     }
 
     /**
-     * @param BaseMedia $media
-     * @param TmdbShow|TmdbMovie $info
+     * @param BaseMedia          $media
+     * @param TmdbMovie|TmdbShow $info
      */
-    private function fillImagesGenres(BaseMedia $media, $info): void
+    private function fillImagesGenres(BaseMedia $media, TmdbShow|TmdbMovie $info): void
     {
         $media->getImages()
             ->setPoster($info->getPosterPath() ?: '')
