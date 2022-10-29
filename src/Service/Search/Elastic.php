@@ -107,7 +107,10 @@ class Elastic implements SearchInterface
     {
         $n = ['nested' => ['path' => 'rating']];
         return match ($sort) {
-            'title', 'name' => ['title' => $order, 'locales.title' => $order],
+            'title', 'name' => [
+                'title' => $order,
+                'locales.title' => ['nested' => ['path' => 'locales'], 'order' => $order],
+            ],
             'popularity' => [
                 'rating.popularity' => $n + ['order' => $order],
                 'rating.watchers' => $n + ['order' => $order],
