@@ -14,24 +14,16 @@ use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'getTopic';
 
-    /** @var SpiderSelector */
-    protected $selector;
+    #[Required] public SpiderSelector $selector;
+    #[Required] public LoggerInterface $logger;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(SpiderSelector $selector, LoggerInterface $logger)
-    {
-        $this->selector = $selector;
-        $this->logger = $logger;
-    }
-
-    public function process(Message $message, Context $context)
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -60,7 +52,7 @@ class TopicProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

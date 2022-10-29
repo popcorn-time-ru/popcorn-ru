@@ -14,28 +14,17 @@ use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'getPage';
 
-    /** @var SpiderSelector */
-    protected $selector;
+    #[Required] public SpiderSelector $selector;
+    #[Required] public LoggerInterface $logger;
+    #[Required] public ProducerInterface $producer;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    /** @var ProducerInterface */
-    private $producer;
-
-    public function __construct(SpiderSelector $selector, ProducerInterface $producer, LoggerInterface $logger)
-    {
-        $this->selector = $selector;
-        $this->producer = $producer;
-        $this->logger = $logger;
-    }
-
-    public function process(Message $message, Context $context)
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -82,7 +71,7 @@ class ForumProcessor extends AbstractProcessor implements TopicSubscriberInterfa
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

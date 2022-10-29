@@ -12,30 +12,16 @@ use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
 {
     public const TOPIC = 'torrentActive';
 
-    /** @var TorrentService */
-    private $torrentService;
+    #[Required] public TorrentService $torrentService;
+    #[Required] public LoggerInterface $logger;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * ShowTorrentProducer constructor.
-     *
-     * @param TorrentService  $torrentService
-     * @param LoggerInterface $logger
-     */
-    public function __construct(TorrentService $torrentService, LoggerInterface $logger)
-    {
-        $this->torrentService = $torrentService;
-        $this->logger = $logger;
-    }
-
-    public function process(Message $message, Context $context)
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -53,7 +39,7 @@ class TorrentActiveProcessor implements TopicSubscriberInterface, Processor
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

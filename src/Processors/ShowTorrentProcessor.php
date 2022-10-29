@@ -14,34 +14,17 @@ use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'linkShowTorrent';
 
-    /** @var EpisodeService */
-    protected $episodes;
+    #[Required] public EpisodeService $episodes;
+    #[Required] public LoggerInterface $logger;
+    #[Required] public ProducerInterface $producer;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    /** @var ProducerInterface */
-    private $producer;
-
-    /**
-     * ShowTorrentProducer constructor.
-     *
-     * @param EpisodeService  $episodes
-     * @param LoggerInterface $logger
-     */
-    public function __construct(EpisodeService $episodes, ProducerInterface $producer, LoggerInterface $logger)
-    {
-        $this->episodes = $episodes;
-        $this->logger = $logger;
-        $this->producer = $producer;
-    }
-
-    public function process(Message $message, Context $context)
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -62,7 +45,7 @@ class ShowTorrentProcessor extends AbstractProcessor implements TopicSubscriberI
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

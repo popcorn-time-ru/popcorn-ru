@@ -10,31 +10,17 @@ use Interop\Queue\Context;
 use Interop\Queue\Message;
 use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class WatcherProcessor implements TopicSubscriberInterface, Processor
 {
     public const TOPIC = 'watcherUpdate';
 
-    private MovieRepository $movieRepository;
-
-    private ShowRepository $showRepository;
-
-    private LoggerInterface $logger;
-
-    /**
-     * WatcherProcessor constructor.
-     *
-     * @param MovieRepository $movieRepository
-     * @param ShowRepository  $showRepository
-     */
-    public function __construct(MovieRepository $movieRepository, ShowRepository $showRepository, LoggerInterface $logger)
-    {
-        $this->movieRepository = $movieRepository;
-        $this->showRepository = $showRepository;
-        $this->logger = $logger;
-    }
-
-    public function process(Message $message, Context $context)
+    #[Required] public MovieRepository $movieRepository;
+    #[Required] public ShowRepository $showRepository;
+    #[Required] public LoggerInterface $logger;
+    
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -58,7 +44,7 @@ class WatcherProcessor implements TopicSubscriberInterface, Processor
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }

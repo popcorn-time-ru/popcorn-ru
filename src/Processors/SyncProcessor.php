@@ -17,50 +17,23 @@ use Enqueue\Util\JSON;
 use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
-use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterface
 {
     public const TOPIC = 'sync';
 
-    private MediaService $extractor;
+    #[Required] public MediaService $extractor;
+    #[Required] public ProducerInterface $producer;
+    #[Required] public TorrentService $torrentService;
+    #[Required] public TorrentRepository $torrentRepository;
+    #[Required] public MovieRepository $movieRepository;
+    #[Required] public ShowRepository $showRepository;
+    #[Required] public LoggerInterface $logger;
+    #[Required] public EntityManagerInterface $em;
 
-    private ProducerInterface $producer;
-
-    private TorrentService $torrentService;
-
-    private TorrentRepository $torrentRepository;
-
-    private MovieRepository $movieRepository;
-
-    private ShowRepository $showRepository;
-
-    private LoggerInterface $logger;
-
-    private EntityManagerInterface $em;
-
-    public function __construct(
-        EntityManagerInterface $em,
-        MediaService $extractor,
-        TorrentRepository $torrentRepository,
-        TorrentService $torrentService,
-        MovieRepository $movieRepository,
-        ShowRepository $showRepository,
-        ProducerInterface $producer,
-        LoggerInterface $logger)
-    {
-        $this->producer = $producer;
-        $this->logger = $logger;
-        $this->torrentService = $torrentService;
-        $this->torrentRepository = $torrentRepository;
-        $this->movieRepository = $movieRepository;
-        $this->showRepository = $showRepository;
-        $this->extractor = $extractor;
-        $this->em = $em;
-    }
-
-    public function process(Message $message, Context $context)
+    public function process(Message $message, Context $context): string
     {
         try {
             $data = JSON::decode($message->getBody());
@@ -122,7 +95,7 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
         return self::ACK;
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): string
     {
         return self::TOPIC;
     }
