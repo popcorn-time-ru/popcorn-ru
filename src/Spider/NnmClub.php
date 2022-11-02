@@ -35,6 +35,10 @@ class NnmClub extends AbstractSpider
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
             RequestOptions::TIMEOUT => 10,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
+            ],
+            'cookies' => new FileCookieJar(sys_get_temp_dir() . '/nnmclub.cookie.json', true),
         ]);
     }
 
@@ -243,7 +247,6 @@ class NnmClub extends AbstractSpider
         $resp = $this->client->get(
             'login.php',
             [
-                'cookies' => new FileCookieJar(sys_get_temp_dir() . '/nnmclub.cookie.json', true),
                 'query' => [
                     'redirect' => 'viewtopic.php?t=' . $topic->id,
                 ]
@@ -262,7 +265,6 @@ class NnmClub extends AbstractSpider
             $resp = $this->client->post(
                 'login.php',
                 [
-                    'cookies' => new FileCookieJar(sys_get_temp_dir() . '/nnmclub.cookie.json', true),
                     'form_params' => $f->getPhpValues()
                 ]
             );
