@@ -15,7 +15,7 @@ class NnmClub extends AbstractSpider
 {
     public const BASE_URL = 'https://nnmclub.to/forum/';
 
-    public const BASE_URL_TOR = 'http://nnmclub2vvjqzjne6q4rrozkkkdmlvnrcsyes2bbkm7e5ut2aproy4id.onion/';
+    public const BASE_URL_TOR = 'http://nnmclub2vvjqzjne6q4rrozkkkdmlvnrcsyes2bbkm7e5ut2aproy4id.onion/forum/';
 
     private const PAGE_SIZE = 50;
 
