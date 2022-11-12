@@ -48,7 +48,7 @@ class SyncProcessor extends AbstractProcessor implements TopicSubscriberInterfac
                 if (!$torrent) {
                     return self::ACK;
                 }
-                if (!empty($data['delete'])) {
+                if (!$torrent->isSynced()) {
                     $this->torrentService->deleteTorrent($torrent->getProvider(), $torrent->getProviderExternalId());
                     return self::ACK;
                 }

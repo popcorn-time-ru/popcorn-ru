@@ -63,9 +63,13 @@ abstract class BaseTorrent
         $this->syncAt = new DateTime();
         return $this;
     }
-    public function isSynced(DateTime $date = null) {
-        $interval = $this->syncAt->diff($date ?: new DateTime());
-        return $interval->days < 1;
+    public function isSynced() {
+        $intervalCheck = $this->lastCheckAt->diff(new DateTime());
+        $intervalSync = $this->syncAt->diff(new DateTime());
+        if ($intervalCheck->days < 100) {
+            return true;
+        }
+        return $intervalCheck->days * 3 < $intervalSync->days;
     }
 
     /**
