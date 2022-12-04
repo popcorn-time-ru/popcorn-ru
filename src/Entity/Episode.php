@@ -3,17 +3,20 @@
 namespace App\Entity;
 
 use App\Entity\Locale\EpisodeLocale;
-use App\Entity\Locale\BaseLocale;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\EpisodeTorrent;
+use App\Repository\EpisodeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
+ * @ORM\Table(uniqueConstraints={
+ *      @ORM\UniqueConstraint(name="uniq_episode", columns={"media_id", "season", "episode"})
+ * })
  */
 class Episode
 {
