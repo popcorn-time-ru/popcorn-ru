@@ -17,6 +17,8 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 class TorrentRepository extends ServiceEntityRepository
 {
+    const TTL = 3600 * 24 * 7;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BaseTorrent::class);
@@ -101,7 +103,7 @@ class TorrentRepository extends ServiceEntityRepository
             $qb->andWhere('t.active = true');
         }
 
-        return $qb->getQuery()->enableResultCache()->getResult();
+        return $qb->getQuery()->enableResultCache(self::TTL)->getResult();
     }
 
     /**
@@ -121,7 +123,7 @@ class TorrentRepository extends ServiceEntityRepository
             $qb->andWhere('t.active = true');
         }
 
-        return $qb->getQuery()->enableResultCache()->getResult();
+        return $qb->getQuery()->enableResultCache(self::TTL)->getResult();
     }
 
     /**

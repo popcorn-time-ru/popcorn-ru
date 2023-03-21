@@ -19,6 +19,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BaseLocaleRepository extends ServiceEntityRepository
 {
+    const TTL = 3600 * 24 * 7;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BaseLocale::class);
@@ -40,7 +42,7 @@ class BaseLocaleRepository extends ServiceEntityRepository
             ->from($info[0], 'm');
         $qb->andWhere('m.locale = :locale')->setParameter('locale', $locale);
         $qb->andWhere('m.'.$info[1].' = :id')->setParameter('id', $media->getId());
-        return $qb->getQuery()->enableResultCache()->getOneOrNullResult();
+        return $qb->getQuery()->enableResultCache(self::TTL)->getOneOrNullResult();
     }
 
     public function findOrCreateByMovieAndLocale(Movie $media, string $locale): MovieLocale

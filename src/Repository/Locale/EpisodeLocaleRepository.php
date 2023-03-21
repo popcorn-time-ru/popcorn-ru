@@ -16,6 +16,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EpisodeLocaleRepository extends ServiceEntityRepository
 {
+    const TTL = 3600 * 24 * 7;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, EpisodeLocale::class);
@@ -38,7 +40,7 @@ class EpisodeLocaleRepository extends ServiceEntityRepository
         $qb->andWhere('e.show = :show')->setParameter('show', $show);
         $qb->andWhere('el.locale = :locale')->setParameter('locale', $locale);
         /** @var EpisodeLocale[] $result */
-        return $qb->getQuery()->enableResultCache()->getResult();
+        return $qb->getQuery()->enableResultCache(self::TTL)->getResult();
     }
 
 

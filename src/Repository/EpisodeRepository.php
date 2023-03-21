@@ -15,6 +15,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EpisodeRepository extends ServiceEntityRepository
 {
+    const TTL = 3600 * 24 * 30;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Episode::class);
@@ -27,7 +29,7 @@ class EpisodeRepository extends ServiceEntityRepository
             ->andWhere('e.season = :season')->setParameter('season', $season)
             ->andWhere('e.episode = :episode')->setParameter('episode', $episode)
             ->getQuery()
-            ->enableResultCache()
+            ->enableResultCache(self::TTL)
             ->getOneOrNullResult()
         ;
     }
