@@ -311,12 +311,10 @@ class Rutracker extends AbstractSpider
 
     private function getImdbByTitle(string $titleStr): ?string
     {
-        $titleStr = preg_replace('#\(.*?\)#', '', $titleStr);
-        preg_match('#^(.*)\[(\d{4}).*\]#', $titleStr, $match);
-        if (count($match) != 3) {
-            return null;
-        }
-        $titles = array_map('trim', explode('/', $match[1]));
+        preg_match('#^(.*)\[(\d{4})[^p].*?\]#', $titleStr, $match);
+        $titleStr = preg_replace('#\(.*?\).*#', '', $titleStr);
+        $titleStr = preg_replace('#\[.*?\]#', '', $titleStr);
+        $titles = array_map('trim', explode('/', $titleStr));
         $year = (int)$match[2];
 
         $names = [];
@@ -334,10 +332,12 @@ class Rutracker extends AbstractSpider
         $names = array_filter(array_map('trim', $names));
 
         foreach ($names as $name) {
-            $imdb = $isSerial
-                ? $this->torrentService->searchShowByTitle($name)
-                : $this->torrentService->searchMovieByTitleAndYear($name, $year)
-            ;
+            if (!$isSerial) {
+                $imdb = $this->torrentService->searchMovieByTitleAndYear($name, $year);
+            }
+            if (!$imdb) {
+                $imdb = $this->torrentService->searchShowByTitle($name);
+            }
             if ($imdb) {
                 return $imdb;
             }
