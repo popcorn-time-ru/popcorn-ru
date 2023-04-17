@@ -37,7 +37,7 @@ class Rutracker extends AbstractSpider
     public function __construct(string $torProxy)
     {
         $this->client = new Client([
-            'base_uri' =>  $this->useTor() ? self::BASE_URL_TOR : self::BASE_URL,
+            'base_uri' =>  $this->useTor() ? self::BASE_URL : self::BASE_URL, // tor site dead now
             RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
             RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
             RequestOptions::HEADERS => [
@@ -76,7 +76,6 @@ class Rutracker extends AbstractSpider
     {
         return [
             // кино-говно.com
-            934, //Азиатское кино
             505, //Идийское кино
             1235, //Грайндхаус
             2459, //короткометражки
