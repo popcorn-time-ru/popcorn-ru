@@ -331,6 +331,7 @@ class Rutracker extends AbstractSpider
         $names = array_filter(array_map('trim', $names));
 
         foreach ($names as $name) {
+            $imdb = false;
             if (!$isSerial) {
                 $imdb = $this->torrentService->searchMovieByTitleAndYear($name, $year);
             }
