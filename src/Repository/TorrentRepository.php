@@ -102,8 +102,12 @@ class TorrentRepository extends ServiceEntityRepository
         if ($onlyActive) {
             $qb->andWhere('t.active = true');
         }
+        $query = $qb->getQuery();
+        if ($onlyActive) {
+            $query->enableResultCache(self::TTL);
+        }
 
-        return $qb->getQuery()->enableResultCache(self::TTL)->getResult();
+        return $query->getResult();
     }
 
     /**
