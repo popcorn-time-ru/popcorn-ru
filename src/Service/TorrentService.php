@@ -139,7 +139,7 @@ class TorrentService
         }
         $media = $torrent->getMedia();
         if ($media->getLastActiveCheck()->diff(new DateTime())->days > 3) {
-            $this->selectActive($media, $torrent->getLanguage());
+            $this->selectActive($media, $torrent->getLanguage(), false);
         }
     }
 
