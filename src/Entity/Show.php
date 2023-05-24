@@ -58,7 +58,7 @@ class Show extends BaseMedia
     public function getLocales() { return $this->locales; }
 
     /**
-     * @var Episode[]&Collection
+     * @var array<Episode>&Collection
      * @ORM\OneToMany(targetEntity="App\Entity\Episode", mappedBy="show")
      */
     protected $episodes;
