@@ -22,6 +22,8 @@ fos_elastica:
                     property_path: released
                 #synopsis: ~
                 existTranslations: ~
+                origLang:
+                    type: "keyword"
                 locales:
                     type: "nested"
                     properties:
@@ -70,6 +72,8 @@ fos_elastica:
                     type: "keyword"
                 #synopsis: ~
                 existTranslations: ~
+                origLang:
+                    type: "keyword"
                 locales:
                     type: "nested"
                     properties:
