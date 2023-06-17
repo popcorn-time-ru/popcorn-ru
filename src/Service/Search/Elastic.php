@@ -41,7 +41,15 @@ class Elastic implements SearchInterface
         return $show->getEpisodes()->count() > 0;
     }
 
-    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
+    public function search(
+        QueryBuilder $qb,
+        ClassMetadata $class,
+        PageRequest $pageRequest,
+        LocaleRequest $localeParams,
+        int $offset,
+        int $limit,
+        bool $anime
+    ): array
     {
         if (($offset + $limit) > self::MAX_LIMIT) {
             return [];
@@ -96,6 +104,22 @@ class Elastic implements SearchInterface
                 $finder = $this->moviesFiner;
                 break;
             case Show::class:
+                $animeQ = new \Elastica\Query\BoolQuery();
+                $genre = new \Elastica\Query\Term();
+                $genre->setTerm('genres', 'animation');
+                $animeQ->addMust($genre);
+                $l1 = new \Elastica\Query\Term();
+                $l1->setTerm('origLang', 'ja');
+                $animeQ->addShould($l1);
+                $l2 = new \Elastica\Query\Term();
+                $l2->setTerm('origLang', 'ko');
+                $animeQ->addShould($l2);
+                $animeQ->setMinimumShouldMatch(1);
+                if ($anime) {
+                    $boolQuery->addMust($animeQ);
+                } else {
+                    $boolQuery->addMustNot($animeQ);
+                }
                 $finder = $this->showFiner;
                 break;
         }

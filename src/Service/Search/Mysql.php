@@ -21,7 +21,15 @@ class Mysql implements SearchInterface
         $this->localeRepository = $localeRepository;
     }
 
-    public function search(QueryBuilder $qb, ClassMetadata $class, PageRequest $pageRequest, LocaleRequest $localeParams, int $offset, int $limit): array
+    public function search(
+        QueryBuilder $qb,
+        ClassMetadata $class,
+        PageRequest $pageRequest,
+        LocaleRequest $localeParams,
+        int $offset,
+        int $limit,
+        bool $anime
+    ): array
     {
         if ($pageRequest->keywords) {
             $localeClass = $class->getName() === Show::class ? ShowLocale::class : MovieLocale::class;

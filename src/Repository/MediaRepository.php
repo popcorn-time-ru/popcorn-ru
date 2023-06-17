@@ -56,11 +56,12 @@ abstract class MediaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param PageRequest   $pageRequest
+     * @param PageRequest $pageRequest
      * @param LocaleRequest $localeParams
+     * @param bool $anime
      * @return BaseMedia[]
      */
-    public function getPage(PageRequest $pageRequest, LocaleRequest $localeParams): array
+    public function getPage(PageRequest $pageRequest, LocaleRequest $localeParams, bool $anime=false): array
     {
         return $this->search->search(
             $this->createQueryBuilder('m'),
@@ -68,7 +69,8 @@ abstract class MediaRepository extends ServiceEntityRepository
             $pageRequest,
             $localeParams,
             $pageRequest->offset,
-            $pageRequest->limit
+            $pageRequest->limit,
+            $anime
         );
     }
 
