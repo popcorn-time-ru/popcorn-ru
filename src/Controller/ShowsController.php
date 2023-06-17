@@ -10,6 +10,7 @@ use App\Request\LocaleRequest;
 use App\Request\PageRequest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
@@ -56,9 +57,9 @@ class ShowsController extends AbstractController
      * @ParamConverter(name="pageParams", converter="page_params")
      * @ParamConverter(name="localeParams", converter="locale_params")
      */
-    public function page(PageRequest $pageParams, LocaleRequest $localeParams)
+    public function page(PageRequest $pageParams, LocaleRequest $localeParams, Request $r)
     {
-        $shows = $this->repo->getPage($pageParams, $localeParams);
+        $shows = $this->repo->getPage($pageParams, $localeParams, (bool)$r->get('anime'));
 
         $data = $this->serializer->serialize($shows, 'json', $localeParams->context('list'));
 
