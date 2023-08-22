@@ -9,12 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 class PageParamConverter implements ParamConverterInterface
 {
     private const PAGE_SIZE = 50;
+    private const PAGE_SIZE_MAX = 100;
 
     public function apply(Request $request, ParamConverter $configuration)
     {
         $pageRequest = new PageRequest();
 
-        $pageRequest->limit = $request->query->get('limit') ?: self::PAGE_SIZE;
+        $pageRequest->limit = min($request->query->get('limit', self::PAGE_SIZE), self::PAGE_SIZE_MAX);
         $page = $request->attributes->get('page');
         $page = max(0, $page - 1);
         $pageRequest->offset = $page * $pageRequest->limit;
