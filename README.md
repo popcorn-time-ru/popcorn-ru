@@ -1,9 +1,7 @@
 # Popcorn Time Ru API server
 
 It is an API server, you don't need this to watch films on the client.<br>
-Just download the client from project page (https://popcorn-time.ga/build/).
-For english films you may simply put https://popcorn-time.ga/ as the Custom API Server in the advanced settings if you use the official Popcorn Time app (0.4.4+git).<br>
-However, for films in other languages, you need the fork version of the client.
+Just download the client from project page (https://github.com/popcorn-official/popcorn-desktop).
 
 If you want to add some trackers or create a self-hosted server then you can fork it.
 
