@@ -1,0 +1,13 @@
+diff --git a/lib/Tmdb/Model/Tv/Season.php b/lib/Tmdb/Model/Tv/Season.php
+index 429aefd..d7d969d 100644
+--- a/lib/Tmdb/Model/Tv/Season.php
++++ b/lib/Tmdb/Model/Tv/Season.php
+@@ -131,7 +131,7 @@ class Season extends AbstractModel
+      */
+     public function setAirDate($airDate)
+     {
+-        $this->airDate = new DateTime($airDate);
++        $this->airDate = $airDate ? new DateTime($airDate) : null;
+ 
+         return $this;
+     }
