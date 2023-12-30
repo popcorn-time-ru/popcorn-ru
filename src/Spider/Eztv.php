@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 
 class Eztv extends AbstractSpider
 {
-    public const BASE_URL = 'https://eztv.re/';
+    public const BASE_URL = 'https://eztv.yt/';
 
     /** @var Client */
     private $client;

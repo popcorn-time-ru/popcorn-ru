@@ -24,7 +24,7 @@ class Yts extends AbstractSpider
     {
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
+            RequestOptions::TIMEOUT => 100,
         ]);
     }
 
