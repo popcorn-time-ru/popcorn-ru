@@ -2,21 +2,22 @@
 
 namespace App\Logging;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 class SentryContextProcessor implements ProcessorInterface
 {
     /**
-     * @param  array $record
-     * @return array
+     * @param LogRecord $record
+     * @return LogRecord
      */
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record): LogRecord
     {
-        foreach ($record['context'] as $key => $val) {
+        foreach ($record->context as $key => $val) {
             if ($key === 'extra') {
                 continue;
             }
-            $record['context']['extra'][$key] = $val;
+            $record->extra[$key] = $val;
         }
         return $record;
     }

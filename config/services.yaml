@@ -8,7 +8,7 @@ parameters:
     extractLocales:
         ['en', 'ar', 'bg', 'bn', 'ca', 'cs', 'da', 'de', 'el', 'es', 'et', 'eu', 'fa', 'fi', 'fr', 'gl', 'gu',
         'he', 'hr', 'hu', 'hi', 'id', 'it', 'is', 'ka', 'kn', 'ko', 'ja', 'lt', 'ml', 'mk', 'ms', 'no', 'nb', 'nl',
-        'nn', 'pl', 'pt', 'pt-br', 'ro', 'ru', 'sk', 'sl', 'sr', 'sv', 'ta', 'tr', 'tl', 'th', 'te', 'vi', 'uk', 'ur',
+        'nn', 'pl', 'pt', 'pt-br', 'ro', 'ru', 'sk', 'sl', 'sr', 'sv', 'ta', 'tr', 'tl', 'th', 'te', 'vi', 'ua', 'uk', 'ur',
         'cn' ]
 
 services:
@@ -78,3 +78,4 @@ services:
             - '@fos_elastica.finder.movies'
             - '@fos_elastica.finder.shows'
 
+    Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
