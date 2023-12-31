@@ -314,7 +314,7 @@ class Rutracker extends AbstractSpider
         $titleStr = preg_replace('#\(.*?\).*#', '', $titleStr);
         $titleStr = preg_replace('#\[.*?\]#', '', $titleStr);
         $titles = array_map('trim', explode('/', $titleStr));
-        $year = (int)$match[2];
+        $year = isset($match[2]) ? (int)$match[2] : null;
 
         $names = [];
         $isSerial = false;
@@ -332,7 +332,7 @@ class Rutracker extends AbstractSpider
 
         foreach ($names as $name) {
             $imdb = false;
-            if (!$isSerial) {
+            if (!$isSerial && $year) {
                 $imdb = $this->torrentService->searchMovieByTitleAndYear($name, $year);
             }
             if (!$imdb) {
