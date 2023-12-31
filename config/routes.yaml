@@ -1,7 +1,12 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+controllers:
+  resource: ../src/Controller/
+  type: annotation
 
 app_metrics:
   path: /metrics
   controller: Artprima\PrometheusMetricsBundle\Controller\MetricsController::prometheus
+
+when@dev:
+  _errors:
+    resource: '@FrameworkBundle/Resources/config/routing/errors.xml'
+    prefix: /_error

@@ -10,9 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
-    /**
-     * @Route(path="/status")
-     */
+    #[Route(path: "/status")]
     public function status()
     {
         $data = [

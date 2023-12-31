@@ -10,27 +10,17 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Prometheus\CollectorRegistry;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class MetricsController
 {
-    /** @required */
-    public ShowRepository $show;
+    #[Required] public ShowRepository $show;
+    #[Required] public MovieRepository $movie;
+    #[Required] public TorrentRepository $torrent;
+    #[Required] public EntityManagerInterface $em;
+    #[Required] public CollectorRegistry $cr;
 
-    /** @required */
-    public MovieRepository $movie;
-
-    /** @required */
-    public TorrentRepository $torrent;
-
-    /** @required */
-    public EntityManagerInterface $em;
-
-    /** @required */
-    public CollectorRegistry $cr;
-
-    /**
-     * @Route(path="/metrics-old")
-     */
+    #[Route(path: "/metrics-old")]
     public function index()
     {
         $g = $this->cr->getOrRegisterGauge('test', 'xxx_yyy', 'help', ['label1', 'label2']);

@@ -10,9 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AnimeController extends AbstractController
 {
-    /**
-     * @Route("/animes/stat", name="animes_stat")
-     */
+    #[Route("/animes/stat", name: "animes_stat")]
     public function stat(LocaleRequest $localeParams)
     {
         $data = [
@@ -25,9 +23,7 @@ class AnimeController extends AbstractController
         return new CacheJsonResponse($data, false);
     }
 
-    /**
-     * @Route("/animes/{page}", name="animes_page", requirements={"page"="\d+"})
-     */
+    #[Route("/animes/{page}", name: "animes_page", requirements: ["page" => "\d+"])]
     public function page(PageRequest $pageParams, LocaleRequest $localeParams)
     {
         return new CacheJsonResponse([]);
