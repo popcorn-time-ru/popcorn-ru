@@ -8,12 +8,10 @@ use App\Repository\MediaStatRepository;
 use App\Repository\ShowRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ShowsController extends AbstractController
@@ -32,7 +30,6 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/shows/stat", name="shows_stat")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function stat(LocaleRequest $localeParams)
     {
@@ -54,8 +51,6 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/shows/{page}", name="shows_page", requirements={"page"="\d+"})
-     * @ParamConverter(name="pageParams", converter="page_params")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function page(PageRequest $pageParams, LocaleRequest $localeParams, Request $r)
     {
@@ -68,7 +63,6 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/show/{id}", name="show")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function show($id, LocaleRequest $localeParams)
     {
@@ -84,7 +78,6 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/show/{id}/torrents", name="show_torrents")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function torrents($id, LocaleRequest $localeParams)
     {
@@ -104,7 +97,6 @@ class ShowsController extends AbstractController
 
     /**
      * @Route("/show/{id}/{season}/{episode}/torrents", name="show_episode_torrents")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function episodeTorrents($id, $season, $episode, LocaleRequest $localeParams)
     {

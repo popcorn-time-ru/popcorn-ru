@@ -7,11 +7,9 @@ use App\Repository\MediaStatRepository;
 use App\Repository\MovieRepository;
 use App\Request\LocaleRequest;
 use App\Request\PageRequest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class MoviesController extends AbstractController
@@ -27,7 +25,6 @@ class MoviesController extends AbstractController
 
     /**
      * @Route("/movies/stat", name="movies_stat")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function stat(LocaleRequest $localeParams)
     {
@@ -49,8 +46,6 @@ class MoviesController extends AbstractController
 
     /**
      * @Route("/movies/{page}", name="movies_page", requirements={"page"="\d+"})
-     * @ParamConverter(name="pageParams", converter="page_params")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function page(PageRequest $pageParams, LocaleRequest $localeParams)
     {
@@ -63,7 +58,6 @@ class MoviesController extends AbstractController
 
     /**
      * @Route("/movie/{id}", name="movie")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function movie($id, LocaleRequest $localeParams)
     {
@@ -79,7 +73,6 @@ class MoviesController extends AbstractController
 
     /**
      * @Route("/movie/{id}/torrents", name="movie_torrents")
-     * @ParamConverter(name="localeParams", converter="locale_params")
      */
     public function torrents($id, LocaleRequest $localeParams)
     {

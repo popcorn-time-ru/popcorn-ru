@@ -36,6 +36,6 @@ class PageParamConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getConverter() === 'page_params' && $configuration->getClass() === PageRequest::class;
+        return $configuration->getClass() === PageRequest::class;
     }
 }
