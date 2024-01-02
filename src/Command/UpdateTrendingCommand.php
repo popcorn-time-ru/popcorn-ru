@@ -12,32 +12,22 @@ use App\Repository\MovieRepository;
 use App\Repository\ShowRepository;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Util\JSON;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
+#[AsCommand(
+    name: 'update:trending',
+    description: 'Update Trending from Trakt.tv',
+)]
 class UpdateTrendingCommand extends Command
 {
-    protected static $defaultName = 'update:trending';
-
-    /** @required */
-    public MovieRepository $movieRepository;
-
-    /** @required */
-    public ShowRepository $showRepository;
-
-    /** @required */
-    public \App\Traktor\Client $trakt;
-
-    /** @required */
-    public ProducerInterface $producer;
-
-    protected function configure()
-    {
-        $this
-            ->setDescription('Update Trending from Trakt.tv')
-        ;
-    }
+    #[Required] public MovieRepository $movieRepository;
+    #[Required] public ShowRepository $showRepository;
+    #[Required] public \App\Traktor\Client $trakt;
+    #[Required] public ProducerInterface $producer;
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

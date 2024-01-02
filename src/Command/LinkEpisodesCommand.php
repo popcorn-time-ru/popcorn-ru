@@ -12,25 +12,25 @@ use App\Service\SpiderSelector;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
+#[AsCommand(
+    name: 'link:episodes',
+    description: 'Try Link unlinked show torrents',
+)]
 class LinkEpisodesCommand extends Command
 {
-    protected static $defaultName = 'link:episodes';
-
-    /** @required */
-    public ProducerInterface $producer;
-
-    /** @required */
-    public TorrentRepository $torrentRepository;
+    #[Required] public ProducerInterface $producer;
+    #[Required] public TorrentRepository $torrentRepository;
 
     protected function configure()
     {
         $this
-            ->setDescription('Try Link unlinked show torrents')
             ->addArgument('limit', InputArgument::REQUIRED, 'Limit')
         ;
     }

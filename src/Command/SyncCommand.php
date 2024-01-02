@@ -11,36 +11,30 @@ use App\Service\SpiderSelector;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
+#[AsCommand(
+    name: 'update:syncOld',
+    description: 'Generate task for sync old records',
+)]
 class SyncCommand extends Command
 {
-    protected static $defaultName = 'update:syncOld';
-
-    /** @required */
-    public ProducerInterface $producer;
-
-    /** @required */
-    public TorrentRepository $torrentRepository;
-
-    /** @required */
-    public MovieRepository $movieRepository;
-
-    /** @required */
-    public ShowRepository $showRepository;
-
-    /** @required */
-    public LoggerInterface $logger;
+    #[Required] public ProducerInterface $producer;
+    #[Required] public TorrentRepository $torrentRepository;
+    #[Required] public MovieRepository $movieRepository;
+    #[Required] public ShowRepository $showRepository;
+    #[Required] public LoggerInterface $logger;
 
     protected function configure()
     {
         // 180 дней по 200 каждые 4 часа (???)
         $this
-            ->setDescription('Generate task for sync old records')
             ->addOption('days-check', 'c', InputOption::VALUE_REQUIRED, 'Days for check')
             ->addOption('days-delete', 'd', InputOption::VALUE_REQUIRED, 'Days for delete')
             ->addArgument('limit', InputArgument::REQUIRED, 'Limit')

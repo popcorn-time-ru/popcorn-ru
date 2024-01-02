@@ -8,23 +8,25 @@ use App\Processors\TorrentActiveProcessor;
 use App\Service\MediaService;
 use Enqueue\Null\NullContext;
 use Interop\Amqp\Impl\AmqpMessage;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
+#[AsCommand(
+    name: 'test:active',
+    description: 'Link files to episodes',
+)]
 class TestActiveCommand extends Command
 {
-    protected static $defaultName = 'test:active';
-
-    /** @required */
-    public TorrentActiveProcessor $processor;
+    #[Required] public TorrentActiveProcessor $processor;
 
     protected function configure()
     {
         $this
-            ->setDescription('Link files to episodes')
             ->addArgument('id', InputArgument::REQUIRED, 'Id')
         ;
     }

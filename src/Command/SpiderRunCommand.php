@@ -6,29 +6,29 @@ use App\Processors\ForumProcessor;
 use App\Service\SpiderSelector;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\Service\Attribute\Required;
 
+#[AsCommand(
+    name: 'spider:run',
+    description: 'Run spider',
+)]
 class SpiderRunCommand extends Command
 {
-    protected static $defaultName = 'spider:run';
-
-    /** @required */
-    public SpiderSelector $selector;
-
-    /** @required */
-    public ProducerInterface $producer;
+    #[Required] public SpiderSelector $selector;
+    #[Required] public ProducerInterface $producer;
 
     protected function configure()
     {
         // ежедневно последние 48 часов все
         // все при старте, и при добавлении нового трекера или изменения логики
         $this
-            ->setDescription('Run spider')
             ->addArgument('name', InputArgument::IS_ARRAY, 'Spider name')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Run all spiders')
             ->addOption('last', null, InputOption::VALUE_REQUIRED, 'Only last N hours')
