@@ -2,26 +2,30 @@
 
 namespace App\Request;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class LocaleParamConverter implements ParamConverterInterface
+class LocaleResolver implements ValueResolverInterface
 {
-    /** @var array */
-    private $extractLocales;
-
     /** @var string */
     private $defaultLocale;
 
-    public function __construct(array $extractLocales, string $defaultLocale)
+    public function __construct(string $defaultLocale)
     {
-        $this->extractLocales = $extractLocales;
         $this->defaultLocale = $defaultLocale;
     }
 
-    public function apply(Request $request, ParamConverter $configuration)
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        $argumentType = $argument->getType();
+        if (
+            $argumentType != LocaleRequest::class
+            && !is_subclass_of($argumentType, LocaleRequest::class, true)
+        ) {
+            return [];
+        }
+
         $localeRequest = new LocaleRequest();
 
         $localeRequest->needLocale = $request->query->has('locale');
@@ -46,12 +50,6 @@ class LocaleParamConverter implements ParamConverterInterface
             $localeRequest->contentLocales = [];
         }
 
-        $request->attributes->set($configuration->getName(), $localeRequest);
-        return true;
-    }
-
-    public function supports(ParamConverter $configuration)
-    {
-        return $configuration->getClass() === LocaleRequest::class;
+        return [$localeRequest];
     }
 }
