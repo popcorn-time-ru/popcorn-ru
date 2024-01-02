@@ -13,15 +13,11 @@ use Generator;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-/**
- * @ORM\MappedSuperclass()
- */
+#[ORM\MappedSuperclass]
 abstract class BaseMedia
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid')]
     protected UuidInterface $id;
     public function getId(): UuidInterface { return $this->id; }
 
@@ -36,18 +32,14 @@ abstract class BaseMedia
         $this->rating = new Rating();
     }
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     protected DateTime $createdAt;
     public function getCreatedAt(): DateTime { return $this->createdAt; }
     public function getCreatedForElastic(): ?DateTime {
         return $this->createdAt->getTimestamp() > 0 ? $this->createdAt : null;
     }
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     protected DateTime $syncAt;
     public function synced(int $delta): bool
     {
@@ -59,8 +51,8 @@ abstract class BaseMedia
 
     /**
      * @var string[]
-     * @ORM\Column(type="simple_array", nullable=true)
      */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     protected $existTranslations;
     public function getExistTranslations(): array { return $this->existTranslations ?? []; }
     public function addExistTranslation(string $translations): self {
@@ -86,9 +78,7 @@ abstract class BaseMedia
         return $this;
     }
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     protected DateTime $lastActiveCheck;
     public function getLastActiveCheck() { return $this->lastActiveCheck; }
     public function setLastActiveCheck($lastActiveCheck) { $this->lastActiveCheck = $lastActiveCheck; return $this;}
@@ -115,63 +105,63 @@ abstract class BaseMedia
     //<editor-fold desc="Api Data">
     /**
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $title;
     public function getTitle() { return $this->title; }
     public function setTitle($title) { $this->title = $title; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $year;
     public function getYear() { return $this->year; }
     public function setYear($year) { $this->year = $year; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=2)
      */
+    #[ORM\Column(type: 'string', length: 2)]
     protected $origLang;
     public function getOrigLang() { return $this->origLang; }
     public function setOrigLang($origLang) { $this->origLang = $origLang; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="text")
      */
+    #[ORM\Column(type: 'text')]
     protected $synopsis;
     public function getSynopsis() { return $this->synopsis; }
     public function setSynopsis($synopsis) { $this->synopsis = $synopsis; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $runtime;
     public function getRuntime() { return $this->runtime; }
     public function setRuntime($runtime) { $this->runtime = $runtime; return $this;}
 
     /**
      * @var array
-     * @ORM\Column(type="simple_array")
      */
+    #[ORM\Column(type: 'simple_array')]
     protected $genres;
     public function getGenres() { return $this->genres; }
     public function setGenres($genres) { $this->genres = $genres; sort($this->genres); return $this;}
 
     /**
      * @var Images
-     * @ORM\Embedded(class="App\Entity\VO\Images", columnPrefix="images_")
      */
+    #[ORM\Embedded(class: 'App\Entity\VO\Images', columnPrefix: 'images_')]
     protected $images;
     public function getImages() { return $this->images; }
 
     /**
      * @var Rating
-     * @ORM\Embedded(class="App\Entity\VO\Rating", columnPrefix="rating_")
      */
+    #[ORM\Embedded(class: 'App\Entity\VO\Rating', columnPrefix: 'rating_')]
     protected $rating;
     public function getRating() { return $this->rating; }
     //</editor-fold>

@@ -12,20 +12,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
- * @ORM\Table(uniqueConstraints={
- *      @ORM\UniqueConstraint(name="uniq_episode", columns={"media_id", "season", "episode"})
- * })
- */
+#[ORM\Table]
+#[ORM\UniqueConstraint(name: 'uniq_episode', columns: ['media_id', 'season', 'episode'])]
+#[ORM\Entity(repositoryClass: 'App\Repository\EpisodeRepository')]
 class Episode
 {
     /**
      * @var UuidInterface
-     *
-     * @ORM\Id()
-     * @ORM\Column(type="uuid")
      */
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid')]
     protected $id;
     public function getId(): UuidInterface { return $this->id; }
 
@@ -37,9 +33,9 @@ class Episode
 
     /**
      * @var EpisodeTorrent[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Torrent\EpisodeTorrent", fetch="LAZY", mappedBy="episode")
-     * @ORM\OrderBy({"peer" = "DESC"})
      */
+    #[ORM\OneToMany(targetEntity: 'App\Entity\Torrent\EpisodeTorrent', fetch: 'LAZY', mappedBy: 'episode')]
+    #[ORM\OrderBy(['peer' => 'DESC'])]
     protected $torrents;
     public function getTorrents() { return $this->torrents; }
 
@@ -58,76 +54,75 @@ class Episode
 
     /**
      * @var EpisodeLocale[]
-     * @ORM\OneToMany(targetEntity="App\Entity\Locale\EpisodeLocale", fetch="LAZY", mappedBy="episode")
      */
+    #[ORM\OneToMany(targetEntity: 'App\Entity\Locale\EpisodeLocale', fetch: 'LAZY', mappedBy: 'episode')]
     protected $locales;
     public function getLocales() { return $this->locales; }
 
     /**
      * @var Show
-     * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="episodes")
-     * @ORM\JoinColumn(name="media_id")
      */
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Show', inversedBy: 'episodes')]
+    #[ORM\JoinColumn(name: 'media_id')]
     protected $show;
     public function getShow(): Show { return $this->show; }
     public function setShow(Show $show): self { $this->show = $show; return $this; }
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Column(type: 'integer')]
     protected $season;
     public function getSeason() { return $this->season; }
     public function setSeason($season) { $this->season = $season; return $this;}
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Column(type: 'integer')]
     protected $episode;
     public function getEpisode() { return $this->episode; }
     public function setEpisode($episode) { $this->episode = $episode; return $this;}
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Column(type: 'integer')]
     protected $firstAired;
     public function getFirstAired() { return $this->firstAired; }
     public function setFirstAired($firstAired) { $this->firstAired = $firstAired; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $title;
     public function getTitle() { return $this->title; }
     public function setTitle($title) { $this->title = $title; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="text")
      */
+    #[ORM\Column(type: 'text')]
     protected $overview;
     public function getOverview() { return $this->overview; }
     public function setOverview($overview) { $this->overview = $overview; return $this;}
 
     /**
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $tvdb = 0;
     public function getTvdb() { return $this->tvdb; }
     public function setTvdb($tvdb) { $this->tvdb = $tvdb; return $this;}
 
     /**
      * @var \Doctrine\Common\Collections\Collection|File[]
-     * @ORM\ManyToMany(targetEntity="File", mappedBy="episodes", cascade={"persist"})
-     * @ORM\JoinTable(name="episodes_files",
-     *      joinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")}
-     * )
      */
+    #[ORM\JoinTable(name: 'episodes_files')]
+    #[ORM\JoinColumn(name: 'episode_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'file_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: 'File', mappedBy: 'episodes', cascade: ['persist'])]
     protected $files;
     public function getFiles() { return $this->files; }
     public function addFile(File $file) {

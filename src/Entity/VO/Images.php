@@ -4,30 +4,22 @@ namespace App\Entity\VO;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable()
- */
+#[ORM\Embeddable]
 class Images
 {
     public const IMAGE_BASE = 'http://image.tmdb.org/t/p/w500';
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected string $poster = '';
     public function getPoster() { return $this->get($this->poster); }
     public function setPoster($poster) { $this->poster = $poster; return $this;}
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected string $fanart = '';
     public function getFanart() { return $this->get($this->fanart); }
     public function setFanart($fanart) { $this->fanart = $fanart; return $this;}
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected string $banner = '';
     public function getBanner() { return $this->get($this->banner); }
     public function setBanner($banner) { $this->banner = $banner; return $this;}

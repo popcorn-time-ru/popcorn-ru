@@ -5,9 +5,7 @@ namespace App\Entity;
 use App\Entity\Torrent\BaseTorrent;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\FileRepository")
- */
+#[ORM\Entity(repositoryClass: 'App\Repository\FileRepository')]
 class File
 {
     /**
@@ -22,32 +20,26 @@ class File
         $this->size = $size;
     }
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
     public function getId(): ?int { return $this->id; }
 
     /**
      * @var BaseTorrent
-     * @ORM\ManyToOne(targetEntity="App\Entity\Torrent\ShowTorrent", inversedBy="files")
      */
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Torrent\ShowTorrent', inversedBy: 'files')]
     protected $torrent;
     public function getTorrent(): BaseTorrent { return $this->torrent; }
     public function setTorrent(BaseTorrent $torrent): self { $this->torrent = $torrent; return $this; }
 
-    /**
-     * @ORM\Column(type="string", length=500)
-     */
+    #[ORM\Column(type: 'string', length: 500)]
     private $name;
     public function getName(): string { return $this->name; }
     public function setName(string $name): self {$this->name = $name; return $this;}
 
-    /**
-     * @ORM\Column(type="bigint")
-     */
+    #[ORM\Column(type: 'bigint')]
     private $size;
     public function getSize(): int { return $this->size; }
     public function setSize(int $size): self { $this->size = $size; return $this;}
@@ -60,12 +52,11 @@ class File
 
     /**
      * @var \Doctrine\Common\Collections\Collection|Episode[]
-     * @ORM\ManyToMany(targetEntity="Episode", inversedBy="files", cascade={"persist"})
-     * @ORM\JoinTable(name="episodes_files",
-     *      joinColumns={@ORM\JoinColumn(name="file_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="episode_id", referencedColumnName="id")}
-     * )
      */
+    #[ORM\JoinTable(name: 'episodes_files')]
+    #[ORM\JoinColumn(name: 'file_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'episode_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: 'Episode', inversedBy: 'files', cascade: ['persist'])]
     protected $episodes;
     public function linkEpisode(Episode $episode)
     {

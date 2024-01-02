@@ -16,20 +16,14 @@ use DateTime;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Contracts\Service\Attribute\Required;
 
 abstract class AbstractSpider implements SpiderInterface
 {
-    /** @required */
-    public TorrentService $torrentService;
-
-    /** @required */
-    public EpisodeService $episodeService;
-
-    /** @required */
-    public ParseHelperService $parseHelper;
-
-    /** @required */
-    public LoggerInterface $logger;
+    #[Required] public TorrentService $torrentService;
+    #[Required] public EpisodeService $episodeService;
+    #[Required] public ParseHelperService $parseHelper;
+    #[Required] public LoggerInterface $logger;
 
     protected $context;
 

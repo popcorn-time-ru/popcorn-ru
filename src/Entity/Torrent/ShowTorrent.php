@@ -8,9 +8,7 @@ use App\Entity\Show;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class ShowTorrent extends BaseTorrent
 {
     public function __construct()
@@ -21,9 +19,9 @@ class ShowTorrent extends BaseTorrent
 
     /**
      * @var Show
-     * @ORM\ManyToOne(targetEntity="App\Entity\Show", inversedBy="torrents")
-     * @ORM\JoinColumn(name="media_id")
      */
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Show', inversedBy: 'torrents')]
+    #[ORM\JoinColumn(name: 'media_id')]
     protected $show;
     public function getShow(): Show { return $this->show; }
     public function setShow(Show $show): self { $this->show = $show; return $this; }
@@ -32,9 +30,8 @@ class ShowTorrent extends BaseTorrent
 
     /**
      * @var File[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="App\Entity\File", mappedBy="torrent",
-     *     cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: 'App\Entity\File', mappedBy: 'torrent', cascade: ['persist', 'remove'], orphanRemoval: true)]
     protected $files;
     public function getFiles() { return $this->files; }
 
