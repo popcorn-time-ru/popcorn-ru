@@ -275,6 +275,13 @@ class MediaService
             }
         }
 
+        if ($episode->getFirstAired() === null) {
+            $episode
+                ->setTitle('')
+                ->setOverview('')
+                ->setFirstAired(0);
+        }
+
         if ($this->localeService->needFillEpisode($episode)) {
             $translations = $this->getEpisodeTranslations($episode);
             $this->localeService->fillEpisode($episode, $translations);
