@@ -59,10 +59,10 @@ class EpisodeService
             ->setEpisode($e)
         ;
         $this->em->persist($item);
-        $show->addEpisode($item);
-        $this->em->flush();
 
+        $show->addEpisode($item);
         $this->mediaInfo->updateEpisode($item);
+
         $this->em->flush();
 
         return $item;
