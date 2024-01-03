@@ -29,7 +29,7 @@ class ShowTorrent extends BaseTorrent
     public function getMedia(): BaseMedia { return $this->show;}
 
     /**
-     * @var File[]|ArrayCollection
+     * @var File[]&ArrayCollection
      */
     #[ORM\OneToMany(targetEntity: 'App\Entity\File', mappedBy: 'torrent', cascade: ['persist', 'remove'], orphanRemoval: true)]
     protected $files;

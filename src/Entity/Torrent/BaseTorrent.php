@@ -4,9 +4,7 @@ namespace App\Entity\Torrent;
 
 use App\Entity\BaseMedia;
 use App\Entity\File;
-use App\Entity\MySqlString;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;

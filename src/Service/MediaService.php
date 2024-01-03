@@ -3,9 +3,11 @@
 namespace App\Service;
 
 use App\Entity\BaseMedia;
+use App\Entity\Episode;
 use App\Entity\Movie;
 use App\Entity\Show;
 use DateTime;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Service\Attribute\Required;
 use Tmdb\Client;
 use Tmdb\Exception\TmdbApiException;
@@ -24,6 +26,7 @@ class MediaService
     public const IMDB_RATING = 7.0;
     public const IMDB_COUNT = 3000;
 
+    #[Required] public LoggerInterface $logger;
     #[Required] public LocaleService $localeService;
     #[Required] public MovieRepository $movieRepo;
     #[Required] public TvRepository $showRepo;
@@ -47,13 +50,18 @@ class MediaService
         return $seasonInfo['episodes'];
     }
 
-    public function getEpisodeTranslations(Show $show, int $season, int $episode): array
+    public function getEpisodeTranslations(Episode $episode): array
     {
-        $search = $this->client->getFindApi()->findBy($show->getImdb(), ['external_source' => 'imdb_id']);
+        $search = $this->client->getFindApi()->findBy($episode->getShow()->getImdb(), ['external_source' => 'imdb_id']);
         $id = $search['tv_results'][0]['id'];
 
         try {
-            $info = $this->client->getTvSeasonApi()->get(sprintf('tv/%s/season/%s/episode/%s/translations', $id, $season, $episode));
+            $info = $this->client->getTvSeasonApi()->get(sprintf(
+                'tv/%s/season/%s/episode/%s/translations',
+                $id,
+                $episode->getSeason(),
+                $episode->getEpisode()
+            ));
         } catch (TmdbApiException $e) {
             return [];
         }
@@ -167,6 +175,10 @@ class MediaService
         $this->fillImagesGenres($show, $showInfo);
         $this->localeService->fillMedia($show, $showInfo);
 
+        foreach ($show->getEpisodes() as $episode) {
+            $this->updateEpisode($episode);
+        }
+
         return $show;
     }
 
@@ -224,6 +236,51 @@ class MediaService
             $media = $this->fillShow($info, $media);
         }
         $media->syncTranslations();
+    }
+
+    protected array $showCache = [];
+
+    public function updateEpisode(Episode $episode)
+    {
+        $key = $episode->getShow()->getImdb().':'.$episode->getSeason();
+        if (empty($this->showCache[$key])) {
+            $this->showCache[$key] = $this->getSeasonEpisodes($episode->getShow(), $episode->getSeason());
+        }
+        foreach ($this->showCache[$key] as $episodeInfo) {
+            if ($episodeInfo['episode_number'] == $episode->getEpisode()) {
+                // Hack for unknown tvdbID in track
+                // tvdbID now is primary key on client
+                if ($episode->getTvdb() <= 0) {
+                    try {
+                        $trakt = $this->trakt->get(sprintf(
+                            'shows/%s/seasons/%s/episodes/%s',
+                            $episode->getShow()->getImdb(),
+                            $episode->getSeason(),
+                            $episode->getEpisode()
+                        ));
+                        $episode->setTvdb($trakt->ids->tvdb ?? -$trakt->ids->trakt ?? 0);
+                    } catch (\Exception $exception) {
+                        $this->logger->error($exception->getMessage());
+                    }
+                }
+                // if (!$item->getTvdb()) {
+                //     continue;
+                // }
+
+                $episode
+                    ->setTitle($episodeInfo['name'] ?: '')
+                    ->setOverview($episodeInfo['overview'] ?: '')
+                    ->setFirstAired((new \DateTime($episodeInfo['air_date'] ?? 'now'))->getTimestamp())
+                ;
+            }
+        }
+
+        if ($this->localeService->needFillEpisode($episode)) {
+            $translations = $this->getEpisodeTranslations($episode);
+            $this->localeService->fillEpisode($episode, $translations);
+        }
+
+        return $episode;
     }
 
     /**
