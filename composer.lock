@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bddfe4d2cb73b36d21c4e9e7a240c11e",
+    "content-hash": "d38969ef4259298dbbe3897fb45a7b88",
     "packages": [
         {
             "name": "artprima/prometheus-metrics-bundle",
@@ -5125,6 +5125,58 @@
                 }
             ],
             "time": "2023-11-16T16:16:50+00:00"
+        },
+        {
+            "name": "rhilip/bencode",
+            "version": "v2.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Rhilip/Bencode.git",
+                "reference": "d5b51d02f73017834c53aa76aff2403fb753ac97"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Rhilip/Bencode/zipball/d5b51d02f73017834c53aa76aff2403fb753ac97",
+                "reference": "d5b51d02f73017834c53aa76aff2403fb753ac97",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "ext-json": "*",
+                "phpunit/phpunit": "^9.0"
+            },
+            "suggest": {
+                "php-64bit": "Running 64 bit is recommended to prevent integer overflow"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rhilip\\Bencode\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rhilip",
+                    "email": "rhilipruan@gmail.com"
+                }
+            ],
+            "description": "A pure and simple PHP library for encoding and decoding Bencode data",
+            "keywords": [
+                "bencode",
+                "bittorrent",
+                "torrent"
+            ],
+            "support": {
+                "issues": "https://github.com/Rhilip/Bencode/issues",
+                "source": "https://github.com/Rhilip/Bencode/tree/v2.4.2"
+            },
+            "time": "2023-11-05T11:24:41+00:00"
         },
         {
             "name": "ruflin/elastica",
@@ -10315,14 +10367,14 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*"
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "8.1"
+        "php": "8.2"
     },
     "plugin-api-version": "2.3.0"
 }

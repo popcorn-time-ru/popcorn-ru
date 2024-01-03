@@ -9,6 +9,7 @@ use App\Entity\Show;
 use App\Entity\Torrent\BaseTorrent;
 use App\Entity\Torrent\MovieTorrent;
 use App\Entity\Torrent\ShowTorrent;
+use App\Processors\DownloadTorrentProcessor;
 use App\Processors\ShowTorrentProcessor;
 use App\Processors\TorrentActiveProcessor;
 use App\Repository\MovieRepository;
@@ -84,6 +85,20 @@ class TorrentService
         $new->setProviderExternalId($externalId);
         $this->em->persist($new);
         return $new;
+    }
+
+    public function downloadTorrent(BaseTorrent $torrent, string $downloadId)
+    {
+        $torrent->sync();
+        $torrent->setActive($torrent->getUrl() != '');
+        $this->em->flush();
+
+        $torrentMessage = new \Enqueue\Client\Message(JSON::encode([
+            'spider' => $torrent->getProvider(),
+            'torrentId' => $torrent->getId()->toString(),
+            'downloadId' => $downloadId,
+        ]));
+        $this->producer->sendEvent(DownloadTorrentProcessor::TOPIC, $torrentMessage);
     }
 
     /**

@@ -104,7 +104,7 @@ class EpisodeService
 
         $th = '-?(?:th)?';
         $season = '(?:сезон|season|sezon)';
-        $episode = '(?:серия|episode|ser[iyj]+a)';
+        $episode = '(?:серия|episode|ser[iyj]+a|part)';
 
         //S - EE серия
         if (preg_match('#(\d+) ?- ?(\d+) '.$episode.'#iu', $file, $m)) {
@@ -148,6 +148,7 @@ class EpisodeService
                 '#\s+e(\d+)#i', //S01 E01
                 '#(?:\s|^)(\d+)(?:\s|$)#iu', // ' 01 '
                 '#\((\d+)\s+(?:iz|of)\s+(?:\d+)\)#iu', // (01x01)
+                '#\spart\s+(\d+)\s#iu', // part N
             ];
             foreach($patterns as $pattern) {
                 if (preg_match($pattern, $file, $m)) {

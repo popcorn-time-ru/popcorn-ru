@@ -2,16 +2,13 @@
 
 namespace App\Processors;
 
-use App\Entity\Torrent\ShowTorrent;
 use App\Service\EpisodeService;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Enqueue\Util\JSON;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Interop\Queue\Context;
 use Interop\Queue\Message;
-use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Contracts\Service\Attribute\Required;

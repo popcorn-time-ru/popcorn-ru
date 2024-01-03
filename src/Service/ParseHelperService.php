@@ -18,13 +18,9 @@ class ParseHelperService
             if (strpos($title, $q)) {
                 return $q;
             }
-        }
-        foreach (self::SUPPORT_QUALITY as $q => $regexp) {
             if (strpos($post->text(), $q)) {
                 return $q;
             }
-        }
-        foreach (self::SUPPORT_QUALITY as $q => $regexp) {
             if (preg_match($regexp, $post->html())) {
                 return $q;
             }

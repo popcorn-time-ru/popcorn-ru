@@ -105,7 +105,7 @@ abstract class BaseTorrent
     /**
      * @var string
      */
-    #[ORM\Column(type: 'string', length: 3000)]
+    #[ORM\Column(type: 'string', length: 3000, nullable: true)]
     protected $url;
     public function getUrl() { return $this->url; }
     public function setUrl($url) { $this->url = $url; return $this;}
