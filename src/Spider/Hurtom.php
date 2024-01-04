@@ -35,6 +35,7 @@ class Hurtom extends AbstractSpider implements DownloadInterface
             'base_uri' =>  $this->useTor() ? self::BASE_URL : self::BASE_URL, // tor site dead now
             RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
             RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
+            RequestOptions::DELAY => random_int(1000, 3000),
             RequestOptions::HEADERS => [
                 'Accept-Encoding' => 'gzip',
             ],
