@@ -11,8 +11,9 @@ abstract class AbstractProcessor implements Processor
         if ($e->getResponse()) {
             echo $e->getMessage().PHP_EOL;
             if ($e->getResponse()->getStatusCode() > 500) {
+                sleep(10);
                 // 503 - it's temporary
-                return self::REQUEUE;
+                return rand(1, 10) == 5 ? self::ACK : self::REQUEUE;
             }
             if ($e->getResponse()->getStatusCode() > 400) {
                 // 404 - some happens

@@ -20,16 +20,30 @@ use Symfony\Component\DomCrawler\Crawler;
 class T1337x extends AbstractSpider
 {
     public const BASE_URL = 'https://1337x.to/';
+    public const BASE_URL_TOR = 'http://l337xdarkkaqfwzntnfk5bmoaroivtl6xsbatabvlb52umg6v3ch44yd.onion/';
 
     /** @var Client */
     private $client;
 
-    public function __construct()
+    public function useTor(): bool
+    {
+        return true;
+    }
+
+    public function __construct(string $torProxy)
     {
         $this->client = new Client([
-            'base_uri' => self::BASE_URL,
-            RequestOptions::TIMEOUT => 10,
-            'cookies' => new FileCookieJar(sys_get_temp_dir() . '/1337x.cookie.json', true)
+            'base_uri' => $this->useTor() ? self::BASE_URL_TOR : self::BASE_URL,
+            RequestOptions::TIMEOUT => $this->useTor() ? 30 : 10,
+            RequestOptions::PROXY => $this->useTor() ? $torProxy : '',
+            RequestOptions::HEADERS => [
+                'Accept-Encoding' => 'gzip',
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            ],
+            'curl' => [
+                CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5_HOSTNAME
+            ],
+            'cookies' => new FileCookieJar(sys_get_temp_dir() . '/1337x.cookie.json', true),
         ]);
     }
 
