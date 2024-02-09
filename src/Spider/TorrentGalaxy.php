@@ -25,7 +25,7 @@ class TorrentGalaxy extends AbstractSpider
 
     public function useTor(): bool
     {
-        return true;
+        return false;
     }
 
     public function __construct(string $torProxy)
@@ -71,7 +71,7 @@ class TorrentGalaxy extends AbstractSpider
         $html = $res->getBody()->getContents();
         $crawler = new Crawler($html);
 
-        $panels = $crawler->filter('#panelmain')->each(static function (Crawler $c) { return $c;});
+        $panels = $crawler->filter('.panel-primary')->each(static function (Crawler $c) { return $c;});
         $post = null;
         foreach ($panels as $panel) {
             if (strpos($panel->html(), 'Torrent details')) {
