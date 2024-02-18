@@ -84,7 +84,7 @@ class TorrentGalaxy extends AbstractSpider
         }
         /** @var Crawler $post */
         preg_match('#Torrent details for "(.*?)"#', $post->text(), $m);
-        $title = $m[1];
+        $title = $m[1] ?? '';
 
         $imdb = $this->parseHelper->getImdb($post);
 
