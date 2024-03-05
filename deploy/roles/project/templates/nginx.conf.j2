@@ -32,6 +32,10 @@ server {
     internal;
   }
 
+  location /posters/ {
+    proxy_pass http://image.tmdb.org/t/p/w500/;
+  }
+
   location ~ \.php$ {
     return 404;
   }
