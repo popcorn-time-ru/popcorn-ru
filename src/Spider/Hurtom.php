@@ -116,7 +116,7 @@ class Hurtom extends AbstractSpider implements DownloadInterface
             if (preg_match('#href="t(\d+)"#', $line->html(), $m)) {
                 $time = $line->filter('td span.postdetails')->first()->html();
                 $time = substr($time, 0 , strpos($time, '<'));
-                if ($this->ruStrToTime('Y-m-d H:i', $time) < $after) {
+                if ($this->ruStrToTime('Y-m-d\TH:i:s\+00:00', $time) < $after) {
                     continue;
                 }
 
